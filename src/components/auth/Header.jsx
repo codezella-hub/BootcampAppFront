@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 function header() {
   return (
@@ -207,7 +208,8 @@ function header() {
                 </ul>
               </nav>
             </div>
-            <a href="#" className="rts-btn btn-primary-white">Sign Up</a>
+            <a className="rts-btn btn-primary-white"><Link to="/register">Sign Up</Link></a>  
+            
           </div>
         </div>
       </div>
