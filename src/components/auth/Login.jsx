@@ -11,11 +11,66 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Reset error messages
+    setError({ email: '', password: '' });
     try {
-      const response = await axios.post('/api/register', { email, password });
-      console.log(response.data);
+      console.log('Sending login request with:', { email, password });
+      const response = await axios.post('/api/login', { email, password });
+      console.log('Login response:', response.data);
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          }
+        });
+        Toast.fire({
+          icon: "success",
+          title: "Signed in successfully"
+        });
+        // Show success alert
+       /* Swal.fire({
+          title: 'Success!',
+          text: 'You are now logged in.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#3085d6',
+          background: '#f4f4f4',
+          backdrop: 'rgba(0,0,0,0.4)',
+        }).then(() => {
+          window.location.href = '/student/enroll-course'; // Redirect after clicking OK
+        });*/
+      // 🔥 Delay navigation for 3 seconds (3000ms)
+      setTimeout(() => {
+        window.location.href = '/student/enroll-course'; 
+      }, 3000);
+      }
     } catch (err) {
-      console.error(err.response?.data || err.message);
+      console.error('Login error:', err);
+      if (err.response && err.response.data.errors) {
+        setError(err.response.data.errors);
+      } else {
+        setError({ email: 'An error occurred. Please try again.' });
+      }
+      // Show error alert
+      Swal.fire({
+        title: 'Login Failed!',
+        text: 'Invalid email or password. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3085d6',
+        background: '#f4f4f4',
+        backdrop: 'rgba(0,0,0,0.4)',
+        height: '500px',
+        width: '500px',
+      });
+      
     }
   };
   
