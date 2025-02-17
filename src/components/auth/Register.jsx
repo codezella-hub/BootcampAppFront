@@ -5,6 +5,7 @@ import Header from './Header';
 import { Link,useNavigate  } from 'react-router-dom';
 
 export default function Register() {
+  
   const navigate = useNavigate();
   const [errorlist, setError] = useState({});
   const [registerInput, setRegister] = useState({
