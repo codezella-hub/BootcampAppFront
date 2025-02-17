@@ -5,53 +5,7 @@ import Header from './Header';
 import { Link } from 'react-router-dom';
 
 export default function Register() {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    birthOfDate: '',
-    cin: '',
-    phoneNumber: '',
-    email: '',
-    password: '',
-    image: null,
-  });
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
-    setFormData({ ...formData, [id]: value });
-  };
-
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, image: e.target.files[0] });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const formDataToSend = new FormData();
-    Object.keys(formData).forEach((key) => {
-      formDataToSend.append(key, formData[key]);
-    });
-
-    try {
-      const response = await axios.post('/api/register', formDataToSend, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      Swal.fire('Success', response.data.message, 'success');
-    } catch (error) {
-      if (error.response && error.response.data.errors) {
-        // Format errors into a list
-        const errorList = error.response.data.errors.map((err) => `<li>${err}</li>`).join('');
-        Swal.fire({
-          title: 'Validation Errors',
-          html: `<ul style="text-align:left;">${errorList}</ul>`,
-          icon: 'error',
-        });
-      } else {
-        Swal.fire('Error', 'An unexpected error occurred', 'error');
-      }
-    }
-  };
 
   return (
     <>
