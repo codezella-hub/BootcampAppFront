@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 function header() {
   return (
@@ -293,8 +294,8 @@ function header() {
             </div>
             <div className="buttons-area">
     
-              <a href="registration.html" className="rts-btn btn-primary">Sign In</a>
-              <a href="registration.html" className="rts-btn btn-primary">Sign Up</a>
+              <a href="registration.html" className="rts-btn btn-primary"><Link to="/login">Sign In</Link></a>
+              <a href="registration.html" className="rts-btn btn-primary"><Link to="/register">Sign Up</Link></a>
             </div>
             <div className="menu-btn" id="menu-btn">
               <svg width={20} height={16} viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
