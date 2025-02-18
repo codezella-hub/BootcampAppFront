@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';  // Import SweetAlert2
 import Header from './Header';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
+  const navigate = useNavigate;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState({ email: '', password: '' });
@@ -48,6 +49,7 @@ export default function Login() {
         });*/
       // 🔥 Delay navigation for 3 seconds (3000ms)
       setTimeout(() => {
+        //navigate('/student/enroll-course'); 
         window.location.href = '/student/enroll-course'; 
       }, 3000);
       }

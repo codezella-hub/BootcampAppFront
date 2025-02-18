@@ -293,7 +293,8 @@ function header() {
             </div>
             <div className="buttons-area">
     
-              <a href="registration.html" className="rts-btn btn-primary">Log Out</a>
+              <a href="registration.html" className="rts-btn btn-primary">Sign In</a>
+              <a href="registration.html" className="rts-btn btn-primary">Sign Up</a>
             </div>
             <div className="menu-btn" id="menu-btn">
               <svg width={20} height={16} viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
