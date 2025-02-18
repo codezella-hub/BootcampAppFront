@@ -5,6 +5,7 @@ import StudentEnrollCourse from './components/student/StudentEnrollCourse';  // 
 import axios from "axios";
 import Home from './components/Home';
 import AddCategory from './components/admin/AddCategory';
+import ForgetPassword from './components/auth/ForgetPassword';
 
 function App() {
   //axios.defaults.baseURL = "http://localhost:3000/"
@@ -18,6 +19,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/AddCategory" element={<AddCategory />} />
+        <Route path="/ForgetPassword" element={<ForgetPassword />} />
 
       </Routes>
     </Router>
