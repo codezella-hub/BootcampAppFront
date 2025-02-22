@@ -277,6 +277,9 @@ function header() {
                       <li><a href="blog-details.html">Blog Details</a></li>
                     </ul>
                   </li>
+                  
+                    <a className="has-dropdown" href="/Forums">Forum</a>
+                  
                 </ul>
               </nav>
             </div>

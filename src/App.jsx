@@ -1,12 +1,14 @@
 import {   BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register'; 
-import StudentEnrollCourse from './components/student/StudentEnrollCourse';  // Ensure this is correctly imported
+import StudentEnrollCourse from './components/student/StudentEnrollCourse';// Ensure this is correctly imported   
 import axios from "axios";
 import Home from './components/Home';
 import AddCategory from './components/admin/AddCategory';
 import ForgetPassword from './components/auth/ForgetPassword';
-import ListCategory from './components/admin/ListCategory';
+import AddForum from './components/student/addForum';
+import ForumList from './components/student/ForumList';
+import ForumDetails from './components/student/ForumDetails';
 
 function App() {
   //axios.defaults.baseURL = "http://localhost:3000/"
@@ -22,6 +24,9 @@ function App() {
         <Route path="/AddCategory" element={<AddCategory />} />
         <Route path="/ListCategory" element={<ListCategory />} />
         <Route path="/ForgetPassword" element={<ForgetPassword />} />
+        <Route path="/addForum" element={<AddForum/>} />
+        <Route path="/Forums" element={<ForumList/>} />
+        <Route path="/forum/:id" element={<ForumDetails/>} />
 
       </Routes>
     </Router>

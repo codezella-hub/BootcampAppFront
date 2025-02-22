@@ -54,6 +54,7 @@ export default function Register() {
         formData.append('password', registerInput.password);
         formData.append('image', picture?.image);
 
+
         axios.post(`/api/register`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
