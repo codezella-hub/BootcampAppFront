@@ -3,9 +3,14 @@ import axios from "axios";
 const API_URL = "http://localhost:3000/api/forums";
 
 const forumApi = {
-  addForum: (formData) => axios.post(API_URL, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  }),
+  addForum: (formData) => {
+    return axios.post("http://localhost:3000/api/forums", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data", 
+            
+        },
+    });
+},
 
   getAllForums: () => axios.get(API_URL),
 

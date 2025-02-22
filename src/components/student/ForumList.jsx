@@ -122,7 +122,7 @@ function ForumList() {
                   {/* rts single course */}
                   <div className="rts-single-course">
                     <a href={`forum/${forum._id}`} className="thumbnail">
-                      <img src={forum.image} alt="forum" />
+                      <img src={`http://localhost:3000${forum.image}`} alt="forum" />
                     </a>
                     <div className="tags-area-wrapper">
                       <div className="single-tag">

@@ -7,11 +7,16 @@ function AddForum() {
     title: "",
     description: "",
     categorie: "",
+    user:"67b8be03d74ad328bb66ccb6",
+    image:"",
   });
+ 
 
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [categories, setCategories] = useState([]); // Stocke les catégories
+  const [imageName, setImageName] = useState(""); 
+  const [categories, setCategories] = useState([]);
+  const [user,setUser]=useState("67b8be03d74ad328bb66ccb6")
 
   useEffect(() => {
     // Récupérer les catégories depuis l'API
@@ -34,30 +39,38 @@ function AddForum() {
   const handleImage = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(file);
+      setImage({image:file});
+      setImageName(file.name);
       setImagePreview(URL.createObjectURL(file));
+      
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const data = new FormData();
-    data.append("title", formData.title);
-    data.append("description", formData.description);
-    data.append("categorie", formData.categorie);
-    data.append("user","67b8be03d74ad328bb66ccb6");
-    if (image) data.append("image", image);
+    data.append('title', formData.title);
+    data.append('description', formData.description);
+    data.append('categorie', formData.categorie);
+    data.append('user', formData.user);
+    if (image) data.append('image', image?.image); 
 
     try {
-      await forumApi.addForum(data);
-      alert("Forum ajouté avec succès!");
-      setFormData({ title: "", description: "", categorie: "" });
-      setImage(null);
-      setImagePreview(null);
+        console.log("Données envoyées :", Object.fromEntries(data.entries())); 
+        await forumApi.addForum(data); 
+        alert("Forum ajouté avec succès!");
+
+        
+        setFormData({ title: "", description: "", categorie: "" });
+        setImage(null);
+        setImagePreview(null);
     } catch (error) {
-      console.error("Erreur lors de l'ajout du forum", error);
+        console.error("Erreur lors de l'ajout du forum", error);
     }
-  };
+};
+
+
 
   return (
     <>
@@ -88,23 +101,34 @@ function AddForum() {
             ></textarea>
           </div>
           
-          <div className="single-input">
-            <label htmlFor="image">Image</label>
-            <input
-              id="image"
-              name="image"
-              type="file"
-              accept="image/*"
-              onChange={handleImage}
-            />
-            {imagePreview && (
-              <div className="course-thumbnail-upload-area">
-                <div className="thumbnail-area">
-                  <img src={imagePreview} alt="Selected" width={100} />
-                </div>
-              </div>
-            )}
-          </div>
+          <div className="single-input-wrapper">
+                                        <label htmlFor="image">Image</label>
+                                        <input
+                                            type="file"
+                                            id="image"
+                                            name="image"
+                                            onChange={handleImage}
+                                            style={{ display: "none" }}
+                                        />
+                                        <div className="course-thumbnail-upload-area">
+                                            <div className="thumbnail-area">
+                                                <img src={imagePreview} alt="Selected" width={200}/>
+                                            </div>
+                                            <div className="information">
+                                                <div className="input-file-type-btn">
+                                                    <button 
+                                                        type="button"
+                                                        className="rts-btn btn-primary"
+                                                        id="custom-button"
+                                                        onClick={() => document.getElementById("image").click()}
+                                                    >
+                                                        Pick Image
+                                                    </button>
+                                                    {imageName && <p>Selected Image: {imageName}</p>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
           <div className="dropdown">
             <label htmlFor="categorie">Catégorie</label>

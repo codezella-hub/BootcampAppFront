@@ -65,7 +65,7 @@ function ForumDetails() {
   };
 
   const handleAddComment = async (e) => {
-    e.preventDefault();
+    
     if (newComment.trim()) {
       try {
         const response = await forumApi.addComment(id, newComment,user);
@@ -83,7 +83,7 @@ function ForumDetails() {
       <div className="col-lg-9 mx-auto">
         {forum && (
           <>
-            <img src={forum.image} alt="forum" width={50} />
+            <img src={`http://localhost:3000${forum.image}`} alt="forum" key={forum._id} />
             <h4>{forum.title}</h4>
             <p>{forum.description}</p>
             <div>
