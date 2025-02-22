@@ -22,6 +22,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/AddCategory" element={<AddCategory />} />
+        <Route path="/ListCategory" element={<ListCategory />} />
         <Route path="/ForgetPassword" element={<ForgetPassword />} />
         <Route path="/addForum" element={<AddForum/>} />
         <Route path="/Forums" element={<ForumList/>} />

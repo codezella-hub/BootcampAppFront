@@ -42,32 +42,57 @@ function AddCategory() {
     };
     const AddCategorySubmit = (e) => {
         e.preventDefault(); // Prevent form refresh
-        console.log(categoryInput);
-        console.log(picture);
+    
+        let errors = {};
+        let missingFields = [];
+    
+        if (!categoryInput.title) {
+            errors.title = "Title is required";
+            missingFields.push("Title");
+        }
+        if (!categoryInput.description) {
+            errors.description = "Description is required";
+            missingFields.push("Description");
+        }
+        if (!picture) {
+            errors.image = "Image is required";
+            missingFields.push("Image");
+        }
+    
+        if (Object.keys(errors).length > 0) {
+            setError(errors); // Store the errors in state
+    
+            Swal.fire({
+                title: 'Error!',
+                text: `Please fill in the following fields: ${missingFields.join(", ")}`,
+                icon: 'error',
+                confirmButtonText: 'OK',
+            });
+    
+            return; // Stop the function if there are errors
+        }
+    
         const formData = new FormData();
         formData.append('title', categoryInput.title);
         formData.append('description', categoryInput.description);
         formData.append('image', picture?.image);
-        
+    
         axios.post(`/api/addCategory`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 "Accept": "application/json",
             },
         }).then(res => {
-            // Check if the status is 201 (successful creation)
             if (res.data.status === 201) {
                 Swal.fire({
                     title: 'Success!',
                     text: res.data.message,
                     icon: 'success',
                     confirmButtonText: 'OK',
-                    confirmButtonColor: '#3085d6',
                 }).then(() => {
-                    navigate('/login'); // Navigate to login page
+                    navigate('/login'); // Navigate after success
                 });
             } else {
-                // Handle other statuses or errors
                 Swal.fire({
                     title: 'Error!',
                     text: 'Something went wrong!',
@@ -76,7 +101,6 @@ function AddCategory() {
                 });
             }
         }).catch(err => {
-            // Handle errors, like network issues
             Swal.fire({
                 title: 'Error!',
                 text: 'Network error. Please try again later.',
@@ -86,6 +110,8 @@ function AddCategory() {
         });
     };
     
+
+
 
     return (
         <div>    {/* banner area start */}
@@ -131,44 +157,56 @@ function AddCategory() {
                                                         <form onSubmit={AddCategorySubmit} className="top-form-create-course">
                                                             <div className="single-input">
                                                                 <label htmlFor="name">Category Title</label>
-                                                                <input id="name" name='title' onChange={handleInput} value={categoryInput.title} type="text" placeholder="New Category" />
+                                                                <input
+                                                                    id="name"
+                                                                    name="title"
+                                                                    onChange={handleInput}
+                                                                    value={categoryInput.title}
+                                                                    type="text"
+                                                                    placeholder="New Category"
+                                                                    style={{ border: errorlist.title ? "2px solid red" : "" }}
+                                                                />
+                                                                {errorlist.title && <p style={{ color: "red", fontSize: "14px" }}>{errorlist.title}</p>}
                                                             </div>
+
                                                             <div className="single-input">
                                                                 <label htmlFor="message-2">About Category</label>
-                                                                <textarea id="message-2" name='description' onChange={handleInput} value={categoryInput.description} placeholder="New Course" defaultValue={""} />
+                                                                <textarea
+                                                                    id="message-2"
+                                                                    name="description"
+                                                                    onChange={handleInput}
+                                                                    value={categoryInput.description}
+                                                                    placeholder="New Course"
+                                                                    style={{ border: errorlist.description ? "2px solid red" : "" }}
+                                                                />
+                                                                {errorlist.description && <p style={{ color: "red", fontSize: "14px" }}>{errorlist.description}</p>}
                                                             </div>
+
                                                             <div className="single-input">
-                                                                <label htmlFor="message-2">Category Image</label>
-                                                                <div className="single-input-wrapper">
-
-                                                                    <input
-                                                                        type="file"
-                                                                        id="image"
-                                                                        name="image"
-                                                                        onChange={handleImage}
-                                                                        style={{ display: "none" }}
-                                                                    />
-                                                                    <div className="course-thumbnail-upload-area">
-                                                                        <div className="thumbnail-area">
-                                                                            <img src={imagePreview} alt="Selected" style={{ width: "250px", height: "250px", objectFit: "cover" }} />
-                                                                        </div>
-
-                                                                        <div className="information">
-                                                                            <div className="input-file-type-btn">
-                                                                                <button
-                                                                                    type="button"
-                                                                                    className="rts-btn btn-primary"
-                                                                                    id="custom-button"
-                                                                                    onClick={() => document.getElementById("image").click()}
-                                                                                >
-                                                                                    Pick Image
-                                                                                </button>
-                                                                                {imageName && <p>Selected Image: {imageName}</p>}
-                                                                            </div>
+                                                                <label htmlFor="image">Category Image</label>
+                                                                <input
+                                                                    type="file"
+                                                                    id="image"
+                                                                    name="image"
+                                                                    onChange={handleImage}
+                                                                    style={{ display: "none" }}
+                                                                />
+                                                                <div className="course-thumbnail-upload-area">
+                                                                    <div className="thumbnail-area">
+                                                                        <img src={imagePreview} alt="Selected" style={{ width: "250px", height: "250px", objectFit: "cover", border: errorlist.image ? "2px solid red" : "" }} />
+                                                                    </div>
+                                                                    <div className="information">
+                                                                        <div className="input-file-type-btn">
+                                                                            <button type="button" className="rts-btn btn-primary" id="custom-button" onClick={() => document.getElementById("image").click()}>
+                                                                                Pick Image
+                                                                            </button>
+                                                                            {imageName && <p>Selected Image: {imageName}</p>}
                                                                         </div>
                                                                     </div>
                                                                 </div>
+                                                                {errorlist.image && <p style={{ color: "red", fontSize: "14px" }}>{errorlist.image}</p>}
                                                             </div>
+
 
                                                             <div className="row">
                                                                 <div className="col-lg-12">
