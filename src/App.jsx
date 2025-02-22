@@ -5,6 +5,7 @@ import StudentEnrollCourse from './components/student/StudentEnrollCourse';// En
 import axios from "axios";
 import Home from './components/Home';
 import AddCategory from './components/admin/AddCategory';
+import ListCategory from './components/admin/ListCategory';
 import ForgetPassword from './components/auth/ForgetPassword';
 import AddForum from './components/student/addForum';
 import ForumList from './components/student/ForumList';
