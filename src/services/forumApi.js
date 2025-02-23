@@ -15,6 +15,8 @@ const forumApi = {
   getAllForums: () => axios.get(API_URL),
 
   getForumById: (id) => axios.get(`${API_URL}/${id}`),
+  
+  getForumByIduser: (id) => axios.get(`${API_URL}/user/${id}`),
 
   updateForum: (id, formData) => axios.put(`${API_URL}/${id}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
@@ -40,9 +42,12 @@ const forumApi = {
   },
 
   // Nouvelle méthode pour retirer un like d'un forum
-  removeLike: (forumId,Iduser) => {
-    return axios.delete("http://localhost:3000/api/likes", { forumId ,userId:Iduser});
+  removeLike: (forum, Iduser) => {
+    return axios.delete(`http://localhost:3000/api/likes`, {
+      data: { forumId:forum,userId: Iduser }
+    });
   },
+  
 
   // Nouvelle méthode pour obtenir les likes d'un forum
   getLikesByForum: (forumId) => {

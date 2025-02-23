@@ -282,6 +282,7 @@ function header() {
                     <ul className="submenu">
                     <li><a href="/Forums">Forums</a></li>
                     <li><a href="/addForum">add Forum</a></li>
+                    <li><a href="/Myforum">My Forum</a></li>
                     </ul>
                   </li>
                 </ul>

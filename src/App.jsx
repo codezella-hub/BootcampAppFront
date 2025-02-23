@@ -10,6 +10,7 @@ import ForgetPassword from './components/auth/ForgetPassword';
 import AddForum from './components/student/addForum';
 import ForumList from './components/student/ForumList';
 import ForumDetails from './components/student/ForumDetails';
+import MyForum from './components/student/MyForum';
 
 function App() {
   //axios.defaults.baseURL = "http://localhost:3000/"
@@ -27,6 +28,7 @@ function App() {
         <Route path="/ForgetPassword" element={<ForgetPassword />} />
         <Route path="/addForum" element={<AddForum/>} />
         <Route path="/Forums" element={<ForumList/>} />
+        <Route path="/Myforum" element={<MyForum/>} />
         <Route path="/forum/:id" element={<ForumDetails/>} />
 
       </Routes>
