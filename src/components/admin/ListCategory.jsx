@@ -24,6 +24,31 @@ function ListCategory() {
             });
     }, []);
 
+    const handleDeleteCategory = (id) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.delete(`/api/deleteCategory/${id}`)
+                    .then(res => {
+                        if (res.status === 200) {
+                            Swal.fire('Deleted!', 'Category has been deleted.', 'success');
+                            setCategory(ListCategory.filter(category => category._id !== id));
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error!', 'Failed to delete category.', 'error');
+                    });
+            }
+        });
+    };
+
     return (
         <div>    {/* banner area start */}
             <Header />
@@ -67,20 +92,21 @@ function ListCategory() {
                                             ListCategory.map(category => (
                                                 <div className="single-certificates" key={category._id}>
                                                     <div className="left">
-                                                        <img  src={`http://localhost:3000${category.image}`} width={150} height={100} alt={category.title} />
+                                                        <img src={`http://localhost:3000${category.image}`} width={150} height={100} alt={category.title} />
                                                         <h5 className="title">Title : {category.title}</h5>
                                                     </div>
                                                     <div className="right">
-                        
-                                        <span>{category.createdAt}</span>
-                                        <span>{category.updatedAt}</span>
-                        
+
+                                                        <span>{category.createdAt}</span>
+                                                        <span>{category.updatedAt}</span>
+
                                                         <a href="#" className="edit-btn">
                                                             <i className="fa-regular fa-pen-to-square" />
                                                         </a>
-                                                        <a href="#" className="delete-btn">
+                                                        <button onClick={() => handleDeleteCategory(category._id)} className="delete-btn">
                                                             <i className="fa-regular fa-trash" />
-                                                        </a>
+                                                        </button>
+
                                                     </div>
                                                 </div>
                                             ))
