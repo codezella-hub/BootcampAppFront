@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import Header from '../student/Header'
-import Footer from '../student/Footer'
+import Header from '../../student/Header'
+import Footer from '../../student/Footer'
 import Swal from 'sweetalert2';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
@@ -30,9 +30,9 @@ function ListCategory() {
             text: "You won't be able to revert this!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
+            confirmButtonColor: '#007C00',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonText: 'Confirm!'
         }).then((result) => {
             if (result.isConfirmed) {
                 axios.delete(`/api/deleteCategory/${id}`)
@@ -100,12 +100,13 @@ function ListCategory() {
                                                         <span>{category.createdAt}</span>
                                                         <span>{category.updatedAt}</span>
 
-                                                        <a href="#" className="edit-btn">
+                                                        <Link to={`/UpdateCategory/${category._id}`} className="edit-btn">
                                                             <i className="fa-regular fa-pen-to-square" />
-                                                        </a>
-                                                        <button onClick={() => handleDeleteCategory(category._id)} className="delete-btn">
+                                                        </Link>
+
+                                                        <a onClick={() => handleDeleteCategory(category._id)} className="delete-btn">
                                                             <i className="fa-regular fa-trash" />
-                                                        </button>
+                                                        </a>
 
                                                     </div>
                                                 </div>
