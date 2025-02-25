@@ -1,10 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import Profile from './Profile'
+
+
 
 function header() {
   return (
 <div className="header-transparent">
   <div className="container">
+ 
     <div className="row">
       <div className="col-lg-12">
         <div className="header-tranaparent-main-wrapper">
@@ -15,6 +19,7 @@ function header() {
             <div className="main-nav-one">
               <nav>
                 <ul>
+            
                   <li className="has-dropdown" style={{position: 'static'}}>
                     <a className="nav-link" href="#">Home</a>
                     <ul className="megamenu-hub">
@@ -209,7 +214,7 @@ function header() {
               </nav>
             </div>
             <a className="rts-btn btn-primary-white"><Link to="/register">Sign Up</Link></a>  
-            
+          
           </div>
         </div>
       </div>

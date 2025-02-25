@@ -1,7 +1,24 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
 
-function header() {
+import { Link } from 'react-router-dom'
+import {checkAuth} from "../../services/authService"
+import  { useEffect, useState } from 'react';
+import Profile from '../auth/Profile';
+function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
+  useEffect(() => {
+    const verifyUser = async () => {
+        const result = await checkAuth();
+        if (result.success) {
+          setIsLoggedIn(true);
+          
+      } else {
+          setIsLoggedIn(false);
+      }
+       
+    };
+
+    verifyUser(); // Call the function to check authentication status
+}, []);
   return (
 <header className="header-one v-2 header--sticky">
   <div className="header-top-one-wrapper">
@@ -296,9 +313,17 @@ function header() {
               </div>
             </div>
             <div className="buttons-area">
-    
+            {isLoggedIn ? (
+                      <Profile></Profile>
+               
+               
+            ) : (
+              <>
               <a href="registration.html" className="rts-btn btn-primary"><Link to="/login">Sign In</Link></a>
               <a href="registration.html" className="rts-btn btn-primary"><Link to="/register">Sign Up</Link></a>
+              </>
+            )}
+              
             </div>
             <div className="menu-btn" id="menu-btn">
               <svg width={20} height={16} viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -318,4 +343,4 @@ function header() {
   )
 }
 
-export default header
+export default Header;

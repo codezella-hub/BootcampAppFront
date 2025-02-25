@@ -9,7 +9,7 @@ import ForgetPassword from './components/auth/ForgetPassword';
 import AddForum from './components/student/addForum';
 import ForumList from './components/student/ForumList';
 import ForumDetails from './components/student/ForumDetails';
-
+import VerifiedEmail from './components/auth/VerifiedEmail';
 function App() {
   //axios.defaults.baseURL = "http://localhost:3000/"
   return (
@@ -19,6 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         {/* Other routes */}
         <Route path="/student/enroll-course" element={<StudentEnrollCourse />} />
+        <Route path="/verify-email" element={<VerifiedEmail />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/AddCategory" element={<AddCategory />} />
@@ -26,7 +27,7 @@ function App() {
         <Route path="/addForum" element={<AddForum/>} />
         <Route path="/Forums" element={<ForumList/>} />
         <Route path="/forum/:id" element={<ForumDetails/>} />
-
+        
       </Routes>
     </Router>
   );
