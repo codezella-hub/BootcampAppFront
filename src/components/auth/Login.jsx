@@ -122,7 +122,7 @@ export default function Login() {
                     Don't Have an account? <Link to="/register">Register</Link>
                   </p>
                   <p>
-                    Forgot Your Password? <Link to="/reset-password">Change it</Link>
+                    Forgot Your Password? <Link to="/ForgetPassword">Change it</Link>
                   </p>
                 </form>
               </div>

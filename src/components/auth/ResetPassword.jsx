@@ -1,33 +1,29 @@
-import { useState } from 'react';
+import  { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';  
 import Header from './Header';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import { Link, useParams } from 'react-router-dom';
 
-function ForgetPassword() {
-    const [email, setEmail] = useState('');
+function ResetPassword() {
+    const { token } = useParams(); // Récupération du token de l'URL
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate(); // Initialize useNavigate
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:3000/api/forget-password', { email });
+            const response = await axios.post(`http://localhost:3000/api/reset-password/${token}`, { password });
             
-            // Affiche le message de succès
             Swal.fire({
                 title: 'Success!',
                 text: response.data.message,
                 icon: 'success',
                 confirmButtonText: 'OK',
-            }).then(() => {
-                // Redirection vers la page de vérification de l'email
-                navigate('/check-your-email'); // Change cette route si nécessaire
             });
 
-            setEmail('');
+            setPassword('');
         } catch (error) {
             Swal.fire({
                 title: 'Error!',
@@ -48,23 +44,23 @@ function ForgetPassword() {
                     <div className="row g-0">
                         <div className="col-lg-6">
                             <div className="login-page-form-area">
-                                <h4 className="title">Reset Your Password</h4>
+                                <h4 className="title">Set Your New Password</h4>
                                 <form onSubmit={handleSubmit}>
                                     <div className="single-input-wrapper">
-                                        <label htmlFor="email">Your Email</label>
+                                        <label htmlFor="password">New Password</label>
                                         <input
-                                            id="email"
-                                            type="email"
-                                            placeholder="Enter Your Email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
+                                            id="password"
+                                            type="password"
+                                            placeholder="Enter Your New Password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
                                             required
                                         />
                                     </div>
                                     <button type="submit" className="rts-btn btn-primary" disabled={loading}>
-                                        {loading ? 'Sending...' : 'Send Reset Link'}
+                                        {loading ? 'Resetting...' : 'Reset Password'}
                                     </button>
-                                    <p>Already Have an account? <Link to="/login">Sign In</Link></p>
+                                    <p>Remembered your password? <Link to="/login">Sign In</Link></p>
                                 </form>
                             </div>
                         </div>
@@ -80,4 +76,4 @@ function ForgetPassword() {
     );
 }
 
-export default ForgetPassword;
+export default ResetPassword;
