@@ -151,7 +151,12 @@ function MyForum() {
                       <span>{forum.commentCount} Comments</span>
                     </div>
                   </div>
-                  
+                  <button
+                      onClick={() => window.location.href = `/updateForum/${forum._id}`}
+                      className="rts-btn btn-primary mt-3"
+                    >
+                      <i className="fa-solid fa-pen"></i> Modifier
+                    </button>
                   <button
                     onClick={() => deleteForum(forum._id)}
                     style={{

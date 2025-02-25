@@ -11,9 +11,26 @@ function ForumDetails() {
   const [userConnect, setUserConnect] = useState(null); 
   const [user, setUser] = useState(null); 
   const [liked, setLiked] = useState(true);
+  const [commentUsers, setCommentUsers] = useState({});
 
 
   useEffect(() => {
+    const fetchCommentUsers = async (comments) => {
+      try {
+        const usersData = {};
+        await Promise.all(
+          comments.map(async (comment) => {
+            if (!usersData[comment.user]) {
+              const response = await forumApi.getuserById(comment.user);
+              usersData[comment.user] = response.data;
+            }
+          })
+        );
+        setCommentUsers(usersData);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des utilisateurs des commentaires", error);
+      }
+    };
     const checkUserCreated = async () => {
       try {
         const response = await forumApi.getuserById(forum.user);
@@ -24,7 +41,7 @@ function ForumDetails() {
     };
     const checkUser = async () => {
       try {
-        const response = await forumApi.getuserById("67b8be03d74ad328bb66ccb6");
+        const response = await forumApi.getuserById("67b8be03d74ad328bb66ccb6");//hot lena user b token
         setUserConnect(response.data);
       } catch (error) {
         console.error("Erreur lors de la récupération de user", error);
@@ -41,17 +58,16 @@ function ForumDetails() {
       }
     };
 
-    // Charger les détails du forum, les commentaires et le nombre de likes
     const fetchForumDetails = async () => {
       try {
         const forumResponse = await forumApi.getForumById(id);
         setForum(forumResponse.data);
-
+    
         const commentsResponse = await forumApi.getCommentsByForum(id);
         setComments(commentsResponse.data);
-
-        
-
+    
+        // Récupérer les utilisateurs des commentaires
+        await fetchCommentUsers(comments);
       } catch (error) {
         console.error("Erreur lors de la récupération du forum", error);
       }
@@ -61,6 +77,7 @@ function ForumDetails() {
     checkUserCreated();
     checkIfLiked(); 
     
+    console.log(commentUsers)
    
   }, [id, forum]); 
 
@@ -89,8 +106,8 @@ function ForumDetails() {
     if (newComment.trim()) {
       try {
         const response = await forumApi.addComment(id, newComment,userConnect._id);
-        setComments([...comments, response.data]); // Ajouter le nouveau commentaire
-        setNewComment(""); // Réinitialiser le champ de saisie
+        setComments([...comments, response.data]); 
+        setNewComment(""); 
       } catch (error) {
         console.error("Erreur lors de l'ajout du commentaire", error);
       }
@@ -189,10 +206,24 @@ function ForumDetails() {
                 <div class="rts-single-wized search">
                     <div class="wized-body mt--0">
                     <h3>Comments</h3>
-                    {comments.map((comment, index) => (
-              <p key={index}>
-                {comment}</p>
-            ))}
+                  {comments.map((comment, index) => (
+                    <div key={index} className="comment">
+                      {commentUsers[comment.user] ? (
+                        <div className="comment-header">
+                          <img
+                            src={`http://localhost:3000${commentUsers[comment.user].image}`}
+                            alt={commentUsers[comment.user].fullName}
+                            style={{ width: "30px", height: "30px", borderRadius: "50%", marginRight: "10px" }}
+                          />
+                          <strong>{commentUsers[comment.user].fullName}</strong>
+                        </div>
+                      ) : (
+                        <span>Loading user...</span>
+                      )}
+                      <p>{comment.content}</p>
+                    </div>
+                  ))}
+
             <div class="rts-search-wrapper">
             <form onSubmit={handleAddComment}>
               
