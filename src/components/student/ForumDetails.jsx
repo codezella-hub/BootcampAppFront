@@ -12,9 +12,19 @@ function ForumDetails() {
   const [user, setUser] = useState(null); 
   const [liked, setLiked] = useState(true);
   const [commentUsers, setCommentUsers] = useState({});
+  const [forums, setForums] = useState([]); 
 
 
   useEffect(() => {
+    const fetchForums = async () => {
+      try {
+        const response = await forumApi.getAllForums();
+        const filteredForums = response.data.filter(f => f.categorie === forum.categorie && f._id !== forum._id);
+        setForums(filteredForums); 
+      } catch (error) {
+        console.error("Erreur lors de la récupération des forums", error);
+      }
+    };
     const fetchCommentUsers = async (comments) => {
       try {
         const usersData = {};
@@ -76,8 +86,9 @@ function ForumDetails() {
     checkUser();
     checkUserCreated();
     checkIfLiked(); 
+    fetchForums();
     
-    console.log(commentUsers)
+  
    
   }, [id, forum]); 
 
@@ -200,16 +211,54 @@ function ForumDetails() {
                         </div>
                     </div>
                 )}
+                
             </div>
-            
+             
             <div class="col-xl-4 col-md-12 col-sm-12 col-12">
+                <div class="rts-single-wized search">
+                    <div class="wized-body mt--0">
+                    <h3>suggestion</h3>
+                    {forums.map((forum) => (
+                    <div class="recent-post-single">
+                                    <div class="thumbnail">
+                                        <a href={`/forum/${forum._id}`}><img src={`http://localhost:3000${forum.image}`} alt="forum" key={forum._id}
+                                        style={{ width: "150px", height: "100px" }}/></a>
+                                    </div>
+                                    <div class="content-area text-start">
+                                      
+                                    <div class="single">
+                                    <i class="far fa-tags"></i>
+                                    <span>{forum.categorie}</span>
+                                </div>
+                                        <div class="user">
+                                        <i class="fa-solid fa-heart"></i>
+                                        <span>{forum.likeCount} Likes</span>
+                                        
+                                        <i class="fa-light fa-comment-dots"></i>
+                                      <span>{forum.commentCount} Comments</span>
+                                        </div>
+                                        <a class="post-title" href={`/forum/${forum._id}`}>
+                                            <h6 class="title">{forum.title}</h6>
+                                        </a>
+                                        <p class="disc">{forum.description}</p>
+                                        
+                                    </div>
+                                </div>
+                                ))}
+                   
+                        
+                    </div>
+                </div>
+            </div>
+             
+            <div class="col-xl-8 col-md-12 col-sm-12 col-12">
                 <div class="rts-single-wized search">
                     <div class="wized-body mt--0">
                     <h3>Comments</h3>
                   {comments.map((comment, index) => (
                     <div key={index} className="comment">
                       {commentUsers[comment.user] ? (
-                        <div className="comment-header">
+                        <div className={`comment-header ${comment.user === userConnect._id ? "sentUser" : "receivedUser"}`}>
                           <img
                             src={`http://localhost:3000${commentUsers[comment.user].image}`}
                             alt={commentUsers[comment.user].fullName}
@@ -220,7 +269,11 @@ function ForumDetails() {
                       ) : (
                         <span>Loading user...</span>
                       )}
-                      <p>{comment.content}</p>
+                      <div className={`comment-box ${comment.user === userConnect._id ? "sent" : "received"}`}>
+                        <p>{comment.content}</p>
+                      </div>
+
+
                     </div>
                   ))}
 
@@ -238,8 +291,11 @@ function ForumDetails() {
                     </div>
                 </div>
             </div>
+
+
         </div>
     </div>
+    
 </div>
 
                 

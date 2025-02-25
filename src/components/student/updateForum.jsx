@@ -76,7 +76,7 @@ function UpdateForum() {
     data.append("categorie", formData.categorie);
     data.append("user", formData.user);
   
-    // Si une nouvelle image est sélectionnée, ajoutez-la à FormData
+   
     if (image) 
       data.append("image", image);
     

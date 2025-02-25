@@ -14,7 +14,7 @@ function MyForum() {
     const fetchForums = async () => {
       try {
         const response = await forumApi.getForumByIduser(user);
-        setForums(response.data); // Mettre à jour l'état avec les forums récupérés
+        setForums(response.data); 
       } catch (error) {
         console.error("Erreur lors de la récupération des forums", error);
       }
