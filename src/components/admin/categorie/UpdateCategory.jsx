@@ -5,7 +5,7 @@ import Header from '../../student/Header'
 import Footer from '../../student/Footer'
 import Swal from 'sweetalert2';
 import { useNavigate, Link } from 'react-router-dom';
-import LeftSideBarAdmin from './LeftSideBarAdmin';
+import LeftSideBarAdmin from '../LeftSideBarAdmin';
 
 function UpdateCategory() {
     const { id } = useParams(); // Get the category ID from the URL
