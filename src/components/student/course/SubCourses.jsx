@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import Header from '../Header'
 import LeftSideBar from '../LeftSideBar'
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 export default function SubCourses() {
     const { id } = useParams(); // Get the category ID from the URL
-    const [ListCourses, setCourses] = useState([]);
-/*
+    const [ListSubCourses, setSubCourses] = useState([]);
+    console.log(id);
+
     useEffect(() => {
         document.title = "List of SubCourses";
     
@@ -15,13 +16,14 @@ export default function SubCourses() {
           .then(res => {
             if (res.status === 200) {
               console.log(res.data);
-              //setCourses(res.data);
+              setSubCourses(res.data);
+              //setSubCourses(res.data);
             }
           })
           .catch(error => {
             console.error("Error fetching courses:", error);
           });
-      }, []);*/
+      }, []);
     return (
 
         <div>
@@ -88,24 +90,26 @@ export default function SubCourses() {
                                     <table className="table-reviews quiz">
                                         <thead>
                                             <tr>
-                                                <th style={{ width: '35%' }}>Question</th>
-                                                <th style={{ width: '15%' }}>Reply</th>
+                                                <th style={{ width: '35%' }}>Time</th>
+                                                <th style={{ width: '15%' }}>Name</th>
                                                 <th>Status</th>
                                             </tr>
                                         </thead>
                                         <tbody className="questions-answer">
-                                            <tr>
+                                        {ListSubCourses.length > 0 ? (
+                                            ListSubCourses.map(subCourse => (
+                                                <tr>
                                                 <td>
                                                     <div className="students-questions">
                                                         <div className="information-q">
-                                                            <p>Students</p>
-                                                            <span>3 days</span>
+                                                            <p>10 seconds</p>
+                                                       
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <span className="questions" style={{ display: 'block' }}> How to play the Guitar</span>
-                                                    <span>Course: Speaking Korean for Beginners</span>
+                                                    <span className="questions" style={{ display: 'block' }}>{subCourse.title}</span>
+                                                    <span>{subCourse.course.title}</span>
                                                 </td>
                                                 <td>
                                                     <span className="marks">0</span>
@@ -114,12 +118,18 @@ export default function SubCourses() {
                                                     <div className="status-btn-wrapper">
                                                         <i className="fa-light fa-circle-check" />
                                                         <div className="button-area">
-                                                            <a href="#" className="rts-btn btn-primary">Replay</a>
+                                                            <Link to={`/SubCourses/Video`} className="rts-btn btn-primary">Watch</Link>
                                                             <i className="fa-regular fa-ellipsis-vertical" />
                                                         </div>
                                                     </div>
                                                 </td>
                                             </tr>
+                                            ))
+                                        ) : (
+                                            <p>Loading categories...</p>
+                                        )}
+
+                                       
                                 
                                         </tbody>
                                     </table>

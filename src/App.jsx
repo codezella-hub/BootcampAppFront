@@ -12,6 +12,7 @@ import ForumList from './components/student/ForumList';
 import ForumDetails from './components/student/ForumDetails';
 import UpdateCategory from './components/admin/categorie/UpdateCategory'; // Import the missing component
 import SubCourses from './components/student/course/SubCourses';
+import Video from './components/student/course/Video';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/forum/:id" element={<ForumDetails />} />
         <Route path="/UpdateCategory/:id" element={<UpdateCategory />} /> {/* Fix: Add this route */}
         <Route path="/SubCourses/:id" element={<SubCourses />} /> {/* Fix: Add this route */}
+        <Route path="/SubCourses/Video" element={<Video />} /> {/* Fix: Add this route */}
       </Routes>
     </Router>
   );
