@@ -5,7 +5,8 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function AddCategory() {
+function 
+AddCategory() {
     const navigate = useNavigate();
     const [errorlist, setError] = useState({});
     const [categoryInput, setRegister] = useState({
