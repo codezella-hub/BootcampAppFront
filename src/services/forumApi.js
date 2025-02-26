@@ -25,7 +25,7 @@ const forumApi = {
   deleteForum: (id) => axios.delete(`${API_URL}/${id}`),
 
   getCategories: () => axios.get("http://localhost:3000/api/categories"),
-
+  
   // Nouvelle méthode pour ajouter un commentaire
   addComment: (forumId, comment,user) => {
     return axios.post("http://localhost:3000/api/comments", { forumId, content: comment,userId:user });

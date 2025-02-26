@@ -150,12 +150,25 @@ function MyForum() {
                       <i class="fa-light fa-comment-dots"></i>
                       <span>{forum.commentCount} Comments</span>
                     </div>
+                    
                   </div>
                   <button
                       onClick={() => window.location.href = `/updateForum/${forum._id}`}
-                      className="rts-btn btn-primary mt-3"
+                      style={{
+                        backgroundColor: '#553CDF',
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        padding: "10px",
+                        cursor: "pointer",
+                        fontSize: "18px",
+                        width: "45px",
+                        position: "absolute", 
+                        top: "150px",  
+                        right: "-100px", 
+                      }}
                     >
-                      <i className="fa-solid fa-pen"></i> Modifier
+                      <i className="fa-solid fa-pen"></i>
                     </button>
                   <button
                     onClick={() => deleteForum(forum._id)}
@@ -169,14 +182,16 @@ function MyForum() {
                       fontSize: "18px",
                       width: "45px",
                       position: "absolute", 
-                      top: "0px",  
-                      right: "0px", 
+                      top: "150px",  
+                      right: "-150px", 
                     }}
                   >
                     <i className="fa-solid fa-trash"></i>
                   </button>
                 </div>
+                
               </div>
+              
             </div>
             ))}
           </div>
