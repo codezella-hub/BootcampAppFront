@@ -89,6 +89,7 @@ function StudentEnrollCourse() {
                                     style={{ width: "200px", height: "150px", objectFit: "cover" }}
                                   />
 
+
                                   <div className="tag-thumb">
                                     <span>{item.course.title}</span>
                                   </div>
