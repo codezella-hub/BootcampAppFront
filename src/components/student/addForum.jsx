@@ -11,6 +11,7 @@ function AddForum() {
     image:"",
   });
  
+  
 
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
