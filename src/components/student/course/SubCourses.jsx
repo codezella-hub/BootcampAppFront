@@ -15,9 +15,10 @@ export default function SubCourses() {
         axios.get(`/api/subcourses/course/${id}`)
           .then(res => {
             if (res.status === 200) {
-              console.log(res.data);
+              //console.log(res.data);
               setSubCourses(res.data);
               //setSubCourses(res.data);
+
             }
           })
           .catch(error => {
