@@ -437,7 +437,7 @@ function Video() {
         </div>
         <iframe src="https://res.cloudinary.com/dix7gepbx/video/upload/v1739110399/course_videos/videos/10%20sec%202D%20Test%20animation.mp4" title="YouTube video player" />
         <div className="lesson-bottom-area">
-          <h5 className="title mb--10">About Lesson</h5>
+          <h5 className="title mb--10">About Lesson --</h5>
           <p className="disc">
             If filmmaking is your passion but you never went to film school you’ve come to the right place. Here, you will get hands-on
             experience and acquire skills that you never would’ve elsewhere like learning how to make feature films on your own, making do with any equipment, and doing it all faster and better.
