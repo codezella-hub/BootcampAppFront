@@ -31,6 +31,7 @@ function App() {
         <Route path="/UpdateCategory/:id" element={<UpdateCategory />} /> {/* Fix: Add this route */}
         <Route path="/SubCourses/:id" element={<SubCourses />} /> {/* Fix: Add this route */}
         <Route path="/SubCourses/Video" element={<Video />} /> {/* Fix: Add this route */}
+        
       </Routes>
     </Router>
   );
