@@ -429,7 +429,7 @@ function Video() {
             <div className="toggle-class" id="toggle-left-back">
               <i className="fa-light fa-chevron-left" />
             </div>
-            <span>Course Content</span>
+            <span>Course Content </span>
           </div>
           <div className="right">
             <a href="course-two.html"><i className="fa-solid fa-x" /></a>
