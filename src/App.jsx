@@ -13,6 +13,7 @@ import ForumDetails from './components/student/ForumDetails';
 import UpdateCategory from './components/admin/categorie/UpdateCategory'; // Import the missing component
 import SubCourses from './components/student/course/SubCourses';
 import Video from './components/student/course/Video';
+import AddCourse from './components/trainer/course/AddCourse';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/AddCategory" element={<AddCategory />} />
+        <Route path="/AddCourse" element={<AddCourse />} />
         <Route path="/ListCategory" element={<ListCategory />} />
         <Route path="/ForgetPassword" element={<ForgetPassword />} />
         <Route path="/addForum" element={<AddForum />} />
@@ -31,6 +33,7 @@ function App() {
         <Route path="/UpdateCategory/:id" element={<UpdateCategory />} /> {/* Fix: Add this route */}
         <Route path="/SubCourses/:id" element={<SubCourses />} /> {/* Fix: Add this route */}
         <Route path="/SubCourses/Video" element={<Video />} /> {/* Fix: Add this route */}
+        
         
       </Routes>
     </Router>
