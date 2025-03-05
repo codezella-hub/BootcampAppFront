@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react'
 import Header from '../../student/Header'
 import Footer from '../../student/Footer'
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-function AddCourse() {
+function UpdateCourse() {
+    const { id } = useParams(); // Get the category ID from the URL
     const [ListCategory, setCategory] = useState([]);
     const navigate = useNavigate();
     const [errorlist, setError] = useState({});
-    const [courseInput, setRegister] = useState({
+    const [courseInput, setCourse] = useState({
         title: '',
         description: '',
         price: '',
@@ -26,30 +27,51 @@ function AddCourse() {
     const [imageName, setImageName] = useState(""); // Store selected image name
     const [imagePreview, setImagePreview] = useState("assets/images/dashboard/05.png"); // Default image
     useEffect(() => {
-        document.title = "List of Categories";
-
+        document.title = "Update Course";
+    
         axios.get(`/api/categories`)
             .then(res => {
                 if (res.status === 200) {
-                    console.log(res.data);
                     setCategory(res.data);
                 }
             })
             .catch(error => {
                 console.error("Error fetching categories:", error);
             });
-    }, []);
-
+    
+        axios.get(`/api/course/${id}`)
+            .then(res => {
+                if (res.status === 200) {
+                    const courseData = res.data;
+                    setCourse({
+                        ...courseData,
+                        category: courseData.category._id // Set the category as ObjectId
+                    });
+                    setImagePreview(`http://localhost:3000${courseData.courseImage}`);
+                    setPicture({ image: courseData.courseImage }); // Set the image in the state
+                    setImageName(courseData.courseImageName); // Set the image name
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching course:", error);
+            });
+    }, [id]);
 
     const handleInput = (e) => {
         e.persist();
-        setRegister({ ...courseInput, [e.target.name]: e.target.value });
-
+        const { name, value } = e.target;
+    
+        if (name === "category") {
+            setCourse({ ...courseInput, category: value });
+        } else {
+            setCourse({ ...courseInput, [name]: value });
+        }
+    
         // Remove error border once user starts typing
-        if (errorlist[e.target.name]) {
+        if (errorlist[name]) {
             setError((prevErrors) => {
                 const newErrors = { ...prevErrors };
-                delete newErrors[e.target.name];
+                delete newErrors[name];
                 return newErrors;
             });
         }
@@ -66,10 +88,10 @@ function AddCourse() {
 
     const AddCourseSubmit = (e) => {
         e.preventDefault(); // Prevent form refresh
-
+    
         let errors = {};
         let missingFields = [];
-
+    
         // Validate required fields
         const requiredFields = ['title', 'description', 'price', 'prerequisites', 'objectives', 'targetAudience', 'language', 'courseDuration', 'rating', 'subtitles', 'category'];
         requiredFields.forEach(field => {
@@ -78,11 +100,11 @@ function AddCourse() {
                 missingFields.push(field.charAt(0).toUpperCase() + field.slice(1));
             }
         });
-        if (!picture) {
+        if (!picture || !picture.image) {
             errors.image = "Image is required";
             missingFields.push("Image");
         }
-
+    
         // Validate price, courseDuration, and rating as numbers
         if (courseInput.price && isNaN(courseInput.price)) {
             errors.price = "Price must be a number";
@@ -96,27 +118,27 @@ function AddCourse() {
             errors.rating = "Rating must be a number";
             missingFields.push("Rating");
         }
-
+    
         if (Object.keys(errors).length > 0) {
             setError(errors); // Store the errors in state
-
+    
             Swal.fire({
                 title: 'Error!',
                 text: `Please fill in the following fields: ${missingFields.join(", ")}`,
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
-
+    
             return; // Stop the function if there are errors
         }
-
+    
         const formData = new FormData();
         Object.keys(courseInput).forEach(key => {
             formData.append(key, courseInput[key]);
         });
-        formData.append('courseImage', picture?.image); // Use 'courseImage' as the field name
-
-        axios.post(`/api/addCourse`, formData, {
+        formData.append('courseImage', picture.image); // Use 'courseImage' as the field name
+    
+        axios.put(`/api/UpdateCourse/${id}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 "Accept": "application/json",
@@ -351,11 +373,11 @@ function AddCourse() {
 
 
                                                             <div className="single-input">
-                                                                <label htmlFor="courseImage">Course Image</label>
+                                                                <label htmlFor="image">Category Image</label>
                                                                 <input
                                                                     type="file"
-                                                                    id="courseImage"
-                                                                    name="courseImage"
+                                                                    id="image"
+                                                                    name="image"
                                                                     onChange={handleImage}
                                                                     style={{ display: "none" }}
                                                                 />
@@ -365,7 +387,7 @@ function AddCourse() {
                                                                     </div>
                                                                     <div className="information">
                                                                         <div className="input-file-type-btn">
-                                                                            <button type="button" className="rts-btn btn-primary" id="custom-button" onClick={() => document.getElementById("courseImage").click()}>
+                                                                            <button type="button" className="rts-btn btn-primary" id="custom-button" onClick={() => document.getElementById("image").click()}>
                                                                                 Pick Image
                                                                             </button>
                                                                             {imageName && <p>Selected Image: {imageName}</p>}
@@ -374,6 +396,7 @@ function AddCourse() {
                                                                 </div>
                                                                 {errorlist.image && <p style={{ color: "red", fontSize: "14px" }}>{errorlist.image}</p>}
                                                             </div>
+
 
                                                             <div className="row">
                                                                 <div className="col-lg-12">
@@ -392,82 +415,12 @@ function AddCourse() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="col-lg-4 rts-sticky-column-item">
-                                <div className="course-upload-tips-wrapper theiaStickySidebar">
-                                    <h5 className="title">Course Upload Tips</h5>
-                                    <div className="single-check-wrapper">
-                                        <i className="fa-light fa-circle-check" />
-                                        <span>Set the Category Price option or make it free.</span>
-                                    </div>
-                                    <div className="single-check-wrapper">
-                                        <i className="fa-light fa-circle-check" />
-                                        <span>Standard size for the Category thumbnail is
-                                            700x430.</span>
-                                    </div>
-                                    <div className="single-check-wrapper">
-                                        <i className="fa-light fa-circle-check" />
-                                        <span>Video section controls the Category overview video.</span>
-                                    </div>
-                                    <div className="single-check-wrapper">
-                                        <i className="fa-light fa-circle-check" />
-                                        <span>Category Builder is where you create &amp; organize
-                                            a Category.</span>
-                                    </div>
-                                    <div className="single-check-wrapper">
-                                        <i className="fa-light fa-circle-check" />
-                                        <span>Add Topics in the Category Builder section to create
-                                            lessons, quizzes, and assignments.</span>
-                                    </div>
-                                    <div className="single-check-wrapper">
-                                        <i className="fa-light fa-circle-check" />
-                                        <span>Prerequisites refers to the fundamental Category
-                                            to complete before taking this particular Category.</span>
-                                    </div>
-                                    <div className="single-check-wrapper">
-                                        <i className="fa-light fa-circle-check" />
-                                        <span>Information from the Additional Data section
-                                            shows up on the Category single page.</span>
-                                    </div>
-                                </div>
-                            </div>
+                           
                         </div>
                     </div>
                 </div>
                 {/* create course area end */}
-                {/* Modal */}
-                <div className="modal announcement fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
-                    <div className="modal-dialog">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalLabel">Add New Topic</h5>
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
-                            </div>
-                            <div className="modal-body">
-                                <form action="#" className="modal-form">
-                                    <select className="nice-select" name="price">
-                                        <option>Select New Topic</option>
-                                        <option value="asc">Recently Update Web Design </option>
-                                        <option value="desc">Web Design Course</option>
-                                        <option value="pop">Update Web Design</option>
-                                        <option value="low">Recently Update Web</option>
-                                        <option value="high">Course: New Courses</option>
-                                    </select>
-                                    <div className="single-input mt--20">
-                                        <label htmlFor="course">Topic Title</label>
-                                        <input id="course" type="text" placeholder="Topic title" />
-                                    </div>
-                                    <div className="single-input">
-                                        <label htmlFor="message">Summary</label>
-                                        <textarea id="message" placeholder="Summary..." defaultValue={""} />
-                                    </div>
-                                </form>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="rts-btn btn-primary">Publish</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            
                 {/* rts backto top start */}
                 <div className="progress-wrap">
                     <svg className="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
@@ -482,4 +435,4 @@ function AddCourse() {
     )
 }
 
-export default AddCourse
+export default UpdateCourse
