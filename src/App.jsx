@@ -17,6 +17,8 @@ import AddCourse from './components/trainer/course/AddCourse';
 import ListCourse from './components/trainer/course/ListCourse';
 import UpdateCourse from './components/trainer/course/UpdateCourse';
 import AddSubCourse from './components/trainer/subCourse/AddSubCourse';
+import ListSubCourse from './components/trainer/subCourse/ListSubCourse';
+import UpdateSubCourse from './components/trainer/subCourse/UpdateSubCourse';
 
 function App() {
   return (
@@ -30,7 +32,9 @@ function App() {
         <Route path="/AddCourse" element={<AddCourse />} />
         <Route path="/AddSubCourse" element={<AddSubCourse />} />
         <Route path="/UpdateCourse/:id" element={<UpdateCourse />} />
+        <Route path="/UpdateSubCourse/:id" element={<UpdateSubCourse />} />
         <Route path="/ListCourse" element={<ListCourse />} />
+        <Route path="/ListSubCourse" element={<ListSubCourse />} />
         <Route path="/ListCategory" element={<ListCategory />} />
         <Route path="/ForgetPassword" element={<ForgetPassword />} />
         <Route path="/addForum" element={<AddForum />} />

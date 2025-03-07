@@ -28,7 +28,7 @@ function UpdateCourse() {
     const [imagePreview, setImagePreview] = useState("assets/images/dashboard/05.png"); // Default image
     useEffect(() => {
         document.title = "Update Course";
-    
+
         axios.get(`/api/categories`)
             .then(res => {
                 if (res.status === 200) {
@@ -38,7 +38,7 @@ function UpdateCourse() {
             .catch(error => {
                 console.error("Error fetching categories:", error);
             });
-    
+
         axios.get(`/api/course/${id}`)
             .then(res => {
                 if (res.status === 200) {
@@ -60,13 +60,13 @@ function UpdateCourse() {
     const handleInput = (e) => {
         e.persist();
         const { name, value } = e.target;
-    
+
         if (name === "category") {
             setCourse({ ...courseInput, category: value });
         } else {
             setCourse({ ...courseInput, [name]: value });
         }
-    
+
         // Remove error border once user starts typing
         if (errorlist[name]) {
             setError((prevErrors) => {
@@ -88,10 +88,10 @@ function UpdateCourse() {
 
     const AddCourseSubmit = (e) => {
         e.preventDefault(); // Prevent form refresh
-    
+
         let errors = {};
         let missingFields = [];
-    
+
         // Validate required fields
         const requiredFields = ['title', 'description', 'price', 'prerequisites', 'objectives', 'targetAudience', 'language', 'courseDuration', 'rating', 'subtitles', 'category'];
         requiredFields.forEach(field => {
@@ -104,7 +104,7 @@ function UpdateCourse() {
             errors.image = "Image is required";
             missingFields.push("Image");
         }
-    
+
         // Validate price, courseDuration, and rating as numbers
         if (courseInput.price && isNaN(courseInput.price)) {
             errors.price = "Price must be a number";
@@ -118,26 +118,26 @@ function UpdateCourse() {
             errors.rating = "Rating must be a number";
             missingFields.push("Rating");
         }
-    
+
         if (Object.keys(errors).length > 0) {
             setError(errors); // Store the errors in state
-    
+
             Swal.fire({
                 title: 'Error!',
                 text: `Please fill in the following fields: ${missingFields.join(", ")}`,
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
-    
+
             return; // Stop the function if there are errors
         }
-    
+
         const formData = new FormData();
         Object.keys(courseInput).forEach(key => {
             formData.append(key, courseInput[key]);
         });
         formData.append('courseImage', picture.image); // Use 'courseImage' as the field name
-    
+
         axios.put(`/api/UpdateCourse/${id}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
@@ -206,7 +206,7 @@ function UpdateCourse() {
                                         <div className="accordion-item">
                                             <h2 className="accordion-header" id="headingOne">
                                                 <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                                Course Info
+                                                    Course Info
                                                 </button>
                                             </h2>
                                             <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
@@ -415,12 +415,12 @@ function UpdateCourse() {
                                     </div>
                                 </div>
                             </div>
-                           
+
                         </div>
                     </div>
                 </div>
                 {/* create course area end */}
-            
+
                 {/* rts backto top start */}
                 <div className="progress-wrap">
                     <svg className="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
