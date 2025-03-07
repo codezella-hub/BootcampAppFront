@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import Header from '../../student/Header';
 import Footer from '../../student/Footer';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 function UpdateSubCourse() {
+    const { id } = useParams(); // Get the subcourse ID from the URL
     const navigate = useNavigate();
     const [ListCourse, setCourse] = useState([]);
     const [errorlist, setError] = useState({});
@@ -16,7 +17,7 @@ function UpdateSubCourse() {
     });
 
     useEffect(() => {
-        document.title = "List of SubCourses";
+        document.title = "Update SubCourse";
 
         axios.get(`/api/courses`)
             .then(res => {
@@ -27,8 +28,22 @@ function UpdateSubCourse() {
             .catch(error => {
                 console.error("Error fetching courses:", error);
             });
-    }, []);
-    
+
+        axios.get(`/api/SubCourse/${id}`)
+            .then(res => {
+                if (res.status === 200) {
+                    const subCourseData = res.data;
+                    setSubCourse({
+                        title: subCourseData.title,
+                        order: subCourseData.order,
+                        course: subCourseData.course._id // Set the course as ObjectId
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching subcourse:", error);
+            });
+    }, [id]);
 
     const handleInput = (e) => {
         e.persist();
@@ -91,7 +106,7 @@ function UpdateSubCourse() {
             course: subCourseInput.course,
         };
 
-        axios.post(`/api/updateSubCourse/`, formData, {
+        axios.put(`/api/updateSubCourse/${id}`, formData, {
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json",
@@ -100,11 +115,11 @@ function UpdateSubCourse() {
             if (res.status === 201) {
                 Swal.fire({
                     title: 'Success!',
-                    text: 'SubCourse created successfully!',
+                    text: 'SubCourse updated successfully!',
                     icon: 'success',
                     confirmButtonText: 'OK',
                 }).then(() => {
-                    navigate('/login'); // Navigate after success
+                    navigate('/ListSubCourse'); // Navigate after success
                 });
             } else {
                 Swal.fire({
@@ -133,11 +148,11 @@ function UpdateSubCourse() {
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="breadcrumb-main-wrapper">
-                                    <h1 className="title">Create SubCourse</h1>
+                                    <h1 className="title">Update SubCourse</h1>
                                     <div className="pagination-wrapper">
                                         <a href="index-2.html">Home</a>
                                         <i className="fa-regular fa-chevron-right" />
-                                        <a className="active" href="create-course.html">Create SubCourse</a>
+                                        <a className="active" href="create-course.html">Update SubCourse</a>
                                     </div>
                                 </div>
                             </div>
