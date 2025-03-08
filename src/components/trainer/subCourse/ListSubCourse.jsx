@@ -23,6 +23,30 @@ function ListSubCourse() {
       });
   }, []);
 
+  const handleDeleteSubCourse = (id) => {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#007C00',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Confirm!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.delete(`/api/deleteSubCourse/${id}`)
+                .then(res => {
+                    if (res.status === 200) {
+                        Swal.fire('Deleted!', 'SubCourse has been deleted.', 'success');
+                        setSubCourse(ListSubCourse.filter(subCourse => subCourse._id !== id));
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Error!', 'Failed to delete category.', 'error');
+                });
+        }
+    });
+};
   return (
     <div>
       <Header />
@@ -89,7 +113,7 @@ function ListSubCourse() {
                                 </div>
                                 <div className="right">
                                 <Link to={`/UpdateSubCourse/${item._id}`}  className="rts-btn btn-primary">Edit</Link>
-                                <button className="rts-btn btn-primary">Delete</button>
+                                <button onClick={() => handleDeleteSubCourse(item._id)} className="rts-btn btn-primary">Delete</button>
                                   <button className="rts-btn btn-primary">Watch</button>
                                   <i className="fa-regular fa-ellipsis-vertical" />
                                 </div>
