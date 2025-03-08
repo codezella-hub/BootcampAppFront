@@ -19,6 +19,7 @@ import UpdateCourse from './components/trainer/course/UpdateCourse';
 import AddSubCourse from './components/trainer/subCourse/AddSubCourse';
 import ListSubCourse from './components/trainer/subCourse/ListSubCourse';
 import UpdateSubCourse from './components/trainer/subCourse/UpdateSubCourse';
+import AddVideo from './components/trainer/video/AddVideo';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/AddCategory" element={<AddCategory />} />
         <Route path="/AddCourse" element={<AddCourse />} />
         <Route path="/AddSubCourse" element={<AddSubCourse />} />
+        <Route path="/AddVideo" element={<AddVideo />} />
         <Route path="/UpdateCourse/:id" element={<UpdateCourse />} />
         <Route path="/UpdateSubCourse/:id" element={<UpdateSubCourse />} />
         <Route path="/ListCourse" element={<ListCourse />} />
