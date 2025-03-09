@@ -20,6 +20,9 @@ import AddSubCourse from './components/trainer/subCourse/AddSubCourse';
 import ListSubCourse from './components/trainer/subCourse/ListSubCourse';
 import UpdateSubCourse from './components/trainer/subCourse/UpdateSubCourse';
 import AddVideo from './components/trainer/video/AddVideo';
+import ListVideo from './components/trainer/video/ListVideo';
+import VideoDetail from './components/trainer/video/VideoDetail';
+import UpdateVideo from './components/trainer/video/UpdateVideo';
 
 function App() {
   return (
@@ -36,6 +39,7 @@ function App() {
         <Route path="/UpdateCourse/:id" element={<UpdateCourse />} />
         <Route path="/UpdateSubCourse/:id" element={<UpdateSubCourse />} />
         <Route path="/ListCourse" element={<ListCourse />} />
+        <Route path="/ListVideo" element={<ListVideo/>} />
         <Route path="/ListSubCourse" element={<ListSubCourse />} />
         <Route path="/ListCategory" element={<ListCategory />} />
         <Route path="/ForgetPassword" element={<ForgetPassword />} />
@@ -45,6 +49,8 @@ function App() {
         <Route path="/UpdateCategory/:id" element={<UpdateCategory />} /> {/* Fix: Add this route */}
         <Route path="/SubCourses/:id" element={<SubCourses />} /> {/* Fix: Add this route */}
         <Route path="/SubCourses/Video" element={<Video />} /> {/* Fix: Add this route */}
+        <Route path="/VideoDetail/:id" element={<VideoDetail />} /> {/* Fix: Add this route */}
+        <Route path="/UpdateVideo/:id" element={<UpdateVideo />} /> {/* Fix: Add this route */}
         
         
       </Routes>
