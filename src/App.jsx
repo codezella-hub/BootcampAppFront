@@ -23,6 +23,8 @@ import AddVideo from './components/trainer/video/AddVideo';
 import ListVideo from './components/trainer/video/ListVideo';
 import VideoDetail from './components/trainer/video/VideoDetail';
 import UpdateVideo from './components/trainer/video/UpdateVideo';
+import ListCourseStudent from './components/student/enroll/ListCourseStudent';
+import DetailCourse from './components/student/enroll/DetailCourse';
 
 function App() {
   return (
@@ -37,6 +39,7 @@ function App() {
         <Route path="/AddSubCourse" element={<AddSubCourse />} />
         <Route path="/AddVideo" element={<AddVideo />} />
         <Route path="/UpdateCourse/:id" element={<UpdateCourse />} />
+        <Route path="/DetailCourse/:id" element={<DetailCourse />} />
         <Route path="/UpdateSubCourse/:id" element={<UpdateSubCourse />} />
         <Route path="/ListCourse" element={<ListCourse />} />
         <Route path="/ListVideo" element={<ListVideo/>} />
@@ -51,6 +54,7 @@ function App() {
         <Route path="/SubCourses/Video" element={<Video />} /> {/* Fix: Add this route */}
         <Route path="/VideoDetail/:id" element={<VideoDetail />} /> {/* Fix: Add this route */}
         <Route path="/UpdateVideo/:id" element={<UpdateVideo />} /> {/* Fix: Add this route */}
+        <Route path="/ListCourseStudent" element={<ListCourseStudent />} /> {/* Fix: Add this route */}
         
         
       </Routes>
