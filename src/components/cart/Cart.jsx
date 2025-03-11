@@ -2,29 +2,84 @@ import React, { useState, useEffect } from "react";
 import { getOrders, deleteOrder } from "../../services/orderAPI";
 import Header from "./Header";
 import Footer from "./Footer";
-import "./Cart.css"; 
+import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
+import "./Cart.css";
 
-const Cart = ({ cartItems = [] }) => {
+const DEFAULT_IMAGE = "/vite.svg"; // Default image when none is provided
+
+const Cart = () => {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        
-        const data = await getOrders();
-        if (Array.isArray(data)) {
-          setOrders(data);
-        } else {
-          console.error("Invalid orders data format:", data);
-          setOrders([]);
-        }
-      } catch (error) {
-        console.error("Error loading orders:", error);
-        setOrders([]);
-      }
-    };
     fetchOrders();
   }, []);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      const data = await getOrders();
+      console.log("Fetched Orders:", data);
+
+      if (Array.isArray(data) && data.length > 0) {
+        setOrders(data);
+      } else {
+        console.warn("No valid orders received.");
+        setOrders([]);
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this order?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteOrder(orderId);
+          setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
+          Swal.fire("Deleted!", "Your order has been deleted.", "success");
+        } catch (error) {
+          Swal.fire("Error", "Failed to delete the order. Try again later.", "error");
+        }
+      }
+    });
+  };
+
+  const handleQuantityChange = (orderId, courseId, newQuantity) => {
+    if (!orderId || !courseId || newQuantity < 1) return; // Prevent negatives
+
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order._id === orderId
+          ? {
+              ...order,
+              items: order.items.map((item) =>
+                item.courseId && item.courseId._id === courseId
+                  ? { ...item, quantity: newQuantity }
+                  : item
+              ),
+            }
+          : order
+      )
+    );
+  };
+
+  const calculateSubtotal = (items) => {
+    return items.reduce((total, item) => total + item.price * item.quantity, 0);
+  };
 
   return (
     <div className="page-container">
@@ -38,11 +93,9 @@ const Cart = ({ cartItems = [] }) => {
               <div className="breadcrumb-main-wrapper">
                 <h1 className="title">Cart</h1>
                 <div className="pagination-wrapper">
-                  <a href="/">Home</a>
+                  <Link to="/">Home</Link>
                   <i className="fa-regular fa-chevron-right"></i>
-                  <a className="active" href="/cart">
-                    Cart
-                  </a>
+                  <Link to="/cart" className="active">Cart</Link>
                 </div>
               </div>
             </div>
@@ -53,10 +106,12 @@ const Cart = ({ cartItems = [] }) => {
       {/* Cart Content */}
       <main className="ms-main">
         <div className="ms-page-content container">
-          {cartItems.length === 0 ? (
-            <p className="empty-message">Your cart is empty.</p>
-          ) : (
-            <div className="woocommerce">
+          <div className="woocommerce">
+            {loading ? (
+              <p className="loading-message">Loading your cart...</p>
+            ) : orders.length === 0 ? (
+              <p className="empty-message">Your cart is empty.</p>
+            ) : (
               <div className="ms-woocommerce-cart-form-wrapper">
                 <table className="shop_table shop_table_responsive cart woocommerce-cart-form__contents">
                   <thead>
@@ -70,91 +125,94 @@ const Cart = ({ cartItems = [] }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {cartItems.map((item) => (
-                      <tr key={item._id} className="woocommerce-cart-form__cart-item cart_item">
-                        <td className="product-remove">
-                          <button
-                            className="remove"
-                            onClick={() => deleteOrder(item._id)}
-                          >
-                            ✖
-                          </button>
-                        </td>
-                        <td className="product-thumbnail">
-                          <a href={`/course/${item._id}`}>
-                            <img src={item.image} alt={item.title} className="cart-image" />
-                          </a>
-                        </td>
-                        <td className="product-name">
-                          <a href={`/course/${item._id}`}>{item.title}</a>
-                        </td>
-                        <td className="product-price"> TND {item.price.toFixed(2)}</td>
-                        <td>
-                          <div className="cart-edit">
-                            <div className="quantity-edit">
-                              <button className="button">-</button>
-                              <span className="quantity">{item.quantity}</span>
-                              <button className="button">+</button>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="product-subtotal"> TND {(item.price * item.quantity).toFixed(2)}</td>
-                      </tr>
-                    ))}
-                    <tr>
-                      <td colSpan="6" className="actions">
-                        <div className="ms-actions-inner">
-                          <div className="coupon">
-                            <input type="text" className="input-text" placeholder="Coupon code" />
-                            <button className="button rts-btn btn-primary">Apply coupon</button>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
+                    {orders.map((order) =>
+                      order.items.map((item) => {
+                        const course = item.courseId || {}; // Ensure course data exists
+                        return (
+                          <tr key={course._id || item._id}>
+                            <td className="product-remove">
+                              <button 
+                                className="remove" 
+                                onClick={() => handleDeleteOrder(order._id)}
+                                aria-label="Remove this item"
+                              >
+                                ✖
+                              </button>
+                            </td>
+                            <td className="product-thumbnail">
+                              <Link to={course._id ? `/course/${course._id}` : "#"}>
+                                <img
+                                  src={course.image || DEFAULT_IMAGE}
+                                  alt={course.title || "Unknown Course"}
+                                  className="cart-image"
+                                />
+                              </Link>
+                            </td>
+                            <td className="product-name">
+                              {course._id ? (
+                                <Link to={`/course/${course._id}`}>{course.title}</Link>
+                              ) : (
+                                <span>Unknown Course</span>
+                              )}
+                            </td>
+                            <td className="product-price">
+                              TND {item.price?.toFixed(2) || "0.00"}
+                            </td>
+                            <td className="product-quantity">
+                              <div className="cart-edit">
+                                <div className="quantity-edit">
+                                  <button
+                                    className="button minus"
+                                    onClick={() =>
+                                      handleQuantityChange(order._id, course._id, item.quantity - 1)
+                                    }
+                                  >
+                                    <i className="fal fa-minus"></i>
+                                  </button>
+                                  <input type="text" className="input" value={item.quantity || 1} readOnly />
+                                  <button
+                                    className="button plus"
+                                    onClick={() =>
+                                      handleQuantityChange(order._id, course._id, item.quantity + 1)
+                                    }
+                                  >
+                                    <i className="fal fa-plus"></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="product-subtotal">
+                              TND {(item.price * (item.quantity || 1)).toFixed(2)}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
                   </tbody>
                 </table>
-              </div>
-            </div>
-          )}
 
-          {/* Orders Section */}
-          <h2 className="order-title">Your Orders ({orders.length})</h2>
-
-          {orders.length === 0 ? (
-            <p className="empty-message">No orders yet.</p>
-          ) : (
-            <div className="woocommerce">
-              <div className="ms-woocommerce-cart-form-wrapper">
-                <table className="shop_table shop_table_responsive cart woocommerce-cart-form__contents">
-                  <thead>
-                    <tr>
-                      <th className="order-id">Order ID</th>
-                      <th className="order-total">Total</th>
-                      <th className="order-status">Payment Status</th>
-                      <th className="order-action">&nbsp;</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((order) => (
-                      <tr key={order._id}>
-                        <td className="order-id">{order._id}</td>
-                        <td className="order-total">TND{order.totalAmount.toFixed(2)}</td>
-                        <td className="order-status">{order.payment.status}</td>
-                        <td className="order-action">
-                          <button
-                            className="rts-btn btn-border cancel-btn"
-                            onClick={() => deleteOrder(order._id)}
-                          >
-                            Cancel
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                {/* Coupon Section */}
+                <div className="coupon-section">
+                  <form className="woocommerce-cart-form" onSubmit={(e) => e.preventDefault()}>
+                    <div className="ms-actions-inner">
+                      <div className="coupon">
+                        <input
+                          type="text"
+                          name="coupon_code"
+                          className="input-text"
+                          placeholder="Enter your coupon"
+                          required
+                        />
+                        <button type="submit" className="button rts-btn btn-primary">
+                          Apply coupon
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </main>
 
@@ -162,5 +220,5 @@ const Cart = ({ cartItems = [] }) => {
     </div>
   );
 };
-///
+
 export default Cart;

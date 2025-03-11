@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Cart from "./components/cart/cart";
+import Cart from "./components/cart/Cart";
 import Home from "./components/Home";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
@@ -21,8 +21,7 @@ function App() {
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/add-category" element={<AddCategory />} />
         <Route path="/student/enroll-course" element={<StudentEnrollCourse />} />
-        <Route path="/cart" element={<Cart userId={userId} cartItems={cartItems} onClearCart={() => setCartItems([])} />} />
-      </Routes>
+        <Route path="/cart" element={<Cart userId={userId} cartItems={cartItems} />} />      </Routes>
     </Router>
   );
 }
