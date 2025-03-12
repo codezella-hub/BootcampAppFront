@@ -61,6 +61,9 @@ const forumApi = {
   getuserById: (userId) => {
     return axios.get(`http://localhost:3000/api/user/${userId}`);
   },
+  getcoursesByCategory: (categoryId) => {
+    return axios.get(`http://localhost:3000/api/courseCategory/${categoryId}`);
+  },
 };
 
 export default forumApi;

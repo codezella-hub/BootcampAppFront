@@ -7,11 +7,11 @@ import Home from './components/Home';
 import AddCategory from './components/admin/AddCategory';
 import ListCategory from './components/admin/ListCategory';
 import ForgetPassword from './components/auth/ForgetPassword';
-import AddForum from './components/student/addForum';
-import ForumList from './components/student/ForumList';
-import ForumDetails from './components/student/ForumDetails';
-import MyForum from './components/student/MyForum';
-import UpdateForum from './components/student/updateForum';
+import AddForum from './components/Forum/addForum.jsx';
+import ForumList from './components/Forum/ForumList.jsx';
+import ForumDetails from './components/Forum/ForumDetails.jsx';
+import MyForum from './components/Forum/MyForum.jsx';
+import UpdateForum from './components/Forum/updateForum.jsx';
 
 function App() {
   //axios.defaults.baseURL = "http://localhost:3000/"

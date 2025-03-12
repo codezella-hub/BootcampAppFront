@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import forumApi from "../../services/forumApi";
-import Header from "./Header";
+import forumApi from "../../services/forumApi.js";
+import Header from "../student/Header.jsx";
 
 function ForumDetails() {
   const { id } = useParams();
@@ -13,6 +13,7 @@ function ForumDetails() {
   const [liked, setLiked] = useState(true);
   const [commentUsers, setCommentUsers] = useState({});
   const [forums, setForums] = useState([]); 
+  const [courses, setCourses] = useState([]); 
 
 
   useEffect(() => {
@@ -23,6 +24,15 @@ function ForumDetails() {
         setForums(filteredForums); 
       } catch (error) {
         console.error("Erreur lors de la récupération des forums", error);
+      }
+    };
+    const fetchCourses = async () => {
+      try {
+        const response = await forumApi.getcoursesByCategory(forum.categorie);
+        setCourses(response.data); 
+        
+      } catch (error) {
+        console.error("Erreur lors de la récupération des courses", error);
       }
     };
     const fetchCommentUsers = async (comments) => {
@@ -87,6 +97,8 @@ function ForumDetails() {
     checkUserCreated();
     checkIfLiked(); 
     fetchForums();
+    fetchCourses();
+    console.log(courses)
     
   
    
@@ -217,7 +229,7 @@ function ForumDetails() {
             <div class="col-xl-4 col-md-12 col-sm-12 col-12">
                 <div class="rts-single-wized search">
                     <div class="wized-body mt--0">
-                    <h3>suggestion</h3>
+                    <h3>suggestion Forums</h3>
                     {forums.map((forum) => (
                     <div class="recent-post-single">
                                     <div class="thumbnail">
@@ -298,7 +310,49 @@ function ForumDetails() {
     
 </div>
 
-                
+<div class="col-xl-4 col-md-12 col-sm-12 col-12">
+                <div class="rts-single-wized search">
+                    <div class="wized-body mt--0">
+                    <h3>suggestion courses</h3>
+                    {courses.map((course) => (
+                    <div class="recent-post-single">
+                                    <div class="thumbnail">
+                                        <a href={`#`}><img src={`http://localhost:3000${course.courseImage}`} alt="course" key={course._id}
+                                        style={{ width: "150px", height: "100px" }}/></a>
+                                    </div>
+                                    <div class="content-area text-start">
+                                      
+                                    <div class="single">
+                                    <i class="far fa-tags"></i>
+                                    <span>{forum.categorie}</span>
+                                </div>
+                                
+                                <div className="stars">
+                            <ul style={{ listStyle: "none", padding: 0, display: "flex" }}>
+                                {[...Array(course.rating)].map((_, i) => (
+                                    <li key={i} style={{ color: i < course.rating ? "gold" : "gray" }}>
+                                        <i className={i < course.rating ? "fa-solid fa-star" : "fa-regular fa-star"}></i>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                                                
+                                        <a class="post-title" href={`#`}>
+                                            <h6 class="title">{course.title}</h6>
+                                        </a>
+                                        <p class="disc">{course.description}</p>
+                                        
+                                    </div>
+                                </div>
+                                ))}
+                   
+                        
+                    </div>
+                </div>
+            </div>
+
+                              
+                                
       
     </>
   );

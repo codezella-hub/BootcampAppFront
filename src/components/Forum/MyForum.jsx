@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import Header from "./Header";
-import forumApi from "../../services/forumApi"; // Assure-toi que le chemin est correct
+import Header from "../student/Header.jsx";
+import forumApi from "../../services/forumApi.js"; // Assure-toi que le chemin est correct
+import { Link } from "react-router-dom";
 
 function MyForum() {
-  const [forums, setForums] = useState([]); // État pour stocker la liste des forums
-  const [categories, setCategories] = useState([]); // État pour les catégories
-  const [selectedCategory, setSelectedCategory] = useState(""); // État pour la catégorie sélectionnée
-  const [activeTab, setActiveTab] = useState("list"); // Nouvel état pour gérer l'onglet actif
+  const [forums, setForums] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [activeTab, setActiveTab] = useState("list");
   const [user, setUser] = useState("67b8be03d74ad328bb66ccb6");
 
   useEffect(() => {
@@ -14,7 +15,7 @@ function MyForum() {
     const fetchForums = async () => {
       try {
         const response = await forumApi.getForumByIduser(user);
-        setForums(response.data); 
+        setForums(response.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des forums", error);
       }
@@ -57,7 +58,7 @@ function MyForum() {
 
   return (
     <>
-      <Header />
+     <Header/>
       <div class="rts-bread-crumbarea-1 rts-section-gap bg_image">
         <div class="container">
           <div class="row">
@@ -67,14 +68,14 @@ function MyForum() {
                 <div class="pagination-wrapper">
                   <a href="/forums">Forum</a>
                   <i class="fa-regular fa-chevron-right"></i>
-                  <a class="active" href="/Myforum">My Forum list</a>
+                  <a class="active" href="/src/components/Forum/MyForum">My Forum list</a>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
+ 
       <div className="col-lg-9 mx-auto">
         <div class="rts-latest-blog-area-three rts-section-gap">
           <div className="filter-small-top-full">
@@ -114,7 +115,15 @@ function MyForum() {
           </div>
         </div>
       </div>
-
+      <div className="buttons-area"
+      style={{
+       
+        position: "relative",
+        top:"-10px",
+        left: "1300px",
+      }}>
+      <a className="rts-btn btn-primary"><Link to="/addForum">Add forum</Link></a>
+      </div>
       <div className="tab-content" id="myTabContent">
         <div class="container rts-section-gapBottom">
           <div class="row g-5">
@@ -150,7 +159,7 @@ function MyForum() {
                       <i class="fa-light fa-comment-dots"></i>
                       <span>{forum.commentCount} Comments</span>
                     </div>
-                    
+
                   </div>
                   <button
                       onClick={() => window.location.href = `/updateForum/${forum._id}`}
@@ -163,9 +172,9 @@ function MyForum() {
                         cursor: "pointer",
                         fontSize: "18px",
                         width: "45px",
-                        position: "absolute", 
-                        top: "150px",  
-                        right: "-100px", 
+                        position: "relative",
+                        top: "10px",
+                        right: "5px",
                       }}
                     >
                       <i className="fa-solid fa-pen"></i>
@@ -181,22 +190,23 @@ function MyForum() {
                       cursor: "pointer",
                       fontSize: "18px",
                       width: "45px",
-                      position: "absolute", 
-                      top: "150px",  
-                      right: "-150px", 
+                      position: "relative",
+                      top: "10px",
+                      right: "-250",
                     }}
                   >
                     <i className="fa-solid fa-trash"></i>
                   </button>
                 </div>
-                
+
               </div>
-              
+
             </div>
             ))}
           </div>
         </div>
       </div>
+      
     </>
   );
 }

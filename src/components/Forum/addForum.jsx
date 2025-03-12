@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Header from "./Header";
-import forumApi from "../../services/forumApi"; 
+import Header from "../student/Header.jsx";
+import forumApi from "../../services/forumApi.js";
+import { Navigate } from "react-router-dom";
 
 function AddForum() {
   const [formData, setFormData] = useState({
@@ -60,8 +61,6 @@ function AddForum() {
         console.log("Données envoyées :", Object.fromEntries(data.entries())); 
         await forumApi.addForum(data); 
         alert("Forum ajouté avec succès!");
-
-        
         setFormData({ title: "", description: "", categorie: "" });
         setImage(null);
         setImagePreview(null);

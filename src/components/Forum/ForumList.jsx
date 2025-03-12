@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import Header from "./Header";
-import forumApi from "../../services/forumApi"; // Assure-toi que le chemin est correct
+import Header from "../student/Header.jsx";
+import forumApi from "../../services/forumApi.js"; // Assure-toi que le chemin est correct
+import { Link } from "react-router-dom";
 
 function ForumList() {
   const [forums, setForums] = useState([]); // État pour stocker la liste des forums
@@ -112,6 +113,15 @@ function ForumList() {
         </div>
         </div>
         </div>
+        <div className="buttons-area"
+      style={{
+       
+        position: "relative",
+        top:"-10px",
+        left: "1300px",
+      }}>
+      <a className="rts-btn btn-primary"><Link to="/addForum">Add forum</Link></a>
+      </div>
         <div className="tab-content" id="myTabContent">
        
 

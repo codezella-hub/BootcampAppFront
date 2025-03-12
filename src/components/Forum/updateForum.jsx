@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom"; // Pour récupérer l'ID du forum depuis l'URL
-import Header from "./Header";
-import forumApi from "../../services/forumApi";
+import Header from "../student/Header.jsx";
+import forumApi from "../../services/forumApi.js";
 
 function UpdateForum() {
   const { id } = useParams();
