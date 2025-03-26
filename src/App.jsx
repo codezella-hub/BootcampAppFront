@@ -7,6 +7,7 @@ import Register from "./components/auth/Register";
 import StudentEnrollCourse from "./components/student/StudentEnrollCourse";
 import AddCategory from "./components/admin/AddCategory";
 import ForgetPassword from "./components/auth/ForgetPassword";
+import Payment from "./components/payement/Payement";
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
@@ -21,7 +22,9 @@ function App() {
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route path="/add-category" element={<AddCategory />} />
         <Route path="/student/enroll-course" element={<StudentEnrollCourse />} />
-        <Route path="/cart" element={<Cart userId={userId} cartItems={cartItems} />} />      </Routes>
+        <Route path="/cart" element={<Cart userId={userId} cartItems={cartItems} />} />
+        <Route path="/checkout" element={<Payment cartItems={cartItems} />} />
+      </Routes>
     </Router>
   );
 }

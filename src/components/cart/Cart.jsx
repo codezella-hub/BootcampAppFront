@@ -6,11 +6,10 @@ import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import "./Cart.css";
 
-const DEFAULT_IMAGE = "/vite.svg"; // Default image when none is provided
-
 const Cart = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [couponCode, setCouponCode] = useState("");
 
   useEffect(() => {
     fetchOrders();
@@ -20,14 +19,7 @@ const Cart = () => {
     setLoading(true);
     try {
       const data = await getOrders();
-      console.log("Fetched Orders:", data);
-
-      if (Array.isArray(data) && data.length > 0) {
-        setOrders(data);
-      } else {
-        console.warn("No valid orders received.");
-        setOrders([]);
-      }
+      setOrders(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Error fetching orders:", error);
       setOrders([]);
@@ -37,6 +29,8 @@ const Cart = () => {
   };
 
   const handleDeleteOrder = async (orderId) => {
+    if (!orderId) return;
+
     Swal.fire({
       title: "Are you sure?",
       text: "Do you really want to delete this order?",
@@ -44,48 +38,44 @@ const Cart = () => {
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Yes, delete it!"
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await deleteOrder(orderId);
-          setOrders((prevOrders) => prevOrders.filter((order) => order._id !== orderId));
+          setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
           Swal.fire("Deleted!", "Your order has been deleted.", "success");
         } catch (error) {
-          Swal.fire("Error", "Failed to delete the order. Try again later.", "error");
+          console.error("Error deleting order:", error);
+          Swal.fire("Error", "Failed to delete the order.", "error");
         }
       }
     });
   };
 
-  const handleQuantityChange = (orderId, courseId, newQuantity) => {
-    if (!orderId || !courseId || newQuantity < 1) return; // Prevent negatives
-
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order._id === orderId
-          ? {
-              ...order,
-              items: order.items.map((item) =>
-                item.courseId && item.courseId._id === courseId
-                  ? { ...item, quantity: newQuantity }
-                  : item
-              ),
-            }
-          : order
-      )
-    );
+  const calculateSubtotal = (items = []) => {
+    return items.reduce((total, item) => total + ((item?.price || 0) * (item?.quantity || 1)), 0);
   };
 
-  const calculateSubtotal = (items) => {
-    return items.reduce((total, item) => total + item.price * item.quantity, 0);
+  const calculateTotal = () => {
+    return orders.reduce((total, order) => total + calculateSubtotal(order?.items || []), 0);
+  };
+
+  const handleApplyCoupon = (e) => {
+    e.preventDefault();
+    if (!couponCode.trim()) return;
+
+    Swal.fire({
+      title: "Coupon Applied",
+      text: "Your coupon has been applied successfully!",
+      icon: "success"
+    });
   };
 
   return (
     <div className="page-container">
       <Header />
 
-      {/* Breadcrumb Section */}
       <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
         <div className="container">
           <div className="row">
@@ -103,14 +93,13 @@ const Cart = () => {
         </div>
       </div>
 
-      {/* Cart Content */}
       <main className="ms-main">
         <div className="ms-page-content container">
           <div className="woocommerce">
             {loading ? (
-              <p className="loading-message">Loading your cart...</p>
+              <div className="loading-message">Loading your cart...</div>
             ) : orders.length === 0 ? (
-              <p className="empty-message">Your cart is empty.</p>
+              <div className="empty-cart-message">Your cart is empty.</div>
             ) : (
               <div className="ms-woocommerce-cart-form-wrapper">
                 <table className="shop_table shop_table_responsive cart woocommerce-cart-form__contents">
@@ -125,90 +114,86 @@ const Cart = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {orders.map((order) =>
-                      order.items.map((item) => {
-                        const course = item.courseId || {}; // Ensure course data exists
-                        return (
-                          <tr key={course._id || item._id}>
-                            <td className="product-remove">
-                              <button 
-                                className="remove" 
-                                onClick={() => handleDeleteOrder(order._id)}
-                                aria-label="Remove this item"
-                              >
-                                ✖
-                              </button>
-                            </td>
-                            <td className="product-thumbnail">
-                              <Link to={course._id ? `/course/${course._id}` : "#"}>
-                                <img
-                                  src={course.image || DEFAULT_IMAGE}
-                                  alt={course.title || "Unknown Course"}
-                                  className="cart-image"
-                                />
-                              </Link>
-                            </td>
-                            <td className="product-name">
-                              {course._id ? (
-                                <Link to={`/course/${course._id}`}>{course.title}</Link>
-                              ) : (
-                                <span>Unknown Course</span>
-                              )}
-                            </td>
-                            <td className="product-price">
-                              TND {item.price?.toFixed(2) || "0.00"}
-                            </td>
-                            <td className="product-quantity">
-                              <div className="cart-edit">
-                                <div className="quantity-edit">
-                                  <button
-                                    className="button minus"
-                                    onClick={() =>
-                                      handleQuantityChange(order._id, course._id, item.quantity - 1)
-                                    }
-                                  >
-                                    <i className="fal fa-minus"></i>
-                                  </button>
-                                  <input type="text" className="input" value={item.quantity || 1} readOnly />
-                                  <button
-                                    className="button plus"
-                                    onClick={() =>
-                                      handleQuantityChange(order._id, course._id, item.quantity + 1)
-                                    }
-                                  >
-                                    <i className="fal fa-plus"></i>
-                                  </button>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="product-subtotal">
-                              TND {(item.price * (item.quantity || 1)).toFixed(2)}
-                            </td>
-                          </tr>
-                        );
-                      })
-                    )}
+                    {orders.map(order => order?.items?.map(item => (
+                      <tr key={`${order?._id}-${item?.courseId?._id}`}>
+                        <td className="product-remove">
+                          <button 
+                            onClick={() => handleDeleteOrder(order?._id)}
+                            className="remove"
+                            aria-label="Remove this item"
+                          >
+                            <svg viewBox="0 0 200 200" width="18" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M114,100l49-49a9.9,9.9,0,0,0-14-14L100,86,51,37A9.9,9.9,0,0,0,37,51l49,49L37,149a9.9,9.9,0,0,0,14,14l49-49,49,49a9.9,9.9,0,0,0,14-14Z"></path>
+                            </svg>
+                          </button>
+                        </td>
+                        <td className="product-thumbnail">
+                          <Link to={`/course/${item?.courseId?._id}`}>
+                            <img 
+                              src={item?.courseId?.image || "/assets/images/shop/01.jpg"} 
+                              alt={item?.courseId?.title || "Course"} 
+                              className="cart-image"
+                            />
+                          </Link>
+                        </td>
+                        <td className="product-name">
+                          <Link to={`/course/${item?.courseId?._id}`}>
+                            {item?.courseId?.title || "Untitled Course"}
+                          </Link>
+                        </td>
+                        <td className="product-price">
+                          <span className="amount">TND {(item?.price || 0).toFixed(2)}</span>
+                        </td>
+                        <td className="product-quantity">{item?.quantity || 1}</td>
+                        <td className="product-subtotal">
+                          <span className="amount">
+                            TND {((item?.price || 0) * (item?.quantity || 1)).toFixed(2)}
+                          </span>
+                        </td>
+                      </tr>
+                    )))}
+                    <tr>
+                      <td colSpan="6" className="actions">
+                        <div className="coupon-section">
+                          <form onSubmit={handleApplyCoupon} className="coupon">
+                            <input
+                              type="text"
+                              name="coupon_code"
+                              className="input-text"
+                              placeholder="Enter your coupon"
+                              value={couponCode}
+                              onChange={(e) => setCouponCode(e.target.value)}
+                              required
+                            />
+                            <button type="submit" className="button rts-btn btn-primary">
+                              Apply coupon
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
                   </tbody>
                 </table>
 
-                {/* Coupon Section */}
-                <div className="coupon-section">
-                  <form className="woocommerce-cart-form" onSubmit={(e) => e.preventDefault()}>
-                    <div className="ms-actions-inner">
-                      <div className="coupon">
-                        <input
-                          type="text"
-                          name="coupon_code"
-                          className="input-text"
-                          placeholder="Enter your coupon"
-                          required
-                        />
-                        <button type="submit" className="button rts-btn btn-primary">
-                          Apply coupon
-                        </button>
-                      </div>
-                    </div>
-                  </form>
+                <div className="cart-totals">
+                  <h3>Cart Totals</h3>
+                  <table className="shop_table">
+                    <tbody>
+                      <tr className="cart-subtotal">
+                        <th>Subtotal</th>
+                        <td>TND {calculateTotal().toFixed(2)}</td>
+                      </tr>
+                      <tr className="order-total">
+                        <th>Total</th>
+                        <td>TND {calculateTotal().toFixed(2)}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div className="proceed-to-checkout">
+                    <Link to="/checkout" className="rts-btn btn-primary">
+                      Proceed to checkout
+                    </Link>
+                  </div>
                 </div>
               </div>
             )}
