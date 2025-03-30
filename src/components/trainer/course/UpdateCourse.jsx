@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 function UpdateCourse() {
-    const { id } = useParams(); // Get the category ID from the URL
+    const { id } = useParams(); // Get the course ID from the URL
     const [ListCategory, setCategory] = useState([]);
     const navigate = useNavigate();
     const [errorlist, setError] = useState({});
@@ -21,14 +21,17 @@ function UpdateCourse() {
         courseDuration: '',
         rating: '',
         subtitles: '',
-        category: ''
+        category: '',
+        user: '660a1b2c3d4e5f6a7b8c9d0e2' // Static user ID added here
     });
     const [picture, setPicture] = useState(null);
     const [imageName, setImageName] = useState(""); // Store selected image name
     const [imagePreview, setImagePreview] = useState("assets/images/dashboard/05.png"); // Default image
+
     useEffect(() => {
         document.title = "Update Course";
 
+        // Fetch categories
         axios.get(`/api/categories`)
             .then(res => {
                 if (res.status === 200) {
@@ -39,13 +42,15 @@ function UpdateCourse() {
                 console.error("Error fetching categories:", error);
             });
 
+        // Fetch existing course data
         axios.get(`/api/course/${id}`)
             .then(res => {
                 if (res.status === 200) {
                     const courseData = res.data;
                     setCourse({
                         ...courseData,
-                        category: courseData.category._id // Set the category as ObjectId
+                        category: courseData.category._id, // Set the category as ObjectId
+                        user: courseData.user?._id || '660a1b2c3d4e5f6a7b8c9d0e2' // Use existing user or fallback to static
                     });
                     setImagePreview(`http://localhost:3000${courseData.courseImage}`);
                     setPicture({ image: courseData.courseImage }); // Set the image in the state
@@ -86,14 +91,15 @@ function UpdateCourse() {
         }
     };
 
-    const AddCourseSubmit = (e) => {
+    const UpdateCourseSubmit = (e) => {
         e.preventDefault(); // Prevent form refresh
 
         let errors = {};
         let missingFields = [];
 
         // Validate required fields
-        const requiredFields = ['title', 'description', 'price', 'prerequisites', 'objectives', 'targetAudience', 'language', 'courseDuration', 'rating', 'subtitles', 'category'];
+        const requiredFields = ['title', 'description', 'price', 'prerequisites', 'objectives', 
+                              'targetAudience', 'language', 'courseDuration', 'rating', 'subtitles', 'category'];
         requiredFields.forEach(field => {
             if (!courseInput[field]) {
                 errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
@@ -133,18 +139,24 @@ function UpdateCourse() {
         }
 
         const formData = new FormData();
+        // Add all course input fields to formData
         Object.keys(courseInput).forEach(key => {
             formData.append(key, courseInput[key]);
         });
-        formData.append('courseImage', picture.image); // Use 'courseImage' as the field name
+        // Handle both file upload and existing image path
+        if (typeof picture.image === 'object') {
+            formData.append('courseImage', picture.image); // New file upload
+        } else {
+            formData.append('existingImage', picture.image); // Existing image path
+        }
 
-        axios.put(`/api/UpdateCourse/${id}`, formData, {
+        axios.put(`/api/updateCourse/${id}`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 "Accept": "application/json",
             },
         }).then(res => {
-            if (res.data.status === 201) {
+            if (res.data.status === 200 || res.data.status === 201) {
                 Swal.fire({
                     title: 'Success!',
                     text: res.data.message,
@@ -156,7 +168,7 @@ function UpdateCourse() {
             } else {
                 Swal.fire({
                     title: 'Error!',
-                    text: 'Something went wrong!',
+                    text: res.data.message || 'Something went wrong!',
                     icon: 'error',
                     confirmButtonText: 'Try Again',
                 });
@@ -164,7 +176,7 @@ function UpdateCourse() {
         }).catch(err => {
             Swal.fire({
                 title: 'Error!',
-                text: 'Network error. Please try again later.',
+                text: err.response?.data?.message || 'Network error. Please try again later.',
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
@@ -212,7 +224,7 @@ function UpdateCourse() {
                                             <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                                 <div className="accordion-body">
                                                     <div className="course-information-area">
-                                                        <form onSubmit={AddCourseSubmit} className="top-form-create-course">
+                                                        <form onSubmit={UpdateCourseSubmit} className="top-form-create-course">
                                                             <div className="single-input">
                                                                 <label htmlFor="name">Course Title</label>
                                                                 <input

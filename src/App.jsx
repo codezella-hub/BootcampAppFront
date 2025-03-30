@@ -26,6 +26,7 @@ import UpdateVideo from './components/trainer/video/UpdateVideo';
 import ListCourseStudent from './components/student/enroll/ListCourseStudent';
 import DetailCourse from './components/student/enroll/DetailCourse';
 import Quiz from './components/student/quiz/Quiz';
+import AllCourses from './components/allUsers/AllCourses';
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
         <Route path="/UpdateVideo/:id" element={<UpdateVideo />} /> {/* Fix: Add this route */}
         <Route path="/ListCourseStudent" element={<ListCourseStudent />} /> {/* Fix: Add this route */}
         <Route path="/Quiz" element={<Quiz />} /> {/* Fix: Add this route */}
+        <Route path="/AllCourses" element={<AllCourses />} /> {/* Fix: Add this route */}
         
         
       </Routes>

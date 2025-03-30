@@ -4,9 +4,10 @@ import LeftSideBar from '../../student/LeftSideBar'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 function ListCourse() {
-
+  const navigate = useNavigate();
   const [ListCourses, setCourses] = useState([]);
 
   useEffect(() => {
@@ -107,7 +108,7 @@ function ListCourse() {
                           ListCourses.map(item => (
                             <div className="col-lg-4 col-md-6 col-sm-12 col-12">
                               <div className="single-course-style-three enroll-course">
-                                <Link to={`/UpdateCourse/${item._id}`} className="thumbnail">
+                                <Link to={`/DetailCourse/${item._id}`} className="thumbnail">
                                   <img
                                     src={`http://localhost:3000${item.courseImage}`}
                                     alt={item.courseImage}
@@ -162,7 +163,7 @@ function ListCourse() {
                                       </div>
                                     </div>
                                   </div>
-                                  <button className="rts-btn btn-border">Download Certificate</button>
+                                  <button onClick={() => navigate(`/UpdateCourse/${item._id}`)} className="rts-btn btn-border">Update Course</button>
                                   <button onClick={() => handleDeleteCourse(item._id)} className="rts-btn btn-border">Delete Course</button>
                                 </div>
                               </div>

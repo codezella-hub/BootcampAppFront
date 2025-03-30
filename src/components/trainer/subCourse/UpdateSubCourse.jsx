@@ -14,11 +14,13 @@ function UpdateSubCourse() {
         title: '',
         order: '',
         course: '',
+        user: '660a1b2c3d4e5f6a7b8c9d0e2' // Static user ID added here
     });
 
     useEffect(() => {
         document.title = "Update SubCourse";
 
+        // Fetch available courses
         axios.get(`/api/courses`)
             .then(res => {
                 if (res.status === 200) {
@@ -29,6 +31,7 @@ function UpdateSubCourse() {
                 console.error("Error fetching courses:", error);
             });
 
+        // Fetch existing subcourse data
         axios.get(`/api/SubCourse/${id}`)
             .then(res => {
                 if (res.status === 200) {
@@ -36,7 +39,8 @@ function UpdateSubCourse() {
                     setSubCourse({
                         title: subCourseData.title,
                         order: subCourseData.order,
-                        course: subCourseData.course._id // Set the course as ObjectId
+                        course: subCourseData.course._id, // Set the course as ObjectId
+                        user: subCourseData.user?._id || '660a1b2c3d4e5f6a7b8c9d0e2' // Use existing user or fallback to static
                     });
                 }
             })
@@ -104,6 +108,7 @@ function UpdateSubCourse() {
             title: subCourseInput.title,
             order: subCourseInput.order,
             course: subCourseInput.course,
+            user: subCourseInput.user // Include the user ID in the update
         };
 
         axios.put(`/api/updateSubCourse/${id}`, formData, {
@@ -112,7 +117,7 @@ function UpdateSubCourse() {
                 "Accept": "application/json",
             },
         }).then(res => {
-            if (res.status === 201) {
+            if (res.status === 200 || res.status === 201) {
                 Swal.fire({
                     title: 'Success!',
                     text: 'SubCourse updated successfully!',
@@ -132,12 +137,13 @@ function UpdateSubCourse() {
         }).catch(err => {
             Swal.fire({
                 title: 'Error!',
-                text: 'Network error. Please try again later.',
+                text: err.response?.data?.message || 'Network error. Please try again later.',
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
         });
     };
+
 
     return (
         <div>

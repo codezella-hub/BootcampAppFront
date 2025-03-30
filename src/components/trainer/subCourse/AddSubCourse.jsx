@@ -13,10 +13,11 @@ function AddSubCourse() {
         title: '',
         order: '',
         course: '',
+        user: '67acb60b2bdf783f2a130f4b' // Static user ID added here
     });
 
     useEffect(() => {
-        document.title = "List of SubCourses";
+        document.title = "Add New SubCourse";
 
         axios.get(`/api/courses`)
             .then(res => {
@@ -88,6 +89,7 @@ function AddSubCourse() {
             title: subCourseInput.title,
             order: subCourseInput.order,
             course: subCourseInput.course,
+            user: subCourseInput.user // Include the user ID in the form data
         };
 
         axios.post(`/api/addSubCourse`, formData, {
@@ -103,7 +105,7 @@ function AddSubCourse() {
                     icon: 'success',
                     confirmButtonText: 'OK',
                 }).then(() => {
-                    navigate('/login'); // Navigate after success
+                    navigate('/ListSubCourse'); // Changed to navigate to subcourse list
                 });
             } else {
                 Swal.fire({
@@ -116,7 +118,7 @@ function AddSubCourse() {
         }).catch(err => {
             Swal.fire({
                 title: 'Error!',
-                text: 'Network error. Please try again later.',
+                text: err.response?.data?.message || 'Network error. Please try again later.',
                 icon: 'error',
                 confirmButtonText: 'OK',
             });

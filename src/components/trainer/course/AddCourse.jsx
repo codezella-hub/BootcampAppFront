@@ -20,13 +20,15 @@ function AddCourse() {
         courseDuration: '',
         rating: '',
         subtitles: '',
-        category: ''
+        category: '',
+        user: '67cd9bb397aad71d4f08b63f' // Static user ID added here
     });
     const [picture, setPicture] = useState(null);
     const [imageName, setImageName] = useState(""); // Store selected image name
     const [imagePreview, setImagePreview] = useState("assets/images/dashboard/05.png"); // Default image
+
     useEffect(() => {
-        document.title = "List of Categories";
+        document.title = "Add New Course";
 
         axios.get(`/api/categories`)
             .then(res => {
@@ -39,7 +41,6 @@ function AddCourse() {
                 console.error("Error fetching categories:", error);
             });
     }, []);
-
 
     const handleInput = (e) => {
         e.persist();
@@ -71,7 +72,8 @@ function AddCourse() {
         let missingFields = [];
 
         // Validate required fields
-        const requiredFields = ['title', 'description', 'price', 'prerequisites', 'objectives', 'targetAudience', 'language', 'courseDuration', 'rating', 'subtitles', 'category'];
+        const requiredFields = ['title', 'description', 'price', 'prerequisites', 'objectives', 
+                              'targetAudience', 'language', 'courseDuration', 'rating', 'subtitles', 'category'];
         requiredFields.forEach(field => {
             if (!courseInput[field]) {
                 errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
@@ -111,6 +113,7 @@ function AddCourse() {
         }
 
         const formData = new FormData();
+        // Add all course input fields to formData
         Object.keys(courseInput).forEach(key => {
             formData.append(key, courseInput[key]);
         });
@@ -148,7 +151,6 @@ function AddCourse() {
             });
         });
     };
-
     return (
         <div>    {/* banner area start */}
             <Header />

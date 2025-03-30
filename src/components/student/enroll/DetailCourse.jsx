@@ -187,7 +187,7 @@ function DetailCourse() {
                     <div className="row g-5">
                         <div className="col-lg-8 order-cl-1 order-lg-1 order-md-2 order-sm-2 order-2">
                             <div className="thumbnail mb--30" style={{ position: 'relative' }}>
-                                <img src={`http://localhost:3000${course.courseImage}`} alt />
+                                <img src={`http://localhost:3000${course.courseImage}`} style={{ width: "900px", height: "500px", objectFit: "cover" }}/>
                                 <div className="vedio-icone">
                                     <a className="video-play-button play-video popup-video" href="https://www.youtube.com/watch?v=ezbJwaLmOeM">
                                         <span />
