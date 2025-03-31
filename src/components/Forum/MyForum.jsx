@@ -9,6 +9,7 @@ function MyForum() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [activeTab, setActiveTab] = useState("list");
   const [user, setUser] = useState("67b8be03d74ad328bb66ccb6");
+    const [searchTerm, setSearchTerm] = useState(""); 
 
   useEffect(() => {
     // Appel à la fonction pour récupérer les forums
@@ -32,17 +33,15 @@ function MyForum() {
     fetchCategories();
     fetchForums(); // Appeler la fonction lors du premier rendu du composant
   }, []);
+   // Filtrer les forums en fonction de la catégorie et de la recherche
+   const filteredForums = forums.filter((forum) => {
+    return (
+      (selectedCategory === "" || forum.categorie === selectedCategory) &&
+      (searchTerm === "" || forum.title.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  });
 
-  // Filtrer les forums en fonction de la catégorie sélectionnée
-  const filteredForums = selectedCategory
-    ? forums.filter(forum => forum.categorie === selectedCategory)
-    : forums;
-
-
-  // Fonction pour gérer la sélection de catégorie
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
-  };
+ 
 
   // Fonction pour supprimer un forum
   const deleteForum = async (forumId) => {
@@ -77,53 +76,70 @@ function MyForum() {
       </div>
  
       <div className="col-lg-9 mx-auto">
-        <div class="rts-latest-blog-area-three rts-section-gap">
-          <div className="filter-small-top-full">
-            <div className="left-filter">
-              <span>Category</span>
-              <select
-                className="w-52 px-4 py-2 border border-gray-300 rounded-md text-gray-700 cursor-pointer focus:outline-none"
-                id="categorie"
-                name="categorie"
-                value={selectedCategory}
-                onChange={handleCategoryChange}
-                style={{
-                  appearance: "none",
-                  backgroundColor: "white",
-                  border: "1px solid #ddd",
-                  borderRadius: "5px",
-                  padding: "10px 15px",
-                  fontSize: "16px",
-                  color: "#333",
-                  cursor: "pointer",
-                  width: "200px",
-                  textAlign: "center",
-                  position: "relative"
-                }}
-              >
-                <option value="">Toutes catégories</option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.title}
-                  </option>
-                ))}
-              </select>
+              <div className="rts-latest-blog-area-three rts-section-gap">
+                <div className="filter-small-top-full" style={{ display: "flex", gap: "15px", alignItems: "center" }}>
+                <div className="right-filter">
+                    <span>Showing {filteredForums.length} results</span>
+                  </div>
+                  
+                  <div className="left-filter">
+                    <span>Category</span>
+                    <select 
+                      className="w-52 px-4 py-2 border border-gray-300 rounded-md text-gray-700 cursor-pointer focus:outline-none"
+                      id="categorie"
+                      name="categorie"
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      style={{
+                        appearance: "none",
+                        backgroundColor: "white",
+                        border: "1px solid #ddd",
+                        borderRadius: "5px",
+                        padding: "10px 15px",
+                        fontSize: "16px",
+                        color: "#333",
+                        cursor: "pointer",
+                        width: "200px",
+                        textAlign: "center"
+                      }}
+                    >
+                      <option value="">Toutes catégories</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+      
+                  
+                  <div className="search-filter">
+                    <input
+                      type="text"
+                      placeholder="Rechercher un forum..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      style={{
+                        padding: "10px",
+                        border: "1px solid #ddd",
+                        borderRadius: "5px",
+                        fontSize: "16px",
+                        width: "250px"
+                      }}
+                    />
+                  </div>
+      
+                  
+                  <a className="rts-btn btn-primary">
+                <Link to="/addForum">Add forum</Link>
+              </a>
+                </div>
+             
+            
+              </div>
             </div>
-            <div class="right-filter">
-              <span>Showing {filteredForums.length} results</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="buttons-area"
-      style={{
-       
-        position: "relative",
-        top:"-10px",
-        left: "1300px",
-      }}>
-      <a className="rts-btn btn-primary"><Link to="/addForum">Add forum</Link></a>
-      </div>
+
+      
       <div className="tab-content" id="myTabContent">
         <div class="container rts-section-gapBottom">
           <div class="row g-5">

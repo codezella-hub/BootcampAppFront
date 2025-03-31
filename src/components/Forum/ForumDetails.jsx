@@ -9,7 +9,7 @@ function ForumDetails() {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
   const [userConnect, setUserConnect] = useState(null); 
-  const [user, setUser] = useState(null); 
+  const [user, setUser] = useState(null); //hot lena user b token
   const [liked, setLiked] = useState(true);
   const [commentUsers, setCommentUsers] = useState({});
   const [forums, setForums] = useState([]); 
@@ -61,7 +61,7 @@ function ForumDetails() {
     };
     const checkUser = async () => {
       try {
-        const response = await forumApi.getuserById("67b8be03d74ad328bb66ccb6");//hot lena user b token
+        const response = await forumApi.getuserById("67bd8cdb87376136b500b5c3");//hot lena user b token
         setUserConnect(response.data);
       } catch (error) {
         console.error("Erreur lors de la récupération de user", error);
@@ -98,7 +98,7 @@ function ForumDetails() {
     checkIfLiked(); 
     fetchForums();
     fetchCourses();
-    console.log(courses)
+    
     
   
    
@@ -217,7 +217,7 @@ function ForumDetails() {
                                 {liked ? (
                                     <button className="rts-btn btn-primary mt-3" onClick={handleRemoveLike}> <i className="fas fa-heart"> </i> Unlike </button>
                                 ) : (
-                                    <button className="rts-btn btn-primary mt-3" onClick={handleLike}> <i className="fas fa-heart"></i> Like </button>
+                                    <button className="rts-btn btn-primary mt-3" onClick={handleLike}> <i className="far fa-heart"></i> Like </button>
                                 )}
                             </div>
                         </div>
@@ -328,14 +328,18 @@ function ForumDetails() {
                                 </div>
                                 
                                 <div className="stars">
-                            <ul style={{ listStyle: "none", padding: 0, display: "flex" }}>
-                                {[...Array(course.rating)].map((_, i) => (
-                                    <li key={i} style={{ color: i < course.rating ? "gold" : "gray" }}>
-                                        <i className={i < course.rating ? "fa-solid fa-star" : "fa-regular fa-star"}></i>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                                    <ul style={{ listStyle: "none", padding: 0, display: "flex" }}>
+                                        {[...Array(5)].map((_, i) => (
+                                            <li key={i} style={{ color: i < course.rating ? "gold" : "gray" }}>
+                                                <i className={i < course.rating ? "fa-solid fa-star" : "fa-regular fa-star"}></i>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+
+
+                        
                                                 
                                         <a class="post-title" href={`#`}>
                                             <h6 class="title">{course.title}</h6>
