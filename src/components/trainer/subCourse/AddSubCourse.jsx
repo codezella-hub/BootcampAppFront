@@ -7,122 +7,98 @@ import axios from 'axios';
 
 function AddSubCourse() {
     const navigate = useNavigate();
-    const [ListCourse, setCourse] = useState([]);
+    const [ListCourse, setCourses] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [errorlist, setError] = useState({});
     const [subCourseInput, setSubCourse] = useState({
         title: '',
         order: '',
         course: '',
-        user: '67acb60b2bdf783f2a130f4b' // Static user ID added here
+        user: '67acb60b2bdf783f2a130f4b' // Static user ID
     });
 
     useEffect(() => {
-        document.title = "Add New SubCourse";
-
-        axios.get(`/api/courses`)
-            .then(res => {
-                if (res.status === 200) {
-                    setCourse(res.data);
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching courses:", error);
-            });
+        document.title = "Add SubCourse";
+        fetchUserCourses();
     }, []);
 
-    const handleInput = (e) => {
-        e.persist();
-        const { name, value } = e.target;
-
-        if (name === 'order') {
-            setSubCourse({ ...subCourseInput, [name]: parseInt(value) });
-        } else {
-            setSubCourse({ ...subCourseInput, [name]: value });
-        }
-
-        // Remove error border once user starts typing
-        if (errorlist[name]) {
-            setError((prevErrors) => {
-                const newErrors = { ...prevErrors };
-                delete newErrors[name];
-                return newErrors;
-            });
+    const fetchUserCourses = async () => {
+        try {
+            setIsLoading(true);
+            const response = await axios.get(`/api/courses/user/${subCourseInput.user}`);
+            
+            if (response.status === 200) {
+                // Handle both response formats (array or object with courses property)
+                const coursesData = response.data.courses || response.data;
+                setCourses(Array.isArray(coursesData) ? coursesData : []);
+            }
+        } catch (error) {
+            console.error("Error fetching user courses:", error);
+            Swal.fire('Error!', 'Failed to load user courses', 'error');
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const AddSubCourseSubmit = (e) => {
-        e.preventDefault(); // Prevent form refresh
+    const handleInput = (e) => {
+        const { name, value } = e.target;
+        setSubCourse(prev => ({
+            ...prev,
+            [name]: name === 'order' ? parseInt(value) || 0 : value
+        }));
 
-        let errors = {};
-        let missingFields = [];
-
-        if (!subCourseInput.title) {
-            errors.title = "Title is required";
-            missingFields.push("Title");
+        // Clear error for this field if it exists
+        if (errorlist[name]) {
+            setError(prev => ({ ...prev, [name]: undefined }));
         }
-        if (!subCourseInput.order) {
-            errors.order = "Order is required";
-            missingFields.push("Order");
-        } else if (isNaN(subCourseInput.order)) {
-            errors.order = "Order must be a number";
-            missingFields.push("Order");
-        }
-        if (!subCourseInput.course) {
-            errors.course = "Course is required";
-            missingFields.push("Course");
-        }
+    };
 
-        if (Object.keys(errors).length > 0) {
-            setError(errors); // Store the errors in state
+    const AddSubCourseSubmit = async (e) => {
+        e.preventDefault();
 
+        // Validate inputs
+        const errors = {};
+        if (!subCourseInput.title) errors.title = "Title is required";
+        if (!subCourseInput.order) errors.order = "Order is required";
+        else if (isNaN(subCourseInput.order)) errors.order = "Order must be a number";
+        if (!subCourseInput.course) errors.course = "Course is required";
+
+        if (Object.keys(errors).some(key => errors[key])) {
+            setError(errors);
             Swal.fire({
                 title: 'Error!',
-                text: `Please fill in the following fields: ${missingFields.join(", ")}`,
+                text: 'Please fill in all required fields correctly',
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
-
-            return; // Stop the function if there are errors
+            return;
         }
 
-        const formData = {
-            title: subCourseInput.title,
-            order: subCourseInput.order,
-            course: subCourseInput.course,
-            user: subCourseInput.user // Include the user ID in the form data
-        };
+        try {
+            const response = await axios.post(`/api/addSubCourse`, {
+                title: subCourseInput.title,
+                order: subCourseInput.order,
+                course: subCourseInput.course,
+                user: subCourseInput.user
+            });
 
-        axios.post(`/api/addSubCourse`, formData, {
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-            },
-        }).then(res => {
-            if (res.status === 201) {
-                Swal.fire({
+            if (response.status === 201) {
+                await Swal.fire({
                     title: 'Success!',
                     text: 'SubCourse created successfully!',
                     icon: 'success',
                     confirmButtonText: 'OK',
-                }).then(() => {
-                    navigate('/ListSubCourse'); // Changed to navigate to subcourse list
                 });
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Something went wrong!',
-                    icon: 'error',
-                    confirmButtonText: 'Try Again',
-                });
+                navigate(`/SubCoursesByCourse/${subCourseInput.course}`);
             }
-        }).catch(err => {
+        } catch (err) {
             Swal.fire({
                 title: 'Error!',
-                text: err.response?.data?.message || 'Network error. Please try again later.',
+                text: err.response?.data?.message || 'Failed to create subcourse',
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
-        });
+        }
     };
 
     return (

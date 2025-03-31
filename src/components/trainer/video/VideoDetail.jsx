@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Header from '../../student/Header';
 import Footer from '../../student/Footer';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -10,18 +10,21 @@ function VideoDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
     const videoRef = useRef(null);
-    let mediaStream = null; // Store the camera stream
+    const [ListVideo, setVideos] = useState([]);
+    let mediaStream = null;
 
     useEffect(() => {
         axios.get(`/api/getVideo/${id}`)
             .then(res => {
-                if (res.status === 200) {
-                    setVideo(res.data);
-                }
+                if (res.status === 200) setVideo(res.data);
             })
-            .catch(error => {
-                console.error("Error fetching video:", error);
-            });
+            .catch(console.error);
+
+        axios.get(`/api/getAllVideos`)
+            .then(res => {
+                if (res.status === 200) setVideos(res.data);
+            })
+            .catch(console.error);
     }, [id]);
 
     const openCamera = async () => {
@@ -83,43 +86,94 @@ function VideoDetail() {
     return (
         <div>
             <Header />
-            <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <div className="breadcrumb-main-wrapper">
-                                <h1 className="title">{video.title}</h1>
-                                <div className="pagination-wrapper">
-                                    <a href="/">Home</a>
-                                    <i className="fa-regular fa-chevron-right" />
-                                    <a className="active" href={`/video/${id}`}>Video Details</a>
-                                </div>
-                            </div>
-                        </div>
+            
+            <div style={{ display: 'flex', marginTop: '20px', padding: '0 20px' }}>
+                {/* Main Video Content */}
+                <div style={{ flex: 3, marginRight: '20px' }}>
+                    <div style={{ backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}>
+                        <video 
+                            ref={videoRef}
+                            controls 
+                            autoPlay 
+                            style={{ width: '100%', height: '600px', objectFit: 'contain' }}
+                        >
+                            <source src={video.url} type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>
                     </div>
-                </div>
-            </div>
 
-            <div className="rts-events-area rts-section-gap">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <div className="thumbnail-large-image">
-                                <video width="100%" height="auto" controls>
-                                    <source src={video.url} type="video/mp4" />
-                                    Your browser does not support the video tag.
-                                </video>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="single-upcoming-events" key={video._id} style={{ margin: '40px 40px 60px 40px' }}>
+                    <div style={{ margin: '20px 0' }}>
+                       
+                        <div className="single-upcoming-events" key={video._id} style={{ margin: '40px 40px 60px 40px' }}>
                     <div className="information">
                         <a>
-                            <h5 className="title">Get a certification</h5>
+                            <h5 className="title">{video.title}</h5>
                         </a>
                     </div>
                     <button className="rts-btn btn-primary with-arrow" onClick={handleStartQuiz}>Start quiz</button>
+                </div>
+                    </div>
+                </div>
+
+                {/* Video Playlist Sidebar */}
+                <div style={{ flex: 1, maxWidth: '400px' }}>
+                    <h3 style={{ marginBottom: '20px', paddingBottom: '10px', borderBottom: '1px solid #ddd' }}>
+                        Up Next ({ListVideo.length})
+                    </h3>
+                    
+                    <div style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+                        {ListVideo.map((listVideo, index) => (
+                            <Link 
+                                key={listVideo._id} 
+                                to={`/video/${listVideo._id}`}
+                                style={{
+                                    display: 'flex',
+                                    marginBottom: '12px',
+                                    padding: '8px',
+                                    borderRadius: '4px',
+                                    backgroundColor: listVideo._id === id ? '#f0f0f0' : 'transparent',
+                                    textDecoration: 'none',
+                                    color: 'inherit'
+                                }}
+                            >
+                                <div style={{ width: '160px', marginRight: '12px' }}>
+                                    <img 
+                                        src={listVideo.thumbnail} 
+                                        alt={listVideo.title}
+                                        style={{ 
+                                            width: '100%', 
+                                            height: '90px',
+                                            objectFit: 'cover',
+                                            borderRadius: '4px'
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <h4 style={{ 
+                                        fontSize: '14px', 
+                                        margin: 0,
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden'
+                                    }}>
+                                        {listVideo.title}
+                                    </h4>
+                                    <p style={{ 
+                                        fontSize: '12px', 
+                                        color: '#666', 
+                                        marginTop: '4px',
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden'
+                                    }}>
+                                        {listVideo.description}
+                                    </p>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             </div>
 

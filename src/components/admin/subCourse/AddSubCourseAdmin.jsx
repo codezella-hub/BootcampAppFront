@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 import Header from '../../student/Header';
 import Footer from '../../student/Footer';
 import Swal from 'sweetalert2';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function UpdateSubCourse() {
-    const { id } = useParams(); // Get the subcourse ID from the URL
+function AddSubCourseAdmin() {
     const navigate = useNavigate();
     const [ListCourse, setCourse] = useState([]);
     const [errorlist, setError] = useState({});
@@ -14,13 +13,12 @@ function UpdateSubCourse() {
         title: '',
         order: '',
         course: '',
-        user: '660a1b2c3d4e5f6a7b8c9d0e2' // Static user ID
+        user: '67acb60b2bdf783f2a130f4b' // Static user ID added here
     });
 
     useEffect(() => {
-        document.title = "Update SubCourse";
+        document.title = "Add New SubCourse";
 
-        // Fetch available courses
         axios.get(`/api/courses`)
             .then(res => {
                 if (res.status === 200) {
@@ -30,109 +28,117 @@ function UpdateSubCourse() {
             .catch(error => {
                 console.error("Error fetching courses:", error);
             });
-
-        // Fetch existing subcourse data
-        axios.get(`/api/SubCourse/${id}`)
-            .then(res => {
-                if (res.status === 200) {
-                    const subCourseData = res.data;
-                    setSubCourse({
-                        title: subCourseData.title,
-                        order: subCourseData.order,
-                        course: subCourseData.course?._id || '', // Handle potential undefined course
-                        user: subCourseData.user?._id || '660a1b2c3d4e5f6a7b8c9d0e2'
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching subcourse:", error);
-            });
-    }, [id]);
+    }, []);
 
     const handleInput = (e) => {
+        e.persist();
         const { name, value } = e.target;
 
-        setSubCourse(prev => ({
-            ...prev,
-            [name]: name === 'order' ? parseInt(value) || 0 : value
-        }));
+        if (name === 'order') {
+            setSubCourse({ ...subCourseInput, [name]: parseInt(value) });
+        } else {
+            setSubCourse({ ...subCourseInput, [name]: value });
+        }
 
-        // Clear error for this field if it exists
+        // Remove error border once user starts typing
         if (errorlist[name]) {
-            setError(prev => {
-                const newErrors = { ...prev };
+            setError((prevErrors) => {
+                const newErrors = { ...prevErrors };
                 delete newErrors[name];
                 return newErrors;
             });
         }
     };
 
-    const UpdateSubCourseSubmit = (e) => {
-        e.preventDefault();
+    const AddSubCourseSubmit = (e) => {
+        e.preventDefault(); // Prevent form refresh
 
-        // Validate inputs
-        const errors = {};
-        if (!subCourseInput.title) errors.title = "Title is required";
-        if (!subCourseInput.order) errors.order = "Order is required";
-        else if (isNaN(subCourseInput.order)) errors.order = "Order must be a number";
-        if (!subCourseInput.course) errors.course = "Course is required";
+        let errors = {};
+        let missingFields = [];
+
+        if (!subCourseInput.title) {
+            errors.title = "Title is required";
+            missingFields.push("Title");
+        }
+        if (!subCourseInput.order) {
+            errors.order = "Order is required";
+            missingFields.push("Order");
+        } else if (isNaN(subCourseInput.order)) {
+            errors.order = "Order must be a number";
+            missingFields.push("Order");
+        }
+        if (!subCourseInput.course) {
+            errors.course = "Course is required";
+            missingFields.push("Course");
+        }
 
         if (Object.keys(errors).length > 0) {
-            setError(errors);
+            setError(errors); // Store the errors in state
+
             Swal.fire({
                 title: 'Error!',
-                text: 'Please fill in all required fields correctly',
+                text: `Please fill in the following fields: ${missingFields.join(", ")}`,
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
-            return;
+
+            return; // Stop the function if there are errors
         }
 
         const formData = {
             title: subCourseInput.title,
             order: subCourseInput.order,
             course: subCourseInput.course,
-            user: subCourseInput.user
+            user: subCourseInput.user // Include the user ID in the form data
         };
 
-        axios.put(`/api/updateSubCourse/${id}`, formData)
-            .then(res => {
-                if (res.status === 200) {
-                    Swal.fire({
-                        title: 'Success!',
-                        text: 'SubCourse updated successfully!',
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                    }).then(() => {
-                        // Navigate to the course's subcourses page using the course ID
-                        navigate(`/SubCoursesByCourse/${subCourseInput.course}`);
-                    });
-                }
-            })
-            .catch(err => {
+        axios.post(`/api/addSubCourse`, formData, {
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        }).then(res => {
+            if (res.status === 201) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'SubCourse created successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                }).then(() => {
+                    navigate('/ListSubCourseAdmin'); // Changed to navigate to subcourse list
+                });
+            } else {
                 Swal.fire({
                     title: 'Error!',
-                    text: err.response?.data?.message || 'Update failed. Please try again.',
+                    text: 'Something went wrong!',
                     icon: 'error',
-                    confirmButtonText: 'OK',
+                    confirmButtonText: 'Try Again',
                 });
+            }
+        }).catch(err => {
+            Swal.fire({
+                title: 'Error!',
+                text: err.response?.data?.message || 'Network error. Please try again later.',
+                icon: 'error',
+                confirmButtonText: 'OK',
             });
+        });
     };
+
     return (
         <div>
             <Header />
             <div>
-   
                 <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
                     <div className="container">
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="breadcrumb-main-wrapper">
-                                    <h1 className="title">Update SubCourse</h1>
+                                    <h1 className="title">Create SubCourse</h1>
                                     <div className="pagination-wrapper">
                                         <a href="index-2.html">Home</a>
                                         <i className="fa-regular fa-chevron-right" />
-                                        <a className="active" href="create-course.html">Update SubCourse</a>
+                                        <a className="active" href="create-course.html">Create SubCourse</a>
                                     </div>
                                 </div>
                             </div>
@@ -154,7 +160,7 @@ function UpdateSubCourse() {
                                             <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                                 <div className="accordion-body">
                                                     <div className="course-information-area">
-                                                        <form onSubmit={UpdateSubCourseSubmit} className="top-form-create-course">
+                                                        <form onSubmit={AddSubCourseSubmit} className="top-form-create-course">
                                                             <div className="single-input">
                                                                 <label htmlFor="name">SubCourse Title</label>
                                                                 <input
@@ -184,23 +190,22 @@ function UpdateSubCourse() {
                                                             </div>
 
                                                             <div className="single-input">
-                <label htmlFor="course">Course</label>
-                <select
-                    id="course"
-                    name="course"
-                    onChange={handleInput}
-                    value={subCourseInput.course}
-                    className={errorlist.course ? 'error-border' : ''}
-                >
-                    <option value="">Select a course</option>
-                    {ListCourse.map((course) => (
-                        <option key={course._id} value={course._id}>
-                            {course.title}
-                        </option>
-                    ))}
-                </select>
-                {errorlist.course && <p className="error-text">{errorlist.course}</p>}
-            </div>
+                                                                <label htmlFor="course">Course</label>
+                                                                <select
+                                                                    id="course"
+                                                                    name="course"
+                                                                    onChange={handleInput}
+                                                                    value={subCourseInput.course}
+                                                                >
+                                                                    <option value="">Select a course</option>
+                                                                    {ListCourse.map((course) => (
+                                                                        <option key={course._id} value={course._id}>
+                                                                            {course.title}
+                                                                        </option>
+                                                                    ))}
+                                                                </select>
+                                                                {errorlist.course && <p style={{ color: "red", fontSize: "14px" }}>{errorlist.course}</p>}
+                                                            </div>
 
                                                             <div className="row">
                                                                 <div className="col-lg-12">
@@ -264,4 +269,4 @@ function UpdateSubCourse() {
     );
 }
 
-export default UpdateSubCourse;
+export default AddSubCourseAdmin;

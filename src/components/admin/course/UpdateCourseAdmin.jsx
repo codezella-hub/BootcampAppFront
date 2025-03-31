@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-function UpdateCourse() {
+function UpdateCourseAdmin() {
     const { id } = useParams(); // Get the course ID from the URL
     const [ListCategory, setCategory] = useState([]);
     const navigate = useNavigate();
@@ -163,7 +163,7 @@ function UpdateCourse() {
                     icon: 'success',
                     confirmButtonText: 'OK',
                 }).then(() => {
-                    navigate('/ListCourse'); // Navigate after success
+                    navigate('/ListCourseAdmin'); // Navigate after success
                 });
             } else {
                 Swal.fire({
@@ -193,12 +193,12 @@ function UpdateCourse() {
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="breadcrumb-main-wrapper">
-                                    <h1 className="title">Update Course</h1>
+                                    <h1 className="title">Create Course</h1>
                                     {/* breadcrumb pagination area */}
                                     <div className="pagination-wrapper">
                                         <a href="index-2.html">Home</a>
                                         <i className="fa-regular fa-chevron-right" />
-                                        <a className="active" href="create-course.html">Update Course</a>
+                                        <a className="active" href="create-course.html">Create Course</a>
                                     </div>
                                     {/* breadcrumb pagination area end */}
                                 </div>
@@ -447,4 +447,4 @@ function UpdateCourse() {
     )
 }
 
-export default UpdateCourse
+export default UpdateCourseAdmin

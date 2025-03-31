@@ -2,15 +2,14 @@ import React, { useEffect, useState } from 'react'
 import Header from '../../student/Header'
 import Footer from '../../student/Footer'
 import Swal from 'sweetalert2';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function UpdateCourse() {
-    const { id } = useParams(); // Get the course ID from the URL
+function AddCourseAdmin() {
     const [ListCategory, setCategory] = useState([]);
     const navigate = useNavigate();
     const [errorlist, setError] = useState({});
-    const [courseInput, setCourse] = useState({
+    const [courseInput, setRegister] = useState({
         title: '',
         description: '',
         price: '',
@@ -22,61 +21,36 @@ function UpdateCourse() {
         rating: '',
         subtitles: '',
         category: '',
-        user: '660a1b2c3d4e5f6a7b8c9d0e2' // Static user ID added here
+        user: '67cd9bb397aad71d4f08b63f' // Static user ID added here
     });
     const [picture, setPicture] = useState(null);
     const [imageName, setImageName] = useState(""); // Store selected image name
     const [imagePreview, setImagePreview] = useState("assets/images/dashboard/05.png"); // Default image
 
     useEffect(() => {
-        document.title = "Update Course";
+        document.title = "Add New Course";
 
-        // Fetch categories
         axios.get(`/api/categories`)
             .then(res => {
                 if (res.status === 200) {
+                    console.log(res.data);
                     setCategory(res.data);
                 }
             })
             .catch(error => {
                 console.error("Error fetching categories:", error);
             });
-
-        // Fetch existing course data
-        axios.get(`/api/course/${id}`)
-            .then(res => {
-                if (res.status === 200) {
-                    const courseData = res.data;
-                    setCourse({
-                        ...courseData,
-                        category: courseData.category._id, // Set the category as ObjectId
-                        user: courseData.user?._id || '660a1b2c3d4e5f6a7b8c9d0e2' // Use existing user or fallback to static
-                    });
-                    setImagePreview(`http://localhost:3000${courseData.courseImage}`);
-                    setPicture({ image: courseData.courseImage }); // Set the image in the state
-                    setImageName(courseData.courseImageName); // Set the image name
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching course:", error);
-            });
-    }, [id]);
+    }, []);
 
     const handleInput = (e) => {
         e.persist();
-        const { name, value } = e.target;
-
-        if (name === "category") {
-            setCourse({ ...courseInput, category: value });
-        } else {
-            setCourse({ ...courseInput, [name]: value });
-        }
+        setRegister({ ...courseInput, [e.target.name]: e.target.value });
 
         // Remove error border once user starts typing
-        if (errorlist[name]) {
+        if (errorlist[e.target.name]) {
             setError((prevErrors) => {
                 const newErrors = { ...prevErrors };
-                delete newErrors[name];
+                delete newErrors[e.target.name];
                 return newErrors;
             });
         }
@@ -91,7 +65,7 @@ function UpdateCourse() {
         }
     };
 
-    const UpdateCourseSubmit = (e) => {
+    const AddCourseSubmit = (e) => {
         e.preventDefault(); // Prevent form refresh
 
         let errors = {};
@@ -106,7 +80,7 @@ function UpdateCourse() {
                 missingFields.push(field.charAt(0).toUpperCase() + field.slice(1));
             }
         });
-        if (!picture || !picture.image) {
+        if (!picture) {
             errors.image = "Image is required";
             missingFields.push("Image");
         }
@@ -143,32 +117,27 @@ function UpdateCourse() {
         Object.keys(courseInput).forEach(key => {
             formData.append(key, courseInput[key]);
         });
-        // Handle both file upload and existing image path
-        if (typeof picture.image === 'object') {
-            formData.append('courseImage', picture.image); // New file upload
-        } else {
-            formData.append('existingImage', picture.image); // Existing image path
-        }
+        formData.append('courseImage', picture?.image); // Use 'courseImage' as the field name
 
-        axios.put(`/api/updateCourse/${id}`, formData, {
+        axios.post(`/api/addCourse`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 "Accept": "application/json",
             },
         }).then(res => {
-            if (res.data.status === 200 || res.data.status === 201) {
+            if (res.data.status === 201) {
                 Swal.fire({
                     title: 'Success!',
                     text: res.data.message,
                     icon: 'success',
                     confirmButtonText: 'OK',
                 }).then(() => {
-                    navigate('/ListCourse'); // Navigate after success
+                    navigate('/ListCourseAdmin'); // Navigate after success
                 });
             } else {
                 Swal.fire({
                     title: 'Error!',
-                    text: res.data.message || 'Something went wrong!',
+                    text: 'Something went wrong!',
                     icon: 'error',
                     confirmButtonText: 'Try Again',
                 });
@@ -176,13 +145,12 @@ function UpdateCourse() {
         }).catch(err => {
             Swal.fire({
                 title: 'Error!',
-                text: err.response?.data?.message || 'Network error. Please try again later.',
+                text: 'Network error. Please try again later.',
                 icon: 'error',
                 confirmButtonText: 'OK',
             });
         });
     };
-
     return (
         <div>    {/* banner area start */}
             <Header />
@@ -193,12 +161,12 @@ function UpdateCourse() {
                         <div className="row">
                             <div className="col-lg-12">
                                 <div className="breadcrumb-main-wrapper">
-                                    <h1 className="title">Update Course</h1>
+                                    <h1 className="title">Create Course</h1>
                                     {/* breadcrumb pagination area */}
                                     <div className="pagination-wrapper">
                                         <a href="index-2.html">Home</a>
                                         <i className="fa-regular fa-chevron-right" />
-                                        <a className="active" href="create-course.html">Update Course</a>
+                                        <a className="active" href="create-course.html">Create Course</a>
                                     </div>
                                     {/* breadcrumb pagination area end */}
                                 </div>
@@ -218,13 +186,13 @@ function UpdateCourse() {
                                         <div className="accordion-item">
                                             <h2 className="accordion-header" id="headingOne">
                                                 <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                                    Course Info
+                                                Course Info
                                                 </button>
                                             </h2>
                                             <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                                 <div className="accordion-body">
                                                     <div className="course-information-area">
-                                                        <form onSubmit={UpdateCourseSubmit} className="top-form-create-course">
+                                                        <form onSubmit={AddCourseSubmit} className="top-form-create-course">
                                                             <div className="single-input">
                                                                 <label htmlFor="name">Course Title</label>
                                                                 <input
@@ -385,11 +353,11 @@ function UpdateCourse() {
 
 
                                                             <div className="single-input">
-                                                                <label htmlFor="image">Category Image</label>
+                                                                <label htmlFor="courseImage">Course Image</label>
                                                                 <input
                                                                     type="file"
-                                                                    id="image"
-                                                                    name="image"
+                                                                    id="courseImage"
+                                                                    name="courseImage"
                                                                     onChange={handleImage}
                                                                     style={{ display: "none" }}
                                                                 />
@@ -399,7 +367,7 @@ function UpdateCourse() {
                                                                     </div>
                                                                     <div className="information">
                                                                         <div className="input-file-type-btn">
-                                                                            <button type="button" className="rts-btn btn-primary" id="custom-button" onClick={() => document.getElementById("image").click()}>
+                                                                            <button type="button" className="rts-btn btn-primary" id="custom-button" onClick={() => document.getElementById("courseImage").click()}>
                                                                                 Pick Image
                                                                             </button>
                                                                             {imageName && <p>Selected Image: {imageName}</p>}
@@ -408,7 +376,6 @@ function UpdateCourse() {
                                                                 </div>
                                                                 {errorlist.image && <p style={{ color: "red", fontSize: "14px" }}>{errorlist.image}</p>}
                                                             </div>
-
 
                                                             <div className="row">
                                                                 <div className="col-lg-12">
@@ -427,12 +394,82 @@ function UpdateCourse() {
                                     </div>
                                 </div>
                             </div>
-
+                            <div className="col-lg-4 rts-sticky-column-item">
+                                <div className="course-upload-tips-wrapper theiaStickySidebar">
+                                    <h5 className="title">Course Upload Tips</h5>
+                                    <div className="single-check-wrapper">
+                                        <i className="fa-light fa-circle-check" />
+                                        <span>Set the Category Price option or make it free.</span>
+                                    </div>
+                                    <div className="single-check-wrapper">
+                                        <i className="fa-light fa-circle-check" />
+                                        <span>Standard size for the Category thumbnail is
+                                            700x430.</span>
+                                    </div>
+                                    <div className="single-check-wrapper">
+                                        <i className="fa-light fa-circle-check" />
+                                        <span>Video section controls the Category overview video.</span>
+                                    </div>
+                                    <div className="single-check-wrapper">
+                                        <i className="fa-light fa-circle-check" />
+                                        <span>Category Builder is where you create &amp; organize
+                                            a Category.</span>
+                                    </div>
+                                    <div className="single-check-wrapper">
+                                        <i className="fa-light fa-circle-check" />
+                                        <span>Add Topics in the Category Builder section to create
+                                            lessons, quizzes, and assignments.</span>
+                                    </div>
+                                    <div className="single-check-wrapper">
+                                        <i className="fa-light fa-circle-check" />
+                                        <span>Prerequisites refers to the fundamental Category
+                                            to complete before taking this particular Category.</span>
+                                    </div>
+                                    <div className="single-check-wrapper">
+                                        <i className="fa-light fa-circle-check" />
+                                        <span>Information from the Additional Data section
+                                            shows up on the Category single page.</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 {/* create course area end */}
-
+                {/* Modal */}
+                <div className="modal announcement fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="exampleModalLabel">Add New Topic</h5>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+                            </div>
+                            <div className="modal-body">
+                                <form action="#" className="modal-form">
+                                    <select className="nice-select" name="price">
+                                        <option>Select New Topic</option>
+                                        <option value="asc">Recently Update Web Design </option>
+                                        <option value="desc">Web Design Course</option>
+                                        <option value="pop">Update Web Design</option>
+                                        <option value="low">Recently Update Web</option>
+                                        <option value="high">Course: New Courses</option>
+                                    </select>
+                                    <div className="single-input mt--20">
+                                        <label htmlFor="course">Topic Title</label>
+                                        <input id="course" type="text" placeholder="Topic title" />
+                                    </div>
+                                    <div className="single-input">
+                                        <label htmlFor="message">Summary</label>
+                                        <textarea id="message" placeholder="Summary..." defaultValue={""} />
+                                    </div>
+                                </form>
+                            </div>
+                            <div className="modal-footer">
+                                <button type="button" className="rts-btn btn-primary">Publish</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {/* rts backto top start */}
                 <div className="progress-wrap">
                     <svg className="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
@@ -447,4 +484,4 @@ function UpdateCourse() {
     )
 }
 
-export default UpdateCourse
+export default AddCourseAdmin

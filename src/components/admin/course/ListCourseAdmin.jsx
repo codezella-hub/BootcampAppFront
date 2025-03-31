@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import Header from '../Header'
-import LeftSideBar from '../LeftSideBar'
+import Header from '../../student/Header'
+import LeftSideBar from '../../student/LeftSideBar'
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
-function StudentEnrollCourse() {
-
+function ListCourseAdmin() {
+  const navigate = useNavigate();
   const [ListCourses, setCourses] = useState([]);
 
   useEffect(() => {
@@ -22,6 +24,30 @@ function StudentEnrollCourse() {
         console.error("Error fetching categories:", error);
       });
   }, []);
+  const handleDeleteCourse = (id) => {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#007C00',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Confirm!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.delete(`/api/deleteCourse/${id}`)
+                .then(res => {
+                    if (res.status === 200) {
+                        Swal.fire('Deleted!', 'Course has been deleted.', 'success');
+                        setCourses(ListCourses.filter(course => course._id !== id));
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Error!', 'Failed to delete category.', 'error');
+                });
+        }
+    });
+};
   return (
 
     <div>
@@ -82,7 +108,7 @@ function StudentEnrollCourse() {
                           ListCourses.map(item => (
                             <div className="col-lg-4 col-md-6 col-sm-12 col-12">
                               <div className="single-course-style-three enroll-course">
-                                <Link to={`/SubCourses/${item._id}`} className="thumbnail">
+                                <Link to={`/DetailCourse/${item._id}`} className="thumbnail">
                                   <img
                                     src={`http://localhost:3000${item.courseImage}`}
                                     alt={item.courseImage}
@@ -116,28 +142,12 @@ function StudentEnrollCourse() {
                                   <div className="leasson-students">
                                     <div className="lesson">
                                       <i className="fa-light fa-calendar-lines-pen" />
-                                      <span>{item.courseDuration} Lessons</span>
-                                    </div>
-                                    <div className="students">
-                                      <i className="fa-light fa-users" />
-                                      <span>25 Lessons</span>
+                                      <span>{item.category.title} </span>
                                     </div>
                                   </div>
-                                  <div className="progress-wrapper-lesson-compleate">
-                                    <div className="compleate">
-                                      <div className="compl">
-                                        Complete
-                                      </div>
-                                      <div className="end">
-                                        <span>50%</span>
-                                      </div>
-                                    </div>
-                                    <div className="progress">
-                                      <div className="progress-bar wow fadeInLeft bg--primary" role="progressbar" style={{ width: '50%' }} aria-valuenow={25} aria-valuemin={0} aria-valuemax={100}>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <button className="rts-btn btn-border">Download Certificate</button>
+                                  <button onClick={() => navigate(`/SubCoursesByCourseAdmin/${item._id}`)} className="rts-btn btn-border">SubCourses</button>
+                                  <button onClick={() => navigate(`/UpdateCourseAdmin/${item._id}`)} className="rts-btn btn-border">Update Course</button>
+                                  <button onClick={() => handleDeleteCourse(item._id)} className="rts-btn btn-border">Delete Course</button>
                                 </div>
                               </div>
                             </div>
@@ -286,4 +296,4 @@ function StudentEnrollCourse() {
   )
 }
 
-export default StudentEnrollCourse
+export default ListCourseAdmin

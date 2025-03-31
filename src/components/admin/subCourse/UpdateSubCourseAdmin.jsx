@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-function UpdateSubCourse() {
+function UpdateSubCourseAdmin() {
     const { id } = useParams(); // Get the subcourse ID from the URL
     const navigate = useNavigate();
     const [ListCourse, setCourse] = useState([]);
@@ -105,7 +105,7 @@ function UpdateSubCourse() {
                         confirmButtonText: 'OK',
                     }).then(() => {
                         // Navigate to the course's subcourses page using the course ID
-                        navigate(`/SubCoursesByCourse/${subCourseInput.course}`);
+                        navigate(`/SubCoursesByCourseAdmin/${subCourseInput.course}`);
                     });
                 }
             })
@@ -122,7 +122,6 @@ function UpdateSubCourse() {
         <div>
             <Header />
             <div>
-   
                 <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
                     <div className="container">
                         <div className="row">
@@ -264,4 +263,4 @@ function UpdateSubCourse() {
     );
 }
 
-export default UpdateSubCourse;
+export default UpdateSubCourseAdmin;

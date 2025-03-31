@@ -119,7 +119,7 @@ export default function SubCourses() {
                                                     <div className="status-btn-wrapper">
                                                         <i className="fa-light fa-circle-check" />
                                                         <div className="button-area">
-                                                            <Link to={`/SubCourses/Video`} className="rts-btn btn-primary">Watch</Link>
+                                                            <button onClick={() => navigate(`/SubCourses/Video`)}className="rts-btn btn-primary">Watch</button>
                                                             <i className="fa-regular fa-ellipsis-vertical" />
                                                         </div>
                                                     </div>

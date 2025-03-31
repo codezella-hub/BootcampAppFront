@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function ListSubCourse() {
+function ListSubCourseAdmin() {
   const navigate = useNavigate();
   const [ListSubCourse, setSubCourse] = useState([]);
   const [filteredSubCourses, setFilteredSubCourses] = useState([]);
@@ -15,7 +15,7 @@ function ListSubCourse() {
 
   useEffect(() => {
     document.title = "List of courses";
-    axios.get(`/api/SubCourses/course/`)
+    axios.get(`/api/SubCourses`)
       .then(res => {
         if (res.status === 200) {
           setSubCourse(res.data);
@@ -116,7 +116,6 @@ function ListSubCourse() {
     <div>
       <Header />
       <div>
-
         <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
           <div className="container">
             <div className="row">
@@ -199,7 +198,7 @@ function ListSubCourse() {
                       </div>
                     </div>
                     <div className="right">
-                      <Link to={`/AddSubCourse`} type="button" className="rts-btn btn-primary" >Add New SubCourse</Link>
+                      <Link to={`/AddSubCourseAdmin`} type="button" className="rts-btn btn-primary" >Add New SubCourse</Link>
                     </div>
                   </div>
 
@@ -229,9 +228,9 @@ function ListSubCourse() {
                                   <span>Category: {item.course?.category?.title}</span>
                                 </div>
                                 <div className="right">
-                                  <button onClick={() => navigate(`/UpdateSubCourse/${item._id}`)} className="rts-btn btn-primary" > Edit </button>
+                                  <button onClick={() => navigate(`/UpdateSubCourseAdmin/${item._id}`)} className="rts-btn btn-primary" > Edit </button>
                                   <button onClick={() => handleDeleteSubCourse(item._id)} className="rts-btn btn-primary">Delete</button>
-                                  <i className="fa-regular fa-ellipsis-vertical" />
+                                
                                 </div>
                               </td>
                             </tr>
@@ -272,4 +271,4 @@ function ListSubCourse() {
 
 }
 
-export default ListSubCourse
+export default ListSubCourseAdmin

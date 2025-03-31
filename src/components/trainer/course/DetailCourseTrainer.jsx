@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
-function DetailCourse() {
+function DetailCourseTrainer() {
     const { id } = useParams(); // Get the category ID from the URL
     const navigate = useNavigate();
     const [course, setCourse] = useState({});
@@ -14,7 +14,7 @@ function DetailCourse() {
     const [subCourseId, setSubCourseId] = useState(null);
     const [user, setUser] = useState({});
     const [loadingVideos, setLoadingVideos] = useState(false);
-    const staticUserId = "67acb60b2bdf783f2a130f4b"; // Hardcoded static user ID
+    const [AuthUserId] = useState("67acb60b2bdf783f2a130f4b"); // Static auth user ID
 
     useEffect(() => {
         document.title = "Detail Course";
@@ -24,6 +24,7 @@ function DetailCourse() {
             .then(res => {
                 if (res.status === 200) {
                     setCourse(res.data);
+                    setCurrentUserId(res.data.user._id)
                 }
             })
             .catch(error => {
@@ -62,8 +63,8 @@ function DetailCourse() {
         }
     }, [subCourseId]); // Runs when `subCourseId` updates
 
-      // Function to fetch videos when a subcourse is clicked
-      const fetchVideos = (selectedSubCourseId) => {
+    // Function to fetch videos when a subcourse is clicked
+    const fetchVideos = (selectedSubCourseId) => {
         setLoadingVideos(true); // Show loading state
 
         axios.get(`/api/getVideosBySubCourse/${selectedSubCourseId}`)
@@ -188,11 +189,14 @@ function DetailCourse() {
                     <div className="row g-5">
                         <div className="col-lg-8 order-cl-1 order-lg-1 order-md-2 order-sm-2 order-2">
                             <div className="thumbnail mb--30" style={{ position: 'relative' }}>
-                                <img src={`http://localhost:3000${course.courseImage}`} style={{ width: "900px", height: "500px", objectFit: "cover" }}/>
+                                <img src={`http://localhost:3000${course.courseImage}`} style={{ width: "900px", height: "500px", objectFit: "cover" }} />
                                 <div className="vedio-icone">
-                                    <a className="video-play-button play-video popup-video" href="https://www.youtube.com/watch?v=ezbJwaLmOeM">
+                                    <Link
+                                        className="video-play-button play-video popup-video"
+                                        to={`/VideoPopUp/${ListVideos[0]?._id}`} // Use the first video's ID (or another logic if needed)
+                                    >
                                         <span />
-                                    </a>
+                                    </Link>
                                     <div className="video-overlay">
                                         <a className="video-overlay-close">×</a>
                                     </div>
@@ -223,18 +227,18 @@ function DetailCourse() {
                             <div className="course-content-wrapper-main mt--40">
                                 <h5 className="title">Course Content</h5>
                                 {/* single */}
-      
+
                                 {ListSubCourse.length > 0 ? (
                                     ListSubCourse.map(subCourse => (
                                         <div key={subCourse._id} className="accordion mt--30" id={`accordion-${subCourse._id}`}>
                                             <div className="accordion-item">
                                                 <h2 className="accordion-header" id={`heading-${subCourse._id}`}>
-                                                    <button 
-                                                        className={`accordion-button ${subCourseId === subCourse._id ? "" : "collapsed"}`} 
-                                                        type="button" 
-                                                        data-bs-toggle="collapse" 
-                                                        data-bs-target={`#collapse-${subCourse._id}`} 
-                                                        aria-expanded={subCourseId === subCourse._id ? "true" : "false"} 
+                                                    <button
+                                                        className={`accordion-button ${subCourseId === subCourse._id ? "" : "collapsed"}`}
+                                                        type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target={`#collapse-${subCourse._id}`}
+                                                        aria-expanded={subCourseId === subCourse._id ? "true" : "false"}
                                                         aria-controls={`collapse-${subCourse._id}`}
                                                         onClick={() => {
                                                             setSubCourseId(subCourse._id);
@@ -245,9 +249,9 @@ function DetailCourse() {
                                                         <span>3 Lectures . 9 min</span>
                                                     </button>
                                                 </h2>
-                                                <div 
-                                                    id={`collapse-${subCourse._id}`} 
-                                                    className={`accordion-collapse collapse ${subCourseId === subCourse._id ? "show" : ""}`} 
+                                                <div
+                                                    id={`collapse-${subCourse._id}`}
+                                                    className={`accordion-collapse collapse ${subCourseId === subCourse._id ? "show" : ""}`}
                                                     aria-labelledby={`heading-${subCourse._id}`}
                                                     data-bs-parent={`#accordion-${subCourse._id}`}
                                                 >
@@ -257,7 +261,7 @@ function DetailCourse() {
                                                         ) : (
                                                             ListVideos.length > 0 ? (
                                                                 ListVideos.map(video => (
-                                                                    <Link key={video._id} to={`/VideoDetail/${video._id}`}  className="play-vedio-wrapper">
+                                                                    <Link key={video._id} to={`/VideoDetail/${video._id}`} className="play-vedio-wrapper">
                                                                         <div className="left">
                                                                             <i className="fa-light fa-circle-play" />
                                                                             <span>{video.title}</span>
@@ -281,7 +285,7 @@ function DetailCourse() {
                                     <p>No subcourses available...</p>
                                 )}
                             </div>
-                           
+
                             <div className="rating-main-wrapper">
                                 {/* single-top-rating */}
                                 <div className="rating-top-main-wrapper">
@@ -393,8 +397,18 @@ function DetailCourse() {
                                         <i className="fa-light fa-clock" />
                                         <span>2 Day left at this price!</span>
                                     </div>
-                                    <a href="#" className="rts-btn btn-primary">Add To Cart</a>
-                                    <button  className="rts-btn btn-border">Watch Now</button>
+                                    // In your JSX where buttons are rendered:
+                                    {AuthUserId === course?.user?._id ? (
+                                        <Link to={`/UpdateCourse/${course._id}`} className="rts-btn btn-primary">
+                                            Update Course
+                                        </Link>
+                                    ) : (
+                                        // Show Add to Cart + Watch Now for other users
+                                        <div className="button-group">
+                                            <a href="#" className="rts-btn btn-primary">Add To Cart</a>
+                                            <button className="rts-btn btn-border">Watch Now</button>
+                                        </div>
+                                    )}
                                     <div className="what-includes">
                                         <span className="m">30-Day Money-Back Guarantee</span>
                                         <h5 className="title">This course includes: </h5>
@@ -933,4 +947,4 @@ function DetailCourse() {
     )
 }
 
-export default DetailCourse
+export default DetailCourseTrainer;
