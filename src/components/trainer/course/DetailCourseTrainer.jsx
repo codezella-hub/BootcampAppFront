@@ -261,16 +261,21 @@ function DetailCourseTrainer() {
                                                         ) : (
                                                             ListVideos.length > 0 ? (
                                                                 ListVideos.map(video => (
-                                                                    <Link key={video._id} to={`/VideoDetail/${video._id}`} className="play-vedio-wrapper">
-                                                                        <div className="left">
-                                                                            <i className="fa-light fa-circle-play" />
-                                                                            <span>{video.title}</span>
-                                                                        </div>
-                                                                        <div className="right">
-                                                                            <span className="play">Preview</span>
-                                                                            <span>{video.duration} sec</span>
-                                                                        </div>
-                                                                    </Link>
+                                                                    <Link 
+                                                                    key={video._id} 
+                                                                    to={`/VideoDetail/${video._id}/${video.subCourse._id}`} 
+                                                                    className="play-vedio-wrapper"
+                                                                >
+                                                                    <div className="left">
+                                                                        <i className="fa-light fa-circle-play" />
+                                                                        <span>{video.title}</span>
+                                                                    </div>
+                                                                    <div className="right">
+                                                                        <span className="play">Preview</span>
+                                                                        <span>{video.duration} sec</span>
+                                                                    </div>
+                                                                </Link>
+                                                                
                                                                 ))
                                                             ) : (
                                                                 <p>No videos found for this subcourse...</p>

@@ -1,31 +1,41 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Header from '../../student/Header';
 import Footer from '../../student/Footer';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
 function VideoDetail() {
+    const { id, subCourseId } = useParams(); // Retrieve both parameters
     const [video, setVideo] = useState(null);
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const videoRef = useRef(null);
     const [ListVideo, setVideos] = useState([]);
-    let mediaStream = null;
-
+    const videoRef = useRef(null);
+    
     useEffect(() => {
-        axios.get(`/api/getVideo/${id}`)
-            .then(res => {
-                if (res.status === 200) setVideo(res.data);
-            })
-            .catch(console.error);
+        let isMounted = true; // Cleanup flag
 
-        axios.get(`/api/getAllVideos`)
-            .then(res => {
-                if (res.status === 200) setVideos(res.data);
-            })
-            .catch(console.error);
-    }, [id]);
+        const fetchData = async () => {
+            try {
+                // Fetch the specific video
+                const videoResponse = await axios.get(`/api/getVideo/${id}`);
+
+                // Fetch videos based on subCourseId
+                const videosResponse = await axios.get(`/api/getVideosBySubCourse/${subCourseId}`);
+
+                if (isMounted) {
+                    if (videoResponse.status === 200) setVideo(videoResponse.data);
+                    if (videosResponse.status === 200) setVideos(videosResponse.data);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        fetchData();
+        return () => { isMounted = false; }; // Cleanup
+    }, [id, subCourseId]);
+
+    if (!video) return <p>Loading video...</p>;
 
     const openCamera = async () => {
         try {
@@ -86,32 +96,33 @@ function VideoDetail() {
     return (
         <div>
             <Header />
-            
+
             <div style={{ display: 'flex', marginTop: '20px', padding: '0 20px' }}>
                 {/* Main Video Content */}
                 <div style={{ flex: 3, marginRight: '20px' }}>
                     <div style={{ backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}>
-                        <video 
+                        <video
+                            key={video?.url} // Add this line
                             ref={videoRef}
-                            controls 
-                            autoPlay 
+                            controls
+                            autoPlay
                             style={{ width: '100%', height: '600px', objectFit: 'contain' }}
                         >
-                            <source src={video.url} type="video/mp4" />
+                            <source src={video?.url} type="video/mp4" />
                             Your browser does not support the video tag.
                         </video>
                     </div>
 
                     <div style={{ margin: '20px 0' }}>
-                       
+
                         <div className="single-upcoming-events" key={video._id} style={{ margin: '40px 40px 60px 40px' }}>
-                    <div className="information">
-                        <a>
-                            <h5 className="title">{video.title}</h5>
-                        </a>
-                    </div>
-                    <button className="rts-btn btn-primary with-arrow" onClick={handleStartQuiz}>Start quiz</button>
-                </div>
+                            <div className="information">
+                                <a>
+                                    <h5 className="title">{video.title}</h5>
+                                </a>
+                            </div>
+                            <button className="rts-btn btn-primary with-arrow" onClick={handleStartQuiz}>Start quiz</button>
+                        </div>
                     </div>
                 </div>
 
@@ -120,12 +131,12 @@ function VideoDetail() {
                     <h3 style={{ marginBottom: '20px', paddingBottom: '10px', borderBottom: '1px solid #ddd' }}>
                         Up Next ({ListVideo.length})
                     </h3>
-                    
+
                     <div style={{ maxHeight: '80vh', overflowY: 'auto' }}>
                         {ListVideo.map((listVideo, index) => (
-                            <Link 
-                                key={listVideo._id} 
-                                to={`/video/${listVideo._id}`}
+                            <Link
+                                key={listVideo._id}
+                                to={`/VideoDetail/${listVideo._id}/${subCourseId}`}
                                 style={{
                                     display: 'flex',
                                     marginBottom: '12px',
@@ -137,11 +148,11 @@ function VideoDetail() {
                                 }}
                             >
                                 <div style={{ width: '160px', marginRight: '12px' }}>
-                                    <img 
-                                        src={listVideo.thumbnail} 
+                                    <img
+                                        src={listVideo.thumbnail}
                                         alt={listVideo.title}
-                                        style={{ 
-                                            width: '100%', 
+                                        style={{
+                                            width: '100%',
                                             height: '90px',
                                             objectFit: 'cover',
                                             borderRadius: '4px'
@@ -149,8 +160,8 @@ function VideoDetail() {
                                     />
                                 </div>
                                 <div>
-                                    <h4 style={{ 
-                                        fontSize: '14px', 
+                                    <h4 style={{
+                                        fontSize: '14px',
                                         margin: 0,
                                         display: '-webkit-box',
                                         WebkitLineClamp: 2,
@@ -159,9 +170,9 @@ function VideoDetail() {
                                     }}>
                                         {listVideo.title}
                                     </h4>
-                                    <p style={{ 
-                                        fontSize: '12px', 
-                                        color: '#666', 
+                                    <p style={{
+                                        fontSize: '12px',
+                                        color: '#666',
                                         marginTop: '4px',
                                         display: '-webkit-box',
                                         WebkitLineClamp: 2,

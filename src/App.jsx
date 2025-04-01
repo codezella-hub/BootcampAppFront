@@ -97,7 +97,7 @@ function App() {
 
         <Route path="/SubCourses/Video" element={<Video />} /> {/* Fix: Add this route */}
 
-        <Route path="/VideoDetail/:id" element={<VideoDetail />} /> {/* Fix: Add this route */}
+        <Route path="/VideoDetail/:id/:subCourseId" element={<VideoDetail />} /> {/* Fix: Add this route */}
         <Route path="/VideoPopUp/:id" element={<VideoPopUp />} /> {/* Fix: Add this route */}
         <Route path="/UpdateVideo/:id" element={<UpdateVideo />} /> {/* Fix: Add this route */}
         <Route path="/ListCourseStudent" element={<ListCourseStudent />} /> {/* Fix: Add this route */}
