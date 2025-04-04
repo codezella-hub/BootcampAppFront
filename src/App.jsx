@@ -37,6 +37,8 @@ import UpdateSubCourseAdmin from './components/admin/subCourse/UpdateSubCourseAd
 import SubCoursesByCourseAdmin from './components/admin/subCourse/SubCoursesByCourseAdmin';
 import DetailCourseTrainer from './components/trainer/course/DetailCourseTrainer';
 import VideoPopUp from './components/trainer/video/VideoPopUp';
+import Code from './components/student/code/Code';
+
 
 function App() {
   return (
@@ -78,6 +80,7 @@ function App() {
         {/* Student */}
         <Route path="/student/enroll-course" element={<StudentEnrollCourse />} />{/* page integre m3a mokhles bel payement */}
         <Route path="/DetailCourse/:id" element={<DetailCourse />} />
+        <Route path="/Code" element={<Code />} />
 
     
 
