@@ -7,11 +7,11 @@ import Register from "./components/auth/Register";
 import StudentEnrollCourse from "./components/student/StudentEnrollCourse";
 import AddCategory from "./components/admin/AddCategory";
 import ForgetPassword from "./components/auth/ForgetPassword";
-import Payment from "./components/payement/Payement";
+import Payment from "./components/payment/Payment";
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
-  const userId = "USER_ID_HERE"; // Replace with actual user ID
+  const userId = "USER_ID_HERE"; 
 
   return (
     <Router>

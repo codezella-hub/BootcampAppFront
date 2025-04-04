@@ -11,6 +11,25 @@ export const getOrders = async () => {
     throw error;
   }
 };
+export const getOrderByUserId = (userid) => {
+  try {
+    return axios.get(API_URL + "/user-id/" + userid).then((response) => {
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        throw new Error("Failed to fetch orders");
+      }
+    }).catch((error) => {
+      console.error("Error fetching orders:", error);
+      throw error;
+    });
+   
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    throw error;
+  }
+
+};
 
 export const deleteOrder = async (orderId) => {
   try {
