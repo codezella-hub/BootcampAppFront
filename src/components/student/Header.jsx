@@ -284,6 +284,13 @@ function header() {
                     <li><a href="/Myforum">My Forum</a></li>
                     </ul>
                   </li>
+                  <li className="has-dropdown">
+                  <a className="nav-link" href="/posts">Jobs</a>
+                  <ul className="submenu">
+                    <li><a href="/MyPosts">my offers</a></li>
+                    <li><a href="/MyCandidats">my applications</a></li>
+                    </ul>
+                    </li>
                 </ul>
               </nav>
             </div>

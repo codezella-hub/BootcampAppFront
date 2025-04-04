@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom"; // Pour récupérer l'ID du forum depuis l'URL
+import { useParams , useNavigate} from "react-router-dom"; // Pour récupérer l'ID du forum depuis l'URL
 import Header from "../student/Header.jsx";
 import forumApi from "../../services/forumApi.js";
 
@@ -16,7 +16,7 @@ function UpdateForum() {
   const [imagePreview, setImagePreview] = useState(null);
   const [imageName, setImageName] = useState("");
   const [categories, setCategories] = useState([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchForumDetails = async () => {
       try {
@@ -85,6 +85,7 @@ function UpdateForum() {
       console.log("Données envoyées :", Object.fromEntries(data.entries()));
       await forumApi.updateForum(id, data);
       alert("Forum mis à jour avec succès !");
+      navigate(-1);
     } catch (error) {
       console.error("Erreur lors de la mise à jour du forum", error);
     }

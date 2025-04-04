@@ -12,6 +12,18 @@ import ForumList from './components/Forum/ForumList.jsx';
 import ForumDetails from './components/Forum/ForumDetails.jsx';
 import MyForum from './components/Forum/MyForum.jsx';
 import UpdateForum from './components/Forum/updateForum.jsx';
+import PostList from './components/post/PostList.jsx';
+import AddCandidat from './components/post/AddCandidat.jsx';
+import DetailPost from './components/post/detailPost.jsx';
+import MyPosts from './components/post/MyPosts.jsx';
+import AddPost from './components/post/addPost.jsx';
+import UpdatePost from './components/post/updatePost.jsx';
+import AffichePostEntreprise from './components/post/affichePostEntreprise.jsx';
+import CandidatDetailsEntreprise from './components/post/CandidatDetailsEntreprise.jsx';
+import MyCandidats from './components/post/MyCandidats.jsx';
+import UpdateCandidat from './components/post/updateCandidat.jsx';
+
+
 
 function App() {
   //axios.defaults.baseURL = "http://localhost:3000/"
@@ -32,6 +44,17 @@ function App() {
         <Route path="/Forums" element={<ForumList/>} />
         <Route path="/Myforum" element={<MyForum/>} />
         <Route path="/forum/:id" element={<ForumDetails/>} />
+        <Route path="/posts" element={<PostList/>} />
+        <Route path="/posts/:id" element={<DetailPost/>} />
+        <Route path="/postsEntreprise/:id" element={<AffichePostEntreprise/>} />
+        <Route path="/addCandidat/:postId" element={<AddCandidat />} />
+        <Route path="/MyPosts" element={<MyPosts/>} />
+        <Route path="/addPost" element={<AddPost/>} />
+        <Route path="/updatePost/:id" element={<UpdatePost/>} />
+        <Route path="/CandidatDetailsEntreprise/:id" element={<CandidatDetailsEntreprise />} />
+        <Route path="/MyCandidats" element={<MyCandidats />} />
+        <Route path="/updateCandidat/:id" element={<UpdateCandidat/>} />
+
 
       </Routes>
     </Router>

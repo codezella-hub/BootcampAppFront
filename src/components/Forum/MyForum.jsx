@@ -175,49 +175,31 @@ function MyForum() {
                       <i class="fa-light fa-comment-dots"></i>
                       <span>{forum.commentCount} Comments</span>
                     </div>
-
+                    <div className="d-flex justify-content-end w-100">
+                                      <Link
+                                          to={`/updateForum/${forum._id}`}
+                                          className="btn btn-sm btn-outline-primary"
+                                          style={{ width: "100px" }}
+                                      >
+                                          ✏️ Modifier
+                                      </Link>
+                                      <button
+                                          onClick={() => deleteForum(forum._id)}
+                                          className="btn btn-sm btn-outline-danger"
+                                          style={{ width: "100px" }}
+                                      >
+                                          🗑️ Supprimer
+                                      </button>
+                                      </div>
                   </div>
-                  <button
-                      onClick={() => window.location.href = `/updateForum/${forum._id}`}
-                      style={{
-                        backgroundColor: '#553CDF',
-                        color: "white",
-                        border: "none",
-                        borderRadius: "50%",
-                        padding: "10px",
-                        cursor: "pointer",
-                        fontSize: "18px",
-                        width: "45px",
-                        position: "relative",
-                        top: "10px",
-                        right: "5px",
-                      }}
-                    >
-                      <i className="fa-solid fa-pen"></i>
-                    </button>
-                  <button
-                    onClick={() => deleteForum(forum._id)}
-                    style={{
-                      backgroundColor: "red",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "50%",
-                      padding: "10px",
-                      cursor: "pointer",
-                      fontSize: "18px",
-                      width: "45px",
-                      position: "relative",
-                      top: "10px",
-                      right: "-250",
-                    }}
-                  >
-                    <i className="fa-solid fa-trash"></i>
-                  </button>
+                  
+                 
                 </div>
 
               </div>
 
             </div>
+            
             ))}
           </div>
         </div>

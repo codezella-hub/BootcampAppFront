@@ -31343,4 +31343,14 @@ header.header-three .sub-dropdown .submenu.third-lvl.base {
   color: #FFA41C; 
 }
 
+.candidat-details-container {
+  max-width: 1000px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
 /*# sourceMappingURL=../maps/style.css.map */
