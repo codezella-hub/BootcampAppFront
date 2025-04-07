@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getOrders, deleteOrder } from "../../services/orderAPI";
+import { getOrders, deleteOrder, getCourseById } from "../../services/orderAPI";
 import Header from "./Header";
 import Footer from "./Footer";
 import { Link } from "react-router-dom";
@@ -19,7 +19,54 @@ const Cart = () => {
     setLoading(true);
     try {
       const data = await getOrders();
-      setOrders(Array.isArray(data) ? data : []);
+
+      const enrichedOrders = await Promise.all(
+        data.map(async (order) => {
+          const enrichedItems = await Promise.all(
+            order.items.map(async (item) => {
+              let courseTitle = "Untitled Course";
+              let courseImage = "/assets/images/shop/01.jpg";
+
+              const courseId =
+                typeof item.courseId === "object"
+                  ? item.courseId._id?.toString?.() || item.courseId.toString?.()
+                  : item.courseId;
+
+              if (!courseId) {
+                console.warn("Missing courseId in item:", item);
+                return {
+                  ...item,
+                  courseTitle,
+                  courseImage,
+                };
+              }
+
+              try {
+                const course = await getCourseById(courseId);
+                if (course) {
+                  courseTitle = course.title;
+                  courseImage = course.courseImage;
+                } else {
+                  console.warn("Course not found for ID:", courseId);
+                }
+              } catch (err) {
+                console.warn("Failed to fetch course details", err);
+              }
+
+              return {
+                ...item,
+                courseTitle,
+                courseImage,
+                courseId: courseId,
+              };
+            })
+          );
+
+          return { ...order, items: enrichedItems };
+        })
+      );
+
+      setOrders(enrichedOrders);
     } catch (error) {
       console.error("Error fetching orders:", error);
       setOrders([]);
@@ -38,12 +85,14 @@ const Cart = () => {
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!"
+      confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await deleteOrder(orderId);
-          setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
+          setOrders((prevOrders) =>
+            prevOrders.filter((order) => order._id !== orderId)
+          );
           Swal.fire("Deleted!", "Your order has been deleted.", "success");
         } catch (error) {
           console.error("Error deleting order:", error);
@@ -53,13 +102,11 @@ const Cart = () => {
     });
   };
 
-  const calculateSubtotal = (items = []) => {
-    return items.reduce((total, item) => total + ((item?.price || 0) * (item?.quantity || 1)), 0);
-  };
+  const calculateSubtotal = (items = []) =>
+    items.reduce((total, item) => total + (item?.price || 0) * (item?.quantity || 1), 0);
 
-  const calculateTotal = () => {
-    return orders.reduce((total, order) => total + calculateSubtotal(order?.items || []), 0);
-  };
+  const calculateTotal = () =>
+    orders.reduce((total, order) => total + calculateSubtotal(order?.items || []), 0);
 
   const handleApplyCoupon = (e) => {
     e.preventDefault();
@@ -68,7 +115,7 @@ const Cart = () => {
     Swal.fire({
       title: "Coupon Applied",
       text: "Your coupon has been applied successfully!",
-      icon: "success"
+      icon: "success",
     });
   };
 
@@ -85,7 +132,9 @@ const Cart = () => {
                 <div className="pagination-wrapper">
                   <Link to="/">Home</Link>
                   <i className="fa-regular fa-chevron-right"></i>
-                  <Link to="/cart" className="active">Cart</Link>
+                  <Link to="/cart" className="active">
+                    Cart
+                  </Link>
                 </div>
               </div>
             </div>
@@ -114,44 +163,59 @@ const Cart = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {orders.map(order => order?.items?.map(item => (
-                      <tr key={`${order?._id}-${item?.courseId?._id}`}>
-                        <td className="product-remove">
-                          <button 
-                            onClick={() => handleDeleteOrder(order?._id)}
-                            className="remove"
-                            aria-label="Remove this item"
-                          >
-                            <svg viewBox="0 0 200 200" width="18" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M114,100l49-49a9.9,9.9,0,0,0-14-14L100,86,51,37A9.9,9.9,0,0,0,37,51l49,49L37,149a9.9,9.9,0,0,0,14,14l49-49,49,49a9.9,9.9,0,0,0,14-14Z"></path>
-                            </svg>
-                          </button>
-                        </td>
-                        <td className="product-thumbnail">
-                          <Link to={`/course/${item?.courseId?._id}`}>
-                            <img 
-                              src={item?.courseId?.image || "/assets/images/shop/01.jpg"} 
-                              alt={item?.courseId?.title || "Course"} 
-                              className="cart-image"
-                            />
-                          </Link>
-                        </td>
-                        <td className="product-name">
-                          <Link to={`/course/${item?.courseId?._id}`}>
-                            {item?.courseId?.title || "Untitled Course"}
-                          </Link>
-                        </td>
-                        <td className="product-price">
-                          <span className="amount">TND {(item?.price || 0).toFixed(2)}</span>
-                        </td>
-                        <td className="product-quantity">{item?.quantity || 1}</td>
-                        <td className="product-subtotal">
-                          <span className="amount">
-                            TND {((item?.price || 0) * (item?.quantity || 1)).toFixed(2)}
-                          </span>
-                        </td>
-                      </tr>
-                    )))}
+                    {orders.map((order) =>
+                      order?.items?.map((item) => {
+                        const courseIdStr =
+                          typeof item.courseId === "object"
+                            ? item.courseId._id?.toString?.() || item.courseId.toString?.()
+                            : item.courseId;
+
+                        return (
+                          <tr key={`${order?._id}-${courseIdStr}`}>
+                            <td className="product-remove">
+                              <button
+                                onClick={() => handleDeleteOrder(order?._id)}
+                                className="remove"
+                                aria-label="Remove this item"
+                              >
+                                <svg
+                                  viewBox="0 0 200 200"
+                                  width="18"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M114,100l49-49a9.9,9.9,0,0,0-14-14L100,86,51,37A9.9,9.9,0,0,0,37,51l49,49L37,149a9.9,9.9,0,0,0,14,14l49-49,49,49a9.9,9.9,0,0,0,14-14Z"></path>
+                                </svg>
+                              </button>
+                            </td>
+                            <td className="product-thumbnail">
+                              <Link to={`/course/${courseIdStr}`}>
+                                <img
+                                  src={item?.courseImage || "/assets/images/shop/01.jpg"}
+                                  alt={item?.courseTitle || "Course"}
+                                  className="cart-image"
+                                />
+                              </Link>
+                            </td>
+                            <td className="product-name">
+                              <Link to={`/course/${courseIdStr}`}>
+                                {item?.courseTitle || "Untitled Course"}
+                              </Link>
+                            </td>
+                            <td className="product-price">
+                              <span className="amount">
+                                TND {(item?.price || 0).toFixed(2)}
+                              </span>
+                            </td>
+                            <td className="product-quantity">{item?.quantity || 1}</td>
+                            <td className="product-subtotal">
+                              <span className="amount">
+                                TND {((item?.price || 0) * (item?.quantity || 1)).toFixed(2)}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
                     <tr>
                       <td colSpan="6" className="actions">
                         <div className="coupon-section">
