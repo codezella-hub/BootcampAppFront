@@ -1,108 +1,98 @@
-import { useState } from 'react';
-import axios from 'axios';
-import Swal from 'sweetalert2';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import Header from './Header';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore.js';
+import { ToastContainer,toast } from 'react-toastify';
+import { useState } from 'react';
+import './register.css';
+
+const registerSchema = z.object({
+    firstname: z.string().min(2, 'First name must be at least 2 characters'),
+    lastname: z.string().min(2, 'Last name must be at least 2 characters'),
+    age: z.number().min(18, 'You must be at least 18 years old').max(120),
+    birthdayDate: z.string().refine(val => !isNaN(new Date(val).getTime()), {
+        message: 'Invalid date format',
+    }),
+    phoneNumber: z.string().min(8, 'Phone number must be at least 10 digits'),
+    email: z.string().email('Invalid email address'),
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    gender: z.enum(['male', 'female']),
+    role: z.enum(['admin', 'user']),
+    terms: z.literal(true, {
+        errorMap: () => ({ message: 'You must accept the terms and conditions' }),
+    }),
+});
 
 export default function Register() {
     const navigate = useNavigate();
-    const [errorList, setError] = useState({});
-    const [registerInput, setRegister] = useState({
-        firstname: '',
-        lastname: '',
-        age: '',
-        birthdayDate: '',
-        email: '',
-        password: '',
-        phoneNumber: '',
-        gender: '',
-        role: '', // Champ pour le rôle
+    const [touchedFields, setTouchedFields] = useState({});
+    const { signup, isLoading } = useAuthStore();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting, isValid },
+        trigger,
+    } = useForm({
+        resolver: zodResolver(registerSchema),
+        mode: 'onBlur',
     });
-    
 
-    // Handle input changes
-    const handleInput = (e) => {
-        const { name, value } = e.target;
-        setRegister((prevState) => ({ ...prevState, [name]: value }));
-
-        // Remove error border once user starts typing
-        if (errorList[name]) {
-            setError((prevErrors) => {
-                const newErrors = { ...prevErrors };
-                delete newErrors[name];
-                return newErrors;
-            });
-        }
+    const handleBlur = async (fieldName) => {
+        await trigger(fieldName);
+        setTouchedFields(prev => ({ ...prev, [fieldName]: true }));
     };
 
+    const getInputClass = (fieldName) => {
+        const isTouched = touchedFields[fieldName];
+        const hasError = errors[fieldName];
 
+        if (!isTouched) return '';
+        return hasError ? 'is-invalid border-danger' : 'is-valid border-success';
+    };
 
-    // Submit registration data
-    const registerSubmit = (e) => {
-        e.preventDefault();
+    const onSubmit = async (data) => {
+        try {
+            const toastId = toast.loading('Processing your registration...', {
+                position: "top-center",
+                autoClose: false,
+                closeButton: false,
+            });
 
-        // Create JSON object with registration data
-        const jsonData = {
-            ...registerInput,
-          
-        };
+            await signup(data);
 
-        console.log('JSON Data:', jsonData); // Log JSON data for debugging
+            toast.update(toastId, {
+                render: 'Registration successful!',
+                type: 'success',
+                isLoading: false,
+                autoClose: 3000,
+                closeButton: true,
+                hideProgressBar: false,
+            });
 
-        // Send data to the backend
-        axios.post('http://localhost:3000/api/register', jsonData, {
-            headers: {
-                "Content-Type": "application/json", // Set content type to JSON
-            },
-        })
-        .then((res) => {
-            if (res.data.success) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: res.data.message,
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#3085d6',
-                }).then(() => {
-                    navigate('/verify-email'); // Redirect to login on success
-                });
-            }
-        })
-        .catch((error) => {
-            console.error('Error response:', error.response);
-            if (error.response && error.response.data.message) {
-                const errorObj = { general: error.response.data.message };
-                setError(errorObj);
-                Swal.fire({
-                    title: 'Registration Failed!',
-                    html: errorObj.general,
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#d33',
-                });
-            } else if (error.response && error.response.data.errors) {
-                const errorObj = {};
-                error.response.data.errors.forEach((err) => {
-                    if (err.includes("firstname")) errorObj.firstname = err;
-                    if (err.includes("lastname")) errorObj.lastname = err;
-                    if (err.includes("age")) errorObj.age = err;
-                    if (err.includes("birthdayDate")) errorObj.birthdayDate = err;
-                    if (err.includes("email")) errorObj.email = err;
-                    if (err.includes("password")) errorObj.password = err;
-                    if (err.includes("phoneNumber")) errorObj.phoneNumber = err;
-                    if (err.includes("gender")) errorObj.gender = err;
-                    if (err.includes("role")) errorObj.role = err; // Gestion des erreurs pour le rôle
-                });
-                setError(errorObj);
-                Swal.fire({
-                    title: 'Registration Failed!',
-                    html: Object.values(errorObj).join('<br>'),
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    confirmButtonColor: '#d33',
-                });
-            }
-        });
+            // Redirection après un délai pour laisser voir le message
+            setTimeout(() => navigate('/verify-email', { state: { email: data.email } }), 1500);
+
+        } catch (error) {
+            toast.dismiss(); // Ferme tous les toasts existants
+
+            toast.error(error.response?.data?.message || 'Registration failed', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+                style: {
+                    border: '1px solid #dc3545',
+                    backgroundColor: '#f8d7da',
+                    color: '#721c24'
+                }
+            });
+        }
     };
 
     return (
@@ -114,7 +104,8 @@ export default function Register() {
                         <div className="col-lg-6">
                             <div className="login-page-form-area">
                                 <h4 className="title">Sign Up to Your Account👋</h4>
-                                <form onSubmit={registerSubmit}>
+                                <form onSubmit={handleSubmit(onSubmit)}>
+                                    {/* Ligne 1: Prénom + Nom */}
                                     <div className="half-input-wrapper">
                                         <div className="single-input-wrapper">
                                             <label htmlFor="firstname">First Name</label>
@@ -122,12 +113,15 @@ export default function Register() {
                                                 id="firstname"
                                                 type="text"
                                                 placeholder="Enter First Name"
-                                                name="firstname"
-                                                onChange={handleInput}
-                                                value={registerInput.firstname}
-                                                required
-                                                style={{ border: errorList.firstname ? '2px solid red' : '' }}
+                                                {...register('firstname')}
+                                                className={`form-control ${getInputClass('firstname')}`}
+                                                onBlur={() => handleBlur('firstname')}
                                             />
+                                            {errors.firstname && (
+                                                <div className="invalid-feedback">
+                                                    {errors.firstname.message}
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="single-input-wrapper">
                                             <label htmlFor="lastname">Last Name</label>
@@ -135,14 +129,19 @@ export default function Register() {
                                                 id="lastname"
                                                 type="text"
                                                 placeholder="Enter Last Name"
-                                                name="lastname"
-                                                onChange={handleInput}
-                                                value={registerInput.lastname}
-                                                required
-                                                style={{ border: errorList.lastname ? '2px solid red' : '' }}
+                                                {...register('lastname')}
+                                                className={`form-control ${getInputClass('lastname')}`}
+                                                onBlur={() => handleBlur('lastname')}
                                             />
+                                            {errors.lastname && (
+                                                <div className="invalid-feedback">
+                                                    {errors.lastname.message}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
+
+                                    {/* Ligne 2: Age + Date de naissance */}
                                     <div className="half-input-wrapper">
                                         <div className="single-input-wrapper">
                                             <label htmlFor="age">Age</label>
@@ -150,106 +149,170 @@ export default function Register() {
                                                 id="age"
                                                 type="number"
                                                 placeholder="Enter Your Age"
-                                                name="age"
-                                                onChange={handleInput}
-                                                value={registerInput.age}
-                                                required
-                                                style={{ border: errorList.age ? '2px solid red' : '' }}
+                                                {...register('age', { valueAsNumber: true })}
+                                                className={`form-control ${getInputClass('age')}`}
+                                                onBlur={() => handleBlur('age')}
                                             />
+                                            {errors.age && (
+                                                <div className="invalid-feedback">
+                                                    {errors.age.message}
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="single-input-wrapper">
                                             <label htmlFor="birthdayDate">Date Of Birth</label>
                                             <input
                                                 id="birthdayDate"
                                                 type="date"
-                                                name="birthdayDate"
-                                                onChange={handleInput}
-                                                value={registerInput.birthdayDate}
-                                                required
-                                                style={{ border: errorList.birthdayDate ? '2px solid red' : '' }}
+                                                {...register('birthdayDate')}
+                                                className={`form-control ${getInputClass('birthdayDate')}`}
+                                                onBlur={() => handleBlur('birthdayDate')}
                                             />
+                                            {errors.birthdayDate && (
+                                                <div className="invalid-feedback">
+                                                    {errors.birthdayDate.message}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className="single-input-wrapper">
-                                        <label htmlFor="phoneNumber">Phone Number</label>
-                                        <input
-                                            id="phoneNumber"
-                                            type="text"
-                                            placeholder="Enter Your Phone"
-                                            name="phoneNumber"
-                                            onChange={handleInput}
-                                            value={registerInput.phoneNumber}
-                                            required
-                                            style={{ border: errorList.phoneNumber ? '2px solid red' : '' }}
-                                        />
+
+                                    {/* Ligne 3: Téléphone + Email */}
+                                    <div className="half-input-wrapper">
+                                        <div className="single-input-wrapper">
+                                            <label htmlFor="phoneNumber">Phone Number</label>
+                                            <input
+                                                id="phoneNumber"
+                                                type="text"
+                                                placeholder="Enter Your Phone"
+                                                {...register('phoneNumber')}
+                                                className={`form-control ${getInputClass('phoneNumber')}`}
+                                                onBlur={() => handleBlur('phoneNumber')}
+                                            />
+                                            {errors.phoneNumber && (
+                                                <div className="invalid-feedback">
+                                                    {errors.phoneNumber.message}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="single-input-wrapper">
+                                            <label htmlFor="email">Your Email</label>
+                                            <input
+                                                id="email"
+                                                type="email"
+                                                placeholder="Enter Your Email"
+                                                {...register('email')}
+                                                className={`form-control ${getInputClass('email')}`}
+                                                onBlur={() => handleBlur('email')}
+                                            />
+                                            {errors.email && (
+                                                <div className="invalid-feedback">
+                                                    {errors.email.message}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="single-input-wrapper">
-                                        <label htmlFor="email">Your Email</label>
-                                        <input
-                                            id="email"
-                                            type="email"
-                                            placeholder="Enter Your Email"
-                                            name="email"
-                                            onChange={handleInput}
-                                            value={registerInput.email}
-                                            required
-                                            style={{ border: errorList.email ? '2px solid red' : '' }}
-                                        />
-                                    </div>
+
+                                    {/* Mot de passe */}
                                     <div className="single-input-wrapper">
                                         <label htmlFor="password">Your Password</label>
                                         <input
                                             id="password"
                                             type="password"
                                             placeholder="Enter Your Password"
-                                            name="password"
-                                            onChange={handleInput}
-                                            value={registerInput.password}
-                                            required
-                                            style={{ border: errorList.password ? '2px solid red' : '' }}
+                                            {...register('password')}
+                                            className={`form-control ${getInputClass('password')}`}
+                                            onBlur={() => handleBlur('password')}
                                         />
+                                        {errors.password && (
+                                            <div className="invalid-feedback">
+                                                {errors.password.message}
+                                            </div>
+                                        )}
                                     </div>
-                                    <div className="single-input-wrapper">
-                                        <label htmlFor="gender">Gender</label>
-                                        <select
-                                            id="gender"
-                                            name="gender"
-                                            onChange={handleInput}
-                                            value={registerInput.gender}
-                                            required
-                                            style={{ border: errorList.gender ? '2px solid red' : '' }}
-                                        >
-                                            <option value="">Select Gender</option>
-                                            <option value="male">Male</option>
-                                            <option value="female">Female</option>
-                                        </select>
-                                    </div>
-                                    <div className="single-input-wrapper">
-                                        <label htmlFor="role">Role</label>
-                                        <select
-                                            id="role"
-                                            name="role"
-                                            onChange={handleInput}
-                                            value={registerInput.role}
-                                            required
-                                            style={{ border: errorList.role ? '2px solid red' : '' }} // Validation pour le rôle
-                                        >
-                                            <option value="">Select Role</option>
-                                            <option value="admin">Admin</option>
-                                            <option value="user">User</option>
-                                        </select>
-                                    </div>
-                                  
-                                    
-                                    <div className="single-checkbox-filter">
-                                        <div className="check-box">
-                                            <input type="checkbox" id="terms" required />
-                                            <label htmlFor="terms">Accept the Terms and Privacy Policy</label>
+
+                                    {/* Ligne 4: Genre + Rôle */}
+                                    <div className="half-input-wrapper">
+                                        <div className="single-input-wrapper">
+                                            <label htmlFor="gender">Gender</label>
+                                            <select
+                                                id="gender"
+                                                {...register('gender')}
+                                                className={`form-control ${getInputClass('gender')}`}
+                                                onBlur={() => handleBlur('gender')}
+                                            >
+                                                <option value="">Select Gender</option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                            </select>
+                                            {errors.gender && (
+                                                <div className="invalid-feedback">
+                                                    {errors.gender.message}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="single-input-wrapper">
+                                            <label htmlFor="role">Role</label>
+                                            <select
+                                                id="role"
+                                                {...register('role')}
+                                                className={`form-control ${getInputClass('role')}`}
+                                                onBlur={() => handleBlur('role')}
+                                            >
+                                                <option value="">Select Role</option>
+                                                <option value="admin">Admin</option>
+                                                <option value="user">User</option>
+                                            </select>
+                                            {errors.role && (
+                                                <div className="invalid-feedback">
+                                                    {errors.role.message}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    <button type="submit" className="rts-btn btn-primary">Register</button>
-                                    <p>Already have an account? <Link to="/login">Login</Link></p>
+
+                                    {/* Checkbox */}
+                                    <div className="single-checkbox-filter">
+                                        <div className="check-box">
+                                            <input
+                                                type="checkbox"
+                                                id="terms"
+                                                {...register('terms')}
+                                                className={errors.terms ? 'is-invalid' : ''}
+                                                onBlur={() => handleBlur('terms')}
+                                            />
+                                            <label htmlFor="terms">
+                                                Accept the Terms and Privacy Policy
+                                            </label>
+                                            {errors.terms && (
+                                                <div className="invalid-feedback d-block">
+                                                    {errors.terms.message}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Bouton */}
+                                    <button
+                                        type="submit"
+                                        className="rts-btn btn-primary"
+
+                                    >
+                                        {isLoading ? 'Registering...' : 'Register'}
+                                    </button>
+                                    <ToastContainer/>
+                                    <p>
+                                        Already have an account? <Link to="/login">Login</Link>
+                                    </p>
                                 </form>
+                            </div>
+                        </div>
+                        <div className="col-lg-6">
+                            <div className="contact-thumbnail-login-p mt--1">
+                                <img
+                                    src="assets/images/auth/login2.png"
+                                    width={600}
+                                    alt="login-form"
+                                />
                             </div>
                         </div>
                     </div>

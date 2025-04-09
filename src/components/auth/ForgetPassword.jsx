@@ -1,42 +1,52 @@
-import { useState } from 'react';
-import axios from 'axios';
-import Swal from 'sweetalert2';  
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
+import { ToastContainer, toast } from 'react-toastify';
 import Header from './Header';
-import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
+import './ForgetPassword.css';
+
+// Schéma de validation
+const forgetPasswordSchema = z.object({
+    email: z.string().email('Please enter a valid email address'),
+});
 
 function ForgetPassword() {
-    const [email, setEmail] = useState('');
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate(); // Initialize useNavigate
+    const navigate = useNavigate();
+    const { forgotPassword, isLoading } = useAuthStore();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(forgetPasswordSchema),
+    });
 
+    const onSubmit = async (data) => {
         try {
-            const response = await axios.post('http://localhost:3000/api/forget-password', { email });
-            
-            // Affiche le message de succès
-            Swal.fire({
-                title: 'Success!',
-                text: response.data.message,
-                icon: 'success',
-                confirmButtonText: 'OK',
-            }).then(() => {
-                // Redirection vers la page de vérification de l'email
-                navigate('/check-your-email'); // Change cette route si nécessaire
+            const toastId = toast.loading('sending forget password email ...', {
+                position: "top-center",
+                autoClose: false,
+                closeButton: false,
             });
 
-            setEmail('');
-        } catch (error) {
-            Swal.fire({
-                title: 'Error!',
-                text: error.response?.data?.message || 'Something went wrong!',
-                icon: 'error',
-                confirmButtonText: 'Try Again',
+            await forgotPassword(data.email);
+
+            toast.update(toastId, {
+                render: 'Password reset link sent! Check your email',
+                type: 'success',
+                isLoading: false,
+                autoClose: 5000,
             });
-        } finally {
-            setLoading(false);
+
+            setTimeout(() => navigate('/check-your-email'), 2000);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to send reset link. Please try again.', {
+                position: "top-center",
+                autoClose: 5000,
+            });
         }
     };
 
@@ -49,28 +59,53 @@ function ForgetPassword() {
                         <div className="col-lg-6">
                             <div className="login-page-form-area">
                                 <h4 className="title">Reset Your Password</h4>
-                                <form onSubmit={handleSubmit}>
+                                <form onSubmit={handleSubmit(onSubmit)}>
                                     <div className="single-input-wrapper">
-                                        <label htmlFor="email">Your Email</label>
+                                        <label htmlFor="email">Email Address</label>
                                         <input
                                             id="email"
                                             type="email"
-                                            placeholder="Enter Your Email"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                            required
+                                            placeholder="Enter your registered email"
+                                            {...register('email')}
+                                            className={`form-control ${errors.email ? 'is-invalid' : ''}`}
                                         />
+                                        {errors.email && (
+                                            <div className="invalid-feedback">
+                                                {errors.email.message}
+                                            </div>
+                                        )}
                                     </div>
-                                    <button type="submit" className="rts-btn btn-primary" disabled={loading}>
-                                        {loading ? 'Sending...' : 'Send Reset Link'}
+                                    <button
+                                        type="submit"
+                                        className="rts-btn btn-primary"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                Sending...
+                                            </>
+                                        ) : (
+                                            'Send Reset Link'
+                                        )}
                                     </button>
-                                    <p>Already Have an account? <Link to="/login">Sign In</Link></p>
+                                    <div className="mt-3 text-center">
+                                        <Link to="/login" className="text-decoration-none">
+                                            Back to Sign In
+                                        </Link>
+                                    </div>
                                 </form>
+                                <ToastContainer />
                             </div>
                         </div>
                         <div className="col-lg-6">
                             <div className="contact-thumbnail-login-p mt--1">
-                                <img src="assets/images/auth/rp.png" width={600} alt="login-form" />
+                                <img
+                                    src="assets/images/auth/rp.png"
+                                    width={600}
+                                    alt="Password reset illustration"
+                                    className="img-fluid"
+                                />
                             </div>
                         </div>
                     </div>

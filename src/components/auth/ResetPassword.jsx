@@ -1,38 +1,60 @@
-import  { useState } from 'react';
-import axios from 'axios';
-import Swal from 'sweetalert2';  
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/authStore';
+import { ToastContainer, toast } from 'react-toastify';
 import Header from './Header';
-import { Link, useParams } from 'react-router-dom';
+import './ResetPassword.css';
+
+// Schéma de validation
+const resetPasswordSchema = z.object({
+    password: z.string()
+        .min(8, 'Password must be at least 8 characters')
+        .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+        .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+        .regex(/[0-9]/, 'Password must contain at least one number'),
+    confirmPassword: z.string()
+}).refine(data => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"]
+});
 
 function ResetPassword() {
-    const { token } = useParams(); // Récupération du token de l'URL
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
+    const { token } = useParams();
+    const { resetPassword, isLoading } = useAuthStore();
+    const navigate = useNavigate();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        watch
+    } = useForm({
+        resolver: zodResolver(resetPasswordSchema),
+    });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-
+    const onSubmit = async (data) => {
         try {
-            const response = await axios.post(`http://localhost:3000/api/reset-password/${token}`, { password });
-            
-            Swal.fire({
-                title: 'Success!',
-                text: response.data.message,
-                icon: 'success',
-                confirmButtonText: 'OK',
+            const toastId = toast.loading('Resetting your password...', {
+                position: "top-center",
+                autoClose: false,
             });
 
-            setPassword('');
-        } catch (error) {
-            Swal.fire({
-                title: 'Error!',
-                text: error.response?.data?.message || 'Something went wrong!',
-                icon: 'error',
-                confirmButtonText: 'Try Again',
+            await resetPassword(token, data.password);
+
+            toast.update(toastId, {
+                render: 'Password reset successfully!',
+                type: 'success',
+                isLoading: false,
+                autoClose: 3000,
             });
-        } finally {
-            setLoading(false);
+
+            setTimeout(() => navigate('/login'), 2000);
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Password reset failed', {
+                position: "top-center",
+                autoClose: 5000,
+            });
         }
     };
 
@@ -45,28 +67,68 @@ function ResetPassword() {
                         <div className="col-lg-6">
                             <div className="login-page-form-area">
                                 <h4 className="title">Set Your New Password</h4>
-                                <form onSubmit={handleSubmit}>
+                                <form onSubmit={handleSubmit(onSubmit)}>
                                     <div className="single-input-wrapper">
                                         <label htmlFor="password">New Password</label>
                                         <input
                                             id="password"
                                             type="password"
                                             placeholder="Enter Your New Password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            required
+                                            {...register('password')}
+                                            className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                                         />
+                                        {errors.password && (
+                                            <div className="invalid-feedback">
+                                                {errors.password.message}
+                                            </div>
+                                        )}
                                     </div>
-                                    <button type="submit" className="rts-btn btn-primary" disabled={loading}>
-                                        {loading ? 'Resetting...' : 'Reset Password'}
+
+                                    <div className="single-input-wrapper">
+                                        <label htmlFor="confirmPassword">Confirm Password</label>
+                                        <input
+                                            id="confirmPassword"
+                                            type="password"
+                                            placeholder="Confirm Your Password"
+                                            {...register('confirmPassword')}
+                                            className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
+                                        />
+                                        {errors.confirmPassword && (
+                                            <div className="invalid-feedback">
+                                                {errors.confirmPassword.message}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        className="rts-btn btn-primary"
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-2"></span>
+                                                Resetting...
+                                            </>
+                                        ) : (
+                                            'Reset Password'
+                                        )}
                                     </button>
-                                    <p>Remembered your password? <Link to="/login">Sign In</Link></p>
+                                    <ToastContainer />
+                                    <p className="mt-3">
+                                        Remembered your password? <Link to="/login">Sign In</Link>
+                                    </p>
                                 </form>
                             </div>
                         </div>
                         <div className="col-lg-6">
                             <div className="contact-thumbnail-login-p mt--1">
-                                <img src="assets/images/auth/rp.png" width={600} alt="login-form" />
+                                <img
+                                    src="assets/images/auth/rp.png"
+                                    width={600}
+                                    alt="Password reset"
+                                    className="img-fluid"
+                                />
                             </div>
                         </div>
                     </div>

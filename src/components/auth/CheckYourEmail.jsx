@@ -15,7 +15,7 @@ function CheckYourEmail() {
                                     We have sent a password reset link to your email. Please check your inbox (and spam folder) to reset your password.
                                 </p>
                                 <p className="mt-3">
-                                    If you don't receive the email, you can <Link to="/ForgetPassword">try again</Link>.
+                                    If you don't receive the email, you can <Link to="/forgot-password">try again</Link>.
                                 </p>
                                 <Link to="/login" className="rts-btn btn-primary mt-4">
                                     Back to Login

@@ -1,96 +1,181 @@
-import { useState } from 'react';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
-import Header  from '../student/Header';
-const VerifiedEmail = () => {
-    const [otp, setOtp] = useState('');
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useAuthStore } from "../../store/authStore";
+import { ToastContainer, toast } from 'react-toastify';
+import './EmailVerification.css';
 
-    const handleInputChange = (e) => {
-        setOtp(e.target.value);
-        setError(''); // Clear error message on input change
+const EmailVerificationPage = () => {
+    const [code, setCode] = useState(["", "", "", "", "", ""]);
+    const inputRefs = useRef([]);
+    const { state } = useLocation();
+    const navigate = useNavigate();
+    const email = state?.email || '';
+    const { error, isLoading, verifyEmail, resendVerificationCode } = useAuthStore();
+    const [resendDisabled, setResendDisabled] = useState(false);
+    const [countdown, setCountdown] = useState(30);
+
+    const handleChange = (index, value) => {
+        const newCode = [...code];
+        if (value.length > 1) {
+            const pastedCode = value.slice(0, 6).split("");
+            for (let i = 0; i < 6; i++) {
+                newCode[i] = pastedCode[i] || "";
+            }
+            setCode(newCode);
+            const lastFilledIndex = newCode.findLastIndex((digit) => digit !== "");
+            const focusIndex = lastFilledIndex < 5 ? lastFilledIndex + 1 : 5;
+            inputRefs.current[focusIndex].focus();
+        } else {
+            newCode[index] = value;
+            setCode(newCode);
+            if (value && index < 5) {
+                inputRefs.current[index + 1].focus();
+            }
+        }
+    };
+
+    const handleKeyDown = (index, e) => {
+        if (e.key === "Backspace" && !code[index] && index > 0) {
+            inputRefs.current[index - 1].focus();
+        }
+    };
+
+    const handleResendCode = async () => {
+        try {
+            setResendDisabled(true);
+            setCountdown(30);
+
+            const toastId = toast.loading('Vérification en cours...', {
+                position: "top-center",
+                autoClose: false,
+                closeButton: false,
+            });
+
+            await resendVerificationCode(email);
+
+            toast.update(toastId, {
+                render: 'Nouveau code envoyé avec succès !',
+                type: 'success',
+                isLoading: false,
+                autoClose: 3000
+            });
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Échec de l'envoi du code");
+            setResendDisabled(false);
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Validate OTP input
-        if (!otp) {
-            setError('Please enter the OTP code.');
-            return;
-        }
-
-        const jsonData = {
-            "code": otp
-        };
-
+        const verificationCode = code.join("");
         try {
-            const response = await axios.post('http://localhost:3000/api/verify-email', jsonData);
-            if (response.data.success) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Your email has been verified.',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                }).then(() => {
-                    navigate('/login'); // Redirect to home or another page after successful verification
-                });
-            } else {
-                setError('Invalid OTP code. Please try again.');
-            }
+            const toastId = toast.loading('Vérification en cours...', {
+                position: "top-center",
+                autoClose: false,
+                closeButton: false,
+            });
+            await verifyEmail(verificationCode);
+            toast.update(toastId, {
+                render: 'Vérification réussie !',
+                type: 'success',
+                isLoading: false,
+                autoClose: 3000,
+                closeButton: true,
+                hideProgressBar: false,
+            });
+            setTimeout(() => navigate('/login'), 1500);
         } catch (error) {
-            console.error('Error verifying OTP:', error);
-            setError('An error occurred while verifying the OTP. Please try again later.');
+            toast.error(error.response?.data?.message || 'Code de vérification incorrect', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+            });
         }
     };
 
+    // Compte à rebours pour le renvoi de code
+    useEffect(() => {
+        let timer;
+        if (resendDisabled && countdown > 0) {
+            timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+        } else if (countdown === 0) {
+            setResendDisabled(false);
+        }
+        return () => clearTimeout(timer);
+    }, [countdown, resendDisabled]);
+
+    // Auto-soumission quand tous les champs sont remplis
+    useEffect(() => {
+        if (code.every((digit) => digit !== "")) {
+            handleSubmit(new Event("submit"));
+        }
+    }, [code]);
+
     return (
-        <>
-        <Header></Header>
-        <div className="d-flex justify-content-center align-items-center vh-100" style={{ backgroundColor: '#f8f9fa' }}>
-            <div className="bg-white p-5 rounded shadow" style={{ width: '400px' }}>
-                <h2 className="text-center mb-4" style={{ color: '#553CDF' }}>Verify Your Email</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group mb-4">
-                        <label htmlFor="otp">Enter OTP Code:</label>
-                        <input
-                            type="text"
-                            id="otp"
-                            value={otp}
-                            onChange={handleInputChange}
-                            required
-                            placeholder="Enter your OTP code"
-                            className="form-control"
-                            style={{ borderColor: '#553CDF' }} // Bordure du champ
-                        />
-                        {error && <p className="text-danger mt-2">{error}</p>}
+        <div className="email-verification-container">
+            <motion.div
+                initial={{ opacity: 0, y: -50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="email-verification-card"
+            >
+                <h2 className="title">Vérification de l'email</h2>
+                <p className="instruction">
+                    Entrez le code à 6 chiffres envoyé à <strong>{email}</strong>
+                </p>
+
+                <form onSubmit={handleSubmit} className="verification-form">
+                    <div className="code-inputs">
+                        {code.map((digit, index) => (
+                            <input
+                                key={index}
+                                ref={(el) => (inputRefs.current[index] = el)}
+                                type="text"
+                                maxLength="1"
+                                value={digit}
+                                onChange={(e) => handleChange(index, e.target.value)}
+                                onKeyDown={(e) => handleKeyDown(index, e)}
+                                className="code-input"
+                            />
+                        ))}
                     </div>
-                    <button
+
+                    <p className="resend-message">
+                        Vous n'avez pas reçu de code ?{' '}
+                        <button
+                            type="button"
+                            onClick={handleResendCode}
+                            disabled={resendDisabled}
+                            className="resend-link"
+                        >
+                            {resendDisabled ? `Renvoyer (${countdown}s)` : 'Renvoyer le code'}
+                        </button>
+                    </p>
+
+                    {error && <p className="error-message">{error}</p>}
+
+                    <motion.button
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
                         type="submit"
-                        className="btn"
-                        style={{
-                            backgroundColor: '#553CDF',
-                            color: 'white',
-                            width: '100%',
-                            height: '40px',
-                            border: 'none',
-                            borderRadius: '5px'
-                        }}
+                        disabled={isLoading || code.some((digit) => !digit)}
+                        className="verify-button"
                     >
-                        Verify
-                    </button>
+                        {isLoading ? (
+                            <>
+                                <span className="spinner"></span>
+                                Vérification...
+                            </>
+                        ) : (
+                            "Vérifier l'email"
+                        )}
+                    </motion.button>
                 </form>
-            </div>
-            <div className="col-lg-6">
-              <div className="contact-thumbnail-login-p mt--1">
-                <img src="assets/images/auth/login2.png" width={600} alt="login-form" />
-              </div>
-            </div>
+            </motion.div>
+            <ToastContainer />
         </div>
-        </>
     );
 };
 
-export default VerifiedEmail;
+export default EmailVerificationPage;
