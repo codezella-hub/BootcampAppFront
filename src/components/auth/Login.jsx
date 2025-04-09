@@ -147,13 +147,18 @@ export default function Login() {
 
                       </div>
                       <div className="google" onClick={github}>
-                        <img src="assets/images/contact/07.png" alt="Apple" />
+
+                        <img
+                            src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                            alt="GitHub"
+                            style={{width: "30px", height: "30px"}} // ajuste selon le besoin
+                        /> Github
                       </div>
                       <div className="google">
-                        <img src="/assets/images/auth/faceid.png" width={24} alt="FaceID" />
+                        <img src="/assets/images/auth/faceid.png" width={24} alt="FaceID"/>
                       </div>
                     </div>
-                
+
                     <p>
                       Don't Have an account? <Link to="/register">Register</Link>
                     </p>

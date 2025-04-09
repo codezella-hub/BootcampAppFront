@@ -36,6 +36,9 @@ function App() {
 
     return children;
   };
+
+
+
   const RedirectAuthenticatedUser = ({ children }) => {
     const { isAuthenticated, user } = useAuthStore();
   

@@ -314,8 +314,8 @@ function Header() {
                
             ) : (
               <>
-                      <a href="registration.html" className="rts-btn btn-primary"><Link to="/login">Sign In</Link></a>
-                      <a href="registration.html" className="rts-btn btn-primary"><Link to="/register">Sign Up</Link></a>
+                     <Link className="rts-btn btn-primary" to="/login">Sign In</Link>
+                      <Link className="rts-btn btn-primary" to="/register">Sign Up</Link>
                       </>
             )}
                                     </div>
