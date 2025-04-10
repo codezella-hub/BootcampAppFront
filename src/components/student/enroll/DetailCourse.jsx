@@ -9,15 +9,40 @@ function DetailCourse() {
     const { id } = useParams(); // Get the category ID from the URL
     const navigate = useNavigate();
     const [course, setCourse] = useState({});
+    const [courseOrder, setCourseOrder] = useState({});
     const [ListSubCourse, setSubCourse] = useState([]);
     const [ListVideos, setListVideos] = useState([]);
     const [subCourseId, setSubCourseId] = useState(null);
     const [user, setUser] = useState({});
     const [loadingVideos, setLoadingVideos] = useState(false);
+    const [isPurchased, setIsPurchased] = useState(false);
+    const [loadingPurchaseCheck, setLoadingPurchaseCheck] = useState(true);
+
     const staticUserId = "67acb60b2bdf783f2a130f4b"; // Hardcoded static user ID
+    const staticReceiverId = "67eaf437c7bb7a0c6758b159"; // Add this line
 
     useEffect(() => {
         document.title = "Detail Course";
+
+        // Updated API call with both user ID and course ID
+        axios.get(`/api/paypal/purchased-course/${staticUserId}/${id}`)
+            .then((res) => {
+                // If request succeeds, user has purchased the course
+                setCourseOrder(res.data);
+                setIsPurchased(true);
+            })
+            .catch((err) => {
+                // Handle 404 as not purchased, log other errors
+                if (err.response?.status === 404) {
+                    setIsPurchased(false);
+                } else {
+                    console.error("Error checking purchase:", err);
+                    setIsPurchased(false);
+                }
+            })
+            .finally(() => {
+                setLoadingPurchaseCheck(false);
+            });
 
         // Fetch course details
         axios.get(`/api/course/${id}`)
@@ -62,8 +87,8 @@ function DetailCourse() {
         }
     }, [subCourseId]); // Runs when `subCourseId` updates
 
-      // Function to fetch videos when a subcourse is clicked
-      const fetchVideos = (selectedSubCourseId) => {
+    // Function to fetch videos when a subcourse is clicked
+    const fetchVideos = (selectedSubCourseId) => {
         setLoadingVideos(true); // Show loading state
 
         axios.get(`/api/getVideosBySubCourse/${selectedSubCourseId}`)
@@ -165,6 +190,105 @@ function DetailCourse() {
             });
         });
     };
+
+  // Update the renderPurchaseButtons function
+  const renderPurchaseButtons = () => {
+    if (loadingPurchaseCheck) {
+        return (
+            <button className="rts-btn btn-primary" disabled>
+                <div className="spinner-border spinner-border-sm" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </button>
+        );
+    }
+
+    if (isPurchased) {
+        return <button className="rts-btn btn-primary">Course Enrolled</button>;
+    }
+
+    return (
+        <>
+            <button 
+                onClick={handlePurchase} 
+                className="rts-btn btn-primary"
+                disabled={!course.price}
+            >
+                Purchase Course (${course.price})
+            </button>
+            <button className="rts-btn btn-border">Watch Preview</button>
+        </>
+    );
+};
+
+const handlePurchase = () => {
+    Swal.fire({
+        title: 'Confirm Purchase',
+        html: `
+            <div style="text-align: left">
+                <p>You're purchasing:</p>
+                <h4>${course.title}</h4>
+                <p>Price: $${course.price}</p>
+            </div>
+        `,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Proceed to PayPal',
+        cancelButtonText: 'Cancel',
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !Swal.isLoading(),
+        preConfirm: () => {
+            return axios.post('/api/paypal/pay', {
+                amount: course.price,
+                userId: staticUserId,
+                courseId: id,
+                receiverId: staticReceiverId
+            })
+            .then(response => {
+                if (!response.data.approvalUrl) {
+                    throw new Error('No approval URL received');
+                }
+                return response.data.approvalUrl;
+            })
+            .catch(error => {
+                Swal.showValidationMessage(
+                    error.response?.data?.error || 'Payment initiation failed'
+                );
+                return null;
+            });
+        }
+    }).then((result) => {
+        if (result.isConfirmed && result.value) {
+            // Open PayPal in a new tab
+            window.open(result.value, '_blank');
+            // Poll for payment completion
+            checkPaymentStatus();
+        }
+    });
+};
+
+const checkPaymentStatus = () => {
+    const paymentCheckInterval = setInterval(() => {
+        axios.get(`/api/paypal/purchased-course/${staticUserId}/${id}`)
+            .then(() => {
+                clearInterval(paymentCheckInterval);
+                setIsPurchased(true);
+                Swal.fire('Success!', 'Payment completed successfully!', 'success');
+            })
+            .catch(() => {
+                // Continue polling until timeout
+            });
+    }, 3000); // Check every 3 seconds
+
+    // Timeout after 2 minutes
+    setTimeout(() => {
+        clearInterval(paymentCheckInterval);
+        Swal.fire('Timeout', 'Payment verification timed out', 'warning');
+    }, 120000);
+};
+
+
+    
     return (
         <div>
             <Header />
@@ -188,7 +312,7 @@ function DetailCourse() {
                     <div className="row g-5">
                         <div className="col-lg-8 order-cl-1 order-lg-1 order-md-2 order-sm-2 order-2">
                             <div className="thumbnail mb--30" style={{ position: 'relative' }}>
-                                <img src={`http://localhost:3000${course.courseImage}`} style={{ width: "900px", height: "500px", objectFit: "cover" }}/>
+                                <img src={`http://localhost:3000${course.courseImage}`} style={{ width: "900px", height: "500px", objectFit: "cover" }} />
                                 <div className="vedio-icone">
                                     <a className="video-play-button play-video popup-video" href="https://www.youtube.com/watch?v=ezbJwaLmOeM">
                                         <span />
@@ -223,18 +347,18 @@ function DetailCourse() {
                             <div className="course-content-wrapper-main mt--40">
                                 <h5 className="title">Course Content</h5>
                                 {/* single */}
-      
+
                                 {ListSubCourse.length > 0 ? (
                                     ListSubCourse.map(subCourse => (
                                         <div key={subCourse._id} className="accordion mt--30" id={`accordion-${subCourse._id}`}>
                                             <div className="accordion-item">
                                                 <h2 className="accordion-header" id={`heading-${subCourse._id}`}>
-                                                    <button 
-                                                        className={`accordion-button ${subCourseId === subCourse._id ? "" : "collapsed"}`} 
-                                                        type="button" 
-                                                        data-bs-toggle="collapse" 
-                                                        data-bs-target={`#collapse-${subCourse._id}`} 
-                                                        aria-expanded={subCourseId === subCourse._id ? "true" : "false"} 
+                                                    <button
+                                                        className={`accordion-button ${subCourseId === subCourse._id ? "" : "collapsed"}`}
+                                                        type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target={`#collapse-${subCourse._id}`}
+                                                        aria-expanded={subCourseId === subCourse._id ? "true" : "false"}
                                                         aria-controls={`collapse-${subCourse._id}`}
                                                         onClick={() => {
                                                             setSubCourseId(subCourse._id);
@@ -245,9 +369,9 @@ function DetailCourse() {
                                                         <span>3 Lectures . 9 min</span>
                                                     </button>
                                                 </h2>
-                                                <div 
-                                                    id={`collapse-${subCourse._id}`} 
-                                                    className={`accordion-collapse collapse ${subCourseId === subCourse._id ? "show" : ""}`} 
+                                                <div
+                                                    id={`collapse-${subCourse._id}`}
+                                                    className={`accordion-collapse collapse ${subCourseId === subCourse._id ? "show" : ""}`}
                                                     aria-labelledby={`heading-${subCourse._id}`}
                                                     data-bs-parent={`#accordion-${subCourse._id}`}
                                                 >
@@ -257,7 +381,7 @@ function DetailCourse() {
                                                         ) : (
                                                             ListVideos.length > 0 ? (
                                                                 ListVideos.map(video => (
-                                                                    <Link key={video._id} to={`/VideoDetail/${video._id}`}  className="play-vedio-wrapper">
+                                                                    <Link key={video._id} to={`/VideoDetail/${video._id}`} className="play-vedio-wrapper">
                                                                         <div className="left">
                                                                             <i className="fa-light fa-circle-play" />
                                                                             <span>{video.title}</span>
@@ -281,7 +405,7 @@ function DetailCourse() {
                                     <p>No subcourses available...</p>
                                 )}
                             </div>
-                           
+
                             <div className="rating-main-wrapper">
                                 {/* single-top-rating */}
                                 <div className="rating-top-main-wrapper">
@@ -393,8 +517,7 @@ function DetailCourse() {
                                         <i className="fa-light fa-clock" />
                                         <span>2 Day left at this price!</span>
                                     </div>
-                                    <a href="#" className="rts-btn btn-primary">Add To Cart</a>
-                                    <button  className="rts-btn btn-border">Watch Now</button>
+                                    {renderPurchaseButtons()}
                                     <div className="what-includes">
                                         <span className="m">30-Day Money-Back Guarantee</span>
                                         <h5 className="title">This course includes: </h5>
