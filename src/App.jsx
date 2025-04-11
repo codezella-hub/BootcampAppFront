@@ -46,7 +46,7 @@ import ListSubCourse from './components/trainer/subCourse/ListSubCourse';
 import UpdateSubCourse from './components/trainer/subCourse/UpdateSubCourse';
 import AddVideo from './components/trainer/video/AddVideo';
 import ListVideo from './components/trainer/video/ListVideo';
-import VideoDetail from './components/trainer/video/VideoDetail';
+import VideoDetail from './components/trainer/video/VideoDetail.jsx';
 import UpdateVideo from './components/trainer/video/UpdateVideo';
 import ListCourseStudent from './components/student/enroll/ListCourseStudent';
 import DetailCourse from './components/student/enroll/DetailCourse';
