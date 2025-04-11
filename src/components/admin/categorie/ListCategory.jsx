@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import Header from '../student/Header'
-import Footer from '../student/Footer'
+import Header from '../../student/Header'
+import Footer from '../../student/Footer'
 import Swal from 'sweetalert2';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import LeftSideBarAdmin from './LeftSideBarAdmin';
+import LeftSideBarAdmin from '../LeftSideBarAdmin';
 function ListCategory() {
 
     const [ListCategory, setCategory] = useState([]);
@@ -23,6 +23,31 @@ function ListCategory() {
                 console.error("Error fetching categories:", error);
             });
     }, []);
+
+    const handleDeleteCategory = (id) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#007C00',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Confirm!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.delete(`/api/deleteCategory/${id}`)
+                    .then(res => {
+                        if (res.status === 200) {
+                            Swal.fire('Deleted!', 'Category has been deleted.', 'success');
+                            setCategory(ListCategory.filter(category => category._id !== id));
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error!', 'Failed to delete category.', 'error');
+                    });
+            }
+        });
+    };
 
     return (
         <div>    {/* banner area start */}
@@ -67,20 +92,22 @@ function ListCategory() {
                                             ListCategory.map(category => (
                                                 <div className="single-certificates" key={category._id}>
                                                     <div className="left">
-                                                        <img  src={`http://localhost:3000${category.image}`} width={150} height={100} alt={category.title} />
+                                                        <img src={`http://localhost:3000${category.image}`} width={150} height={100} alt={category.title} />
                                                         <h5 className="title">Title : {category.title}</h5>
                                                     </div>
                                                     <div className="right">
-                        
-                                        <span>{category.createdAt}</span>
-                                        <span>{category.updatedAt}</span>
-                        
-                                                        <a href="#" className="edit-btn">
+
+                                                        <span>{category.createdAt}</span>
+                                                        <span>{category.updatedAt}</span>
+
+                                                        <Link to={`/UpdateCategory/${category._id}`} className="edit-btn">
                                                             <i className="fa-regular fa-pen-to-square" />
-                                                        </a>
-                                                        <a href="#" className="delete-btn">
+                                                        </Link>
+
+                                                        <a onClick={() => handleDeleteCategory(category._id)} className="delete-btn">
                                                             <i className="fa-regular fa-trash" />
                                                         </a>
+
                                                     </div>
                                                 </div>
                                             ))
