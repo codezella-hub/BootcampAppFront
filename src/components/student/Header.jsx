@@ -297,9 +297,20 @@ function Header() {
                       <li><a href="blog-details.html">Blog Details</a></li>
                     </ul>
                   </li>
-                  
-                    <a className="has-dropdown" href="/Forums">Forum</a>
-                  
+                  <li className="has-dropdown">
+                    <a className="nav-link" href="#">Forum</a>
+                    <ul className="submenu">
+                    <li><a href="/Forums">Forums</a></li>
+                    <li><a href="/Myforum">My Forum</a></li>
+                    </ul>
+                  </li>
+                  <li className="has-dropdown">
+                  <a className="nav-link" href="/posts">Jobs</a>
+                  <ul className="submenu">
+                    <li><a href="/MyPosts">my offers</a></li>
+                    <li><a href="/MyCandidats">my applications</a></li>
+                    </ul>
+                    </li>
                 </ul>
               </nav>
             </div>

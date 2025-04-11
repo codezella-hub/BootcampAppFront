@@ -1,5 +1,5 @@
 
-import Header from "./commun/Header.jsx";
+
 import Banner from "./commun/homeComponent/banner.jsx";
 import Brand from "./commun/homeComponent/brand.jsx";
 import About from "./commun/homeComponent/about.jsx";
@@ -11,11 +11,7 @@ import Facts from "./commun/homeComponent/facts.jsx";
 import Insctructors from "./commun/homeComponent/insctructors.jsx";
 import Feedback from "./commun/homeComponent/feedback.jsx";
 import Blog from "./commun/homeComponent/blog.jsx";
-import Cart from "./commun/Cart.jsx";
-import FooterPrinciple from "./commun/FooterPrinciple.jsx";
-import Header2 from "./commun/Header2.jsx";
-import BackTo from "./commun/backTo.jsx";
-import SearchBox from "./commun/SearchBox.jsx";
+
 
 
 function Home() {
