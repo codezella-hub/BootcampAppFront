@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { getOrders, deleteOrder, getCourseById } from "../../services/orderAPI";
+import { loadStripe } from "@stripe/stripe-js";
 import Header from "./Header";
 import Footer from "./Footer";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import axios from "axios";
 import "./Cart.css";
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 const Cart = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [couponCode, setCouponCode] = useState("");
+  const [processingCheckout, setProcessingCheckout] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -117,6 +122,32 @@ const Cart = () => {
       text: "Your coupon has been applied successfully!",
       icon: "success",
     });
+  };
+
+  const handleCheckout = async () => {
+    try {
+      setProcessingCheckout(true);
+      const stripe = await stripePromise;
+      if (!stripe) throw new Error('Stripe failed to load');
+
+      const response = await axios.post('/api/payment/create-checkout-session', {
+        items: orders.flatMap(order => order.items),
+        totalAmount: calculateTotal()
+      });
+
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: response.data.sessionId
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      Swal.fire('Error', 'Checkout failed. Please try again.', 'error');
+    } finally {
+      setProcessingCheckout(false);
+    }
   };
 
   return (
@@ -254,9 +285,13 @@ const Cart = () => {
                     </tbody>
                   </table>
                   <div className="proceed-to-checkout">
-                    <Link to="/checkout" className="rts-btn btn-primary">
-                      Proceed to checkout
-                    </Link>
+                    <button 
+                      onClick={handleCheckout}
+                      disabled={processingCheckout}
+                      className="rts-btn btn-primary"
+                    >
+                      {processingCheckout ? 'Processing...' : 'Proceed to checkout'}
+                    </button>
                   </div>
                 </div>
               </div>

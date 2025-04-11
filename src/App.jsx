@@ -8,10 +8,12 @@ import StudentEnrollCourse from "./components/student/StudentEnrollCourse";
 import AddCategory from "./components/admin/AddCategory";
 import ForgetPassword from "./components/auth/ForgetPassword";
 import Payment from "./components/payment/Payment";
+import Success from "./components/payment/success";
+import Cancel from "./components/payment/cancel";
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
-  const userId = "USER_ID_HERE"; 
+  const userId = "USER_ID_HERE";
 
   return (
     <Router>
@@ -24,6 +26,8 @@ function App() {
         <Route path="/student/enroll-course" element={<StudentEnrollCourse />} />
         <Route path="/cart" element={<Cart userId={userId} cartItems={cartItems} />} />
         <Route path="/checkout" element={<Payment cartItems={cartItems} />} />
+        <Route path="/success" element={<Success />} />
+        <Route path="/cancel" element={<Cancel />} />
       </Routes>
     </Router>
   );
