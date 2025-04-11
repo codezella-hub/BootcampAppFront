@@ -56,15 +56,12 @@ function App() {
         {/* Default route to the login page */}
         <Route path="/" element={<GlobalInterface />} >
           <Route index element={<Home />} />
+
         </Route>
 
         <Route path='/dashboard' element={<DashboardInterface />} >
 
-          <Route index element={
-
-            <MyProfile />
-
-          } />
+          <Route index element={<MyProfile />} />
           
         </Route>
         <Route path='/profile' element={
