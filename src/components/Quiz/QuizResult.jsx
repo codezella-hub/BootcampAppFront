@@ -12,12 +12,13 @@ const QuizResult = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                console.log(responseId) ;
+                console.log("Response ID:", responseId);
                 const respRes = await responseApi.getResponseById(responseId);
+                console.log("Response Data:", respRes.data);
                 setResponse(respRes.data);
 
-
                 const quizRes = await quizApi.getQuizById(respRes.data.quiz_id);
+                console.log("Quiz Data:", quizRes.data);
                 setQuiz(quizRes.data);
             } catch (err) {
                 console.error("Error loading result:", err);
@@ -29,7 +30,8 @@ const QuizResult = () => {
     if (!quiz || !response) return <p>Loading result...</p>;
 
     const getUserAnswer = (qId) => {
-        return response.answers.find((a) => a.question_id === qId);
+        const ans = response.answers.find((a) => a.question_id === qId);
+        return ans || { question_id: qId, selected_option: "None", is_correct: false };
     };
 
     return (
@@ -39,13 +41,13 @@ const QuizResult = () => {
             <p><strong>Status:</strong> {response.isPassed ? "✅ Passed" : "❌ Failed"}</p>
 
             {quiz.questions.map((q, i) => {
-                const userAns = getUserAnswer(q.question_id);
+                const userAns = getUserAnswer(q._id);
                 const isCorrect = userAns?.is_correct;
                 const selected = userAns?.selected_option || "None";
 
                 return (
                     <div
-                        key={q.question_id}
+                        key={q._id}
                         style={{
                             border: `2px solid ${isCorrect ? "green" : "red"}`,
                             padding: "20px",
