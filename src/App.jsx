@@ -63,7 +63,12 @@ import SubCoursesByCourseAdmin from './components/admin/subCourse/SubCoursesByCo
 import DetailCourseTrainer from './components/trainer/course/DetailCourseTrainer';
 import VideoPopUp from './components/trainer/video/VideoPopUp';
 import Code from './components/student/code/Code';
-
+import Notfound  from "./Interfaces/Notfound.jsx";
+import QuizCreate from "./components/Quiz/QuizCreate.jsx";
+import QuizUpdate from "./components/Quiz/QuizUpdate.jsx";
+import QuizList from "./components/Quiz/QuizList.jsx";
+import QuizResult from "./components/Quiz/QuizResult.jsx";
+import TakeQuiz from "./components/Quiz/TakeQuiz.jsx";
 function App() {
   const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, user } = useAuthStore();
@@ -172,6 +177,22 @@ function App() {
         <Route path="/CandidatDetailsEntreprise/:id" element={<CandidatDetailsEntreprise />} />
         <Route path="/MyCandidats" element={<MyCandidats />} />
         <Route path="/updateCandidat/:id" element={<UpdateCandidat />} />
+        {/* Quiz Routes */}
+        <Route path='/quiz-create' element={<DashboardInterface />} >
+          <Route index element={<QuizCreate />} />
+        </Route>
+        <Route path='/quizUpdate/:id' element={<DashboardInterface />} >
+          <Route index element={<QuizUpdate />} />
+        </Route>
+        <Route path='/quizList' element={<DashboardInterface />} >
+          <Route index element={<QuizList />} />
+        </Route>
+
+        <Route path={"/quizResult/:responseId"} element={<QuizResult/>} />
+        <Route path={"/quiz/:id"} element={<TakeQuiz/>} />
+
+        {/* Not found  Route */}
+        <Route path={"/*"} element={<Notfound/>} />
       </Routes>
     </Router>
   );
