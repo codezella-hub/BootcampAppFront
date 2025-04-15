@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import quizApi from "../../services/quizapi";
-import responseApi from "../../services/responseapi";
+import responseApi from "../../services/responseApi";
 import * as blazeface from "@tensorflow-models/blazeface";
 import "@tensorflow/tfjs";
 
