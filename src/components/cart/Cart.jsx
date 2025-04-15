@@ -14,6 +14,7 @@ const Cart = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [couponCode, setCouponCode] = useState("");
+  const [discountPercent, setDiscountPercent] = useState(0);
   const [processingCheckout, setProcessingCheckout] = useState(false);
 
   useEffect(() => {
@@ -39,11 +40,7 @@ const Cart = () => {
 
               if (!courseId) {
                 console.warn("Missing courseId in item:", item);
-                return {
-                  ...item,
-                  courseTitle,
-                  courseImage,
-                };
+                return { ...item, courseTitle, courseImage };
               }
 
               try {
@@ -110,41 +107,55 @@ const Cart = () => {
   const calculateSubtotal = (items = []) =>
     items.reduce((total, item) => total + (item?.price || 0) * (item?.quantity || 1), 0);
 
-  const calculateTotal = () =>
+  const getRawTotal = () =>
     orders.reduce((total, order) => total + calculateSubtotal(order?.items || []), 0);
+
+  const calculateTotal = () => {
+    const subtotal = getRawTotal();
+    const discount = (discountPercent / 100) * subtotal;
+    return subtotal - discount;
+  };
 
   const handleApplyCoupon = (e) => {
     e.preventDefault();
-    if (!couponCode.trim()) return;
+    const trimmed = couponCode.trim();
 
-    Swal.fire({
-      title: "Coupon Applied",
-      text: "Your coupon has been applied successfully!",
-      icon: "success",
-    });
+    const validCoupons = {
+      HelloWorld: 10,
+      WELCOME25: 25,
+      STUDENT50: 50,
+    };
+
+    if (!trimmed || !validCoupons[trimmed]) {
+      setDiscountPercent(0);
+      Swal.fire("Invalid Coupon", "This coupon does not exist.", "error");
+      return;
+    }
+
+    const discount = validCoupons[trimmed];
+    setDiscountPercent(discount);
+    Swal.fire("Coupon Applied!", `You received a ${discount}% discount.`, "success");
   };
 
   const handleCheckout = async () => {
     try {
       setProcessingCheckout(true);
       const stripe = await stripePromise;
-      if (!stripe) throw new Error('Stripe failed to load');
+      if (!stripe) throw new Error("Stripe failed to load");
 
-      const response = await axios.post('/api/payment/create-checkout-session', {
-        items: orders.flatMap(order => order.items),
-        totalAmount: calculateTotal()
+      const response = await axios.post("/api/payment/create-checkout-session", {
+        items: orders.flatMap((order) => order.items),
+        couponCode: couponCode.trim(),
       });
 
       const { error } = await stripe.redirectToCheckout({
-        sessionId: response.data.sessionId
+        sessionId: response.data.sessionId,
       });
 
-      if (error) {
-        throw new Error(error.message);
-      }
+      if (error) throw new Error(error.message);
     } catch (error) {
-      console.error('Error during checkout:', error);
-      Swal.fire('Error', 'Checkout failed. Please try again.', 'error');
+      console.error("Error during checkout:", error);
+      Swal.fire("Error", "Checkout failed. Please try again.", "error");
     } finally {
       setProcessingCheckout(false);
     }
@@ -163,9 +174,7 @@ const Cart = () => {
                 <div className="pagination-wrapper">
                   <Link to="/">Home</Link>
                   <i className="fa-regular fa-chevron-right"></i>
-                  <Link to="/cart" className="active">
-                    Cart
-                  </Link>
+                  <Link to="/cart" className="active">Cart</Link>
                 </div>
               </div>
             </div>
@@ -204,38 +213,20 @@ const Cart = () => {
                         return (
                           <tr key={`${order?._id}-${courseIdStr}`}>
                             <td className="product-remove">
-                              <button
-                                onClick={() => handleDeleteOrder(order?._id)}
-                                className="remove"
-                                aria-label="Remove this item"
-                              >
-                                <svg
-                                  viewBox="0 0 200 200"
-                                  width="18"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path d="M114,100l49-49a9.9,9.9,0,0,0-14-14L100,86,51,37A9.9,9.9,0,0,0,37,51l49,49L37,149a9.9,9.9,0,0,0,14,14l49-49,49,49a9.9,9.9,0,0,0,14-14Z"></path>
-                                </svg>
+                              <button onClick={() => handleDeleteOrder(order?._id)} className="remove" aria-label="Remove this item">
+                                ✕
                               </button>
                             </td>
                             <td className="product-thumbnail">
                               <Link to={`/course/${courseIdStr}`}>
-                                <img
-                                  src={item?.courseImage || "/assets/images/shop/01.jpg"}
-                                  alt={item?.courseTitle || "Course"}
-                                  className="cart-image"
-                                />
+                                <img src={item?.courseImage || "/assets/images/shop/01.jpg"} alt={item?.courseTitle || "Course"} className="cart-image" />
                               </Link>
                             </td>
                             <td className="product-name">
-                              <Link to={`/course/${courseIdStr}`}>
-                                {item?.courseTitle || "Untitled Course"}
-                              </Link>
+                              <Link to={`/course/${courseIdStr}`}>{item?.courseTitle || "Untitled Course"}</Link>
                             </td>
                             <td className="product-price">
-                              <span className="amount">
-                                TND {(item?.price || 0).toFixed(2)}
-                              </span>
+                              <span className="amount">TND {(item?.price || 0).toFixed(2)}</span>
                             </td>
                             <td className="product-quantity">{item?.quantity || 1}</td>
                             <td className="product-subtotal">
@@ -249,8 +240,8 @@ const Cart = () => {
                     )}
                     <tr>
                       <td colSpan="6" className="actions">
-                        <div className="coupon-section">
-                          <form onSubmit={handleApplyCoupon} className="coupon">
+                      <div className="coupon-section" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                      <form onSubmit={handleApplyCoupon} className="coupon">
                             <input
                               type="text"
                               name="coupon_code"
@@ -276,21 +267,30 @@ const Cart = () => {
                     <tbody>
                       <tr className="cart-subtotal">
                         <th>Subtotal</th>
-                        <td>TND {calculateTotal().toFixed(2)}</td>
+                        <td>TND {getRawTotal().toFixed(2)}</td>
                       </tr>
+                      {discountPercent > 0 && (
+                        <tr className="cart-discount">
+                          <th style={{ color: "red" }}>Discount</th>
+                          <td style={{ color: "red" }}>
+                            -{discountPercent}% (
+                            TND {(getRawTotal() * discountPercent / 100).toFixed(2)})
+                          </td>
+                        </tr>
+                      )}
                       <tr className="order-total">
                         <th>Total</th>
                         <td>TND {calculateTotal().toFixed(2)}</td>
                       </tr>
                     </tbody>
                   </table>
-                  <div className="proceed-to-checkout">
-                    <button 
+<div className="proceed-to-checkout" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                    <button
                       onClick={handleCheckout}
                       disabled={processingCheckout}
                       className="rts-btn btn-primary"
                     >
-                      {processingCheckout ? 'Processing...' : 'Proceed to checkout'}
+                      {processingCheckout ? "Processing..." : "Proceed to checkout"}
                     </button>
                   </div>
                 </div>
