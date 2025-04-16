@@ -76,6 +76,10 @@ const TakeQuiz = () => {
         const payload = {
             user_id,
             quiz_id: id,
+            course_id: quiz.courseId,      // ✅ Add this
+            subCourse_id: quiz.subCourseId, // ✅ Add this
+
+
             answers: evaluatedAnswers.map((a) => {
                 const answerString = a.selected_options.join(", ") || "No Answer";
                 return {
@@ -86,7 +90,6 @@ const TakeQuiz = () => {
             }),
             score,
             isPassed,
-            attemptNumber: 1,
             timeTaken,
         };
 
@@ -95,10 +98,10 @@ const TakeQuiz = () => {
         try {
             console.log("Payload being sent to the backend:", payload);
             const res = await responseApi.submitResponse(payload);
-            //setSubmitted(true);
+            setSubmitted(true);
             console.log("Response from backend:", res.data);
             //alert("Your answers have been submitted successfully!");
-            //navigate(`/quizResult/${res.data._id}`);
+//navigate(`/quizResult/${res.data._id}`);
         } catch (err) {
             console.error("Submit error:", err);
             alert("Failed to submit your answers.");

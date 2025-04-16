@@ -178,7 +178,7 @@ function App() {
         <Route path="/MyCandidats" element={<MyCandidats />} />
         <Route path="/updateCandidat/:id" element={<UpdateCandidat />} />
         {/* Quiz Routes */}
-        <Route path='/quiz-create' element={<DashboardInterface />} >
+        <Route path='/quiz-create/:courseId/:subCourseId' element={<DashboardInterface />} >
           <Route index element={<QuizCreate />} />
         </Route>
         <Route path='/quizUpdate/:id' element={<DashboardInterface />} >

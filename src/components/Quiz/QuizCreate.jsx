@@ -1,20 +1,25 @@
 import { useState } from "react";
 
 import quizApi from "../../services/quizapi.js";
+import { useParams } from "react-router-dom";
 
+import { useAuthStore } from '../../store/authStore.js';
 const primaryColor = "#553CDF"; // purple
 const lightGray = "#f4f4f4";
 
+
 const QuizCreate = () => {
+    const { courseId, subCourseId } = useParams();
+    const { user } = useAuthStore();
     const [quiz, setQuiz] = useState({
         title: "",
-        subCourseId: "",
-        courseId: "",
+        subCourseId: subCourseId,
+        courseId: courseId,
         difficulty: "",
         totalQuestions: 0,
         maxAttempts: 0,
         timeLimit: 0,
-        createdBy: "",
+        createdBy: user._id,
         questions: [],
     });
 
@@ -73,6 +78,7 @@ const QuizCreate = () => {
     const submitQuiz = async (e) => {
         e.preventDefault();
 
+        // Validate quiz data
         const payload = { ...quiz, questions };
 
         try {
@@ -125,15 +131,6 @@ const QuizCreate = () => {
                                             </select>
                                         </label>
 
-                                        <label style={{ border: `2px solid ${primaryColor}`, padding: "12px", borderRadius: "8px", backgroundColor: lightGray }}>Max Attempts:
-                                            <input
-                                                type="number"
-                                                name="maxAttempts"
-                                                value={quiz.maxAttempts}
-                                                onChange={handleQuizChange}
-                                                style={{ width: "100%", padding: "10px", marginTop: "5px", border: `1px solid ${primaryColor}`, borderRadius: "6px" }}
-                                            />
-                                        </label>
 
                                         {questions.map((question, qIndex) => (
                                             <div key={question.question_id} style={{ border: `2px solid ${primaryColor}`, padding: "20px", position: "relative", borderRadius: "12px", backgroundColor: lightGray }}>
