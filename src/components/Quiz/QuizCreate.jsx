@@ -78,6 +78,28 @@ const QuizCreate = () => {
     const submitQuiz = async (e) => {
         e.preventDefault();
 
+        if (!quiz.title.trim() || !quiz.difficulty || !quiz.timeLimit) {
+            return alert("Veuillez remplir tous les champs du quiz.");
+        }
+
+        // Vérification des questions
+        for (let i = 0; i < questions.length; i++) {
+            const q = questions[i];
+
+            if (!q.text.trim()) {
+                return alert(`Veuillez saisir l'énoncé de la question ${i + 1}`);
+            }
+
+            const nonEmptyOptions = q.options.filter(opt => opt.trim() !== "");
+            if (nonEmptyOptions.length < 2) {
+                return alert(`La question ${i + 1} doit contenir au moins 2 options valides.`);
+            }
+
+            if (!q.correct || !nonEmptyOptions.includes(q.correct)) {
+                return alert(`Veuillez choisir une réponse correcte valide pour la question ${i + 1}.`);
+            }
+        }
+
         // Validate quiz data
         const payload = { ...quiz, questions };
 
@@ -131,6 +153,15 @@ const QuizCreate = () => {
                                             </select>
                                         </label>
 
+                                        <label style={{ border: `2px solid ${primaryColor}`, padding: "12px", borderRadius: "8px", backgroundColor: lightGray }}> timeLimit:
+                                            <input
+                                                type="number"
+                                                name="timeLimit"
+                                                value={quiz.timeLimit}
+                                                onChange={handleQuizChange}
+                                                style={{ width: "100%", padding: "10px", marginTop: "5px", border: `1px solid ${primaryColor}`, borderRadius: "6px" }}
+                                            />
+                                        </label>
 
                                         {questions.map((question, qIndex) => (
                                             <div key={question.question_id} style={{ border: `2px solid ${primaryColor}`, padding: "20px", position: "relative", borderRadius: "12px", backgroundColor: lightGray }}>

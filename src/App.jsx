@@ -203,6 +203,7 @@ function App() {
         {/* Quiz Routes */}
         <Route path='/quiz-create/:courseId/:subCourseId' element={<DashboardInterface />} >
           <Route index element={<QuizCreate />} />
+
         </Route>
         <Route path='/quizUpdate/:id' element={<DashboardInterface />} >
           <Route index element={<QuizUpdate />} />

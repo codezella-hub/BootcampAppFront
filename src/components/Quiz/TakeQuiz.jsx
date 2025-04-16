@@ -4,8 +4,10 @@ import quizApi from "../../services/quizapi";
 import responseApi from "../../services/responseApi";
 import * as blazeface from "@tensorflow-models/blazeface";
 import "@tensorflow/tfjs";
+import { useAuthStore } from '../../store/authStore.js';
 
 const TakeQuiz = () => {
+    const { user } = useAuthStore();
     const { id } = useParams();
     const [quiz, setQuiz] = useState(null);
     const [answers, setAnswers] = useState([]);
@@ -13,7 +15,7 @@ const TakeQuiz = () => {
     const [submitted, setSubmitted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const navigate = useNavigate();
-    const user_id = "student123";
+    const user_id = user._id; // Assuming user._id is the user ID you want to use
 
     useEffect(() => {
         const fetchQuiz = async () => {
@@ -100,8 +102,8 @@ const TakeQuiz = () => {
             const res = await responseApi.submitResponse(payload);
             setSubmitted(true);
             console.log("Response from backend:", res.data);
-            //alert("Your answers have been submitted successfully!");
-//navigate(`/quizResult/${res.data._id}`);
+            alert("Your answers have been submitted successfully!");
+            navigate(`/quizResult/${res.data._id}`);
         } catch (err) {
             console.error("Submit error:", err);
             alert("Failed to submit your answers.");
