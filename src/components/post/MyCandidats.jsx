@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import postApi from "../../services/postApi.js";
 import { Link } from "react-router-dom";
-import Header from "../student/Header.jsx";
-
+import Header from "../commun/Header.jsx";
+import { useAuthStore } from '../../store/authStore.js';
 const MyCandidats = () => {
+  const { user} = useAuthStore();
   const [candidats, setCandidats] = useState([]);
-  const userId = "67b8be03d74ad328bb66ccb6"; // ID user connecté (statique)
-
+ 
   useEffect(() => {
     const fetchCandidats = async () => {
       try {
         const res = await postApi.getAllCandidats();
-        const userCandidats = res.data.filter((candidat) => candidat.idUser === userId);
+        const userCandidats = res.data.filter((candidat) => candidat.idUser === user._id);
         setCandidats(userCandidats);
       } catch (err) {
         console.error("Erreur lors de la récupération des candidatures :", err);
