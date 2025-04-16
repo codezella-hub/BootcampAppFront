@@ -96,7 +96,7 @@ function ListVideo() {
                                                     <h5 className="title">{video.title}</h5>
                                                 </a>
                                             </div>
-                                            <Link to={`/VideoDetail/${video._id}`} className="rts-btn btn-primary with-arrow">Watch  <i className="fa-light fa-arrow-right" /></Link>
+                                            <Link to={`/VideoDetail/${video._id}/${video.subCourse._id}`} className="rts-btn btn-primary with-arrow">Watch  <i className="fa-light fa-arrow-right" /></Link>
                                             <button onClick={() => handleDeleteVideo(video._id)} className="rts-btn btn-border">Delete video</button>
                                         </div>
                                     ))

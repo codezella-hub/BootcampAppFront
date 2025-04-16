@@ -4,10 +4,8 @@ import Footer from '../../student/Footer';
 import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { useAuthStore } from '../../../store/authStore';
 
 function DetailCourse() {
-    const { user} = useAuthStore();
     const { id } = useParams(); // Get the category ID from the URL
     const navigate = useNavigate();
     const [course, setCourse] = useState({});
@@ -15,12 +13,12 @@ function DetailCourse() {
     const [ListSubCourse, setSubCourse] = useState([]);
     const [ListVideos, setListVideos] = useState([]);
     const [subCourseId, setSubCourseId] = useState(null);
-    const [userO, setUser] = useState({});
+    const [user, setUser] = useState({});
     const [loadingVideos, setLoadingVideos] = useState(false);
     const [isPurchased, setIsPurchased] = useState(false);
     const [loadingPurchaseCheck, setLoadingPurchaseCheck] = useState(true);
 
-    const staticUserId = user._id; // Hardcoded static user ID
+    const staticUserId = "67acb60b2bdf783f2a130f4b"; // Hardcoded static user ID
     const staticReceiverId = "67eaf437c7bb7a0c6758b159"; // Add this line
 
     useEffect(() => {
@@ -79,7 +77,7 @@ function DetailCourse() {
                 .then(res => {
                     if (res.status === 200) {
                         setListVideos(res.data);
-                        setUser(res.data[0].userO);
+                        setUser(res.data[0].user);
                         console.log(res.data);
                     }
                 })
@@ -575,8 +573,8 @@ const checkPaymentStatus = () => {
                                         <div className="body">
                                             <div className="author">
                                                 <img
-                                                    src={`http://localhost:3000${userO.image}`}
-                                                    alt={userO.name || "User Profile"}
+                                                    src={`http://localhost:3000${user.image}`}
+                                                    alt={user.name || "User Profile"}
                                                     style={{
                                                         width: "80px",
                                                         height: "80px",
@@ -585,7 +583,7 @@ const checkPaymentStatus = () => {
                                                     }}
                                                 />
 
-                                                <span>{userO.email}</span>
+                                                <span>{user.email}</span>
                                             </div>
                                         </div>
                                     </div>
