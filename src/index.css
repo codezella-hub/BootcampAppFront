@@ -1,0 +1,44 @@
+/* Modern Icon Button Styles */
+.modern-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    color: white;
+    background-color: #ffffff; /* Green for Details */
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    border: none;
+}
+
+.details-btn {
+    background-color: #4CAF50; /* Green */
+}
+
+.delete-btn {
+    background-color: #f44336; /* Red */
+}
+
+.pagination-btn {
+
+    color: white;
+    margin: 0 5px;
+}
+
+.pagination-btn.active {
+
+}
+
+.modern-btn-icon:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pagination-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
