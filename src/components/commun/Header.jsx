@@ -291,6 +291,23 @@ function Header() {
                                                         <li><a href="blog-details.html">Blog Details</a></li>
                                                     </ul>
                                                 </li>
+                                                {/* route forum */}
+                                                <li className="has-dropdown">
+                                                    <Link className="nav-link" to="/Forums">Forums</Link>
+                                                    <ul className="submenu">
+                                                        <li><Link to="/Forums">Forums</Link></li>
+                                                        <li><Link to="/Myforum">My Forum</Link></li>
+                                                    </ul>
+                                                </li>
+                                                {/* route post */}
+                                                <li className="has-dropdown">
+                                                    <Link className="nav-link" to="/posts">Jobs</Link>
+                                                    <ul className="submenu">
+                                                        <li><Link to="/posts">Find Job</Link></li>
+                                                        <li><Link to="/MyPosts">My Offers</Link></li>
+                                                        <li><Link to="/MyCandidats">My Applications</Link></li>
+                                                    </ul>
+                                                </li>
                                             </ul>
                                         </nav>
                                     </div>

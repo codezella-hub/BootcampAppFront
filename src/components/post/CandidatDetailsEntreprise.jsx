@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams ,useNavigate } from "react-router-dom";
 import postApi from "../../services/postApi.js";
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
 
 const CandidatDetailsEntreprise = () => {
-  const { id } = useParams();  // Récupère l'ID du candidat depuis l'URL
+  const { id } = useParams();  
   const [candidat, setCandidat] = useState(null); 
   const [post, setPost] = useState(null);
  
   const navigate = useNavigate();
-  // Récupère les détails de la candidature
+  
   useEffect(() => {
     const fetchCandidat = async () => {
       try {

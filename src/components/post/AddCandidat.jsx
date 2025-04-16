@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { useParams ,useNavigate} from "react-router-dom";
 import postApi from "../../services/postApi.js";
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
+import { useAuthStore } from '../../store/authStore.js';
 
 const AddCandidat = () => {
   const { postId } = useParams();
-
+  const { user} = useAuthStore();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    idUser: "67b8be03d74ad328bb66ccb6",
+    idUser: user._id,
     cv: null,
     diplome: null,
   });

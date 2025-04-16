@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import postApi from "../../services/postApi.js";
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
+import { useAuthStore } from '../../store/authStore.js';
 
 const UpdateCandidat = () => {
   const { id } = useParams(); // id du candidat
   const navigate = useNavigate();
-
+  const { user} = useAuthStore();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    idUser: "67b8be03d74ad328bb66ccb6",
+    idUser: user._id,
     cv: null,
     diplome: null,
   });
@@ -28,7 +29,7 @@ const UpdateCandidat = () => {
           name: data.name || "",
           email: data.email || "",
           phone: data.phone || "",
-          idUser: data.idUser || "67b8be03d74ad328bb66ccb6",
+          idUser: data.idUser || user._id,
           cv: null,
           diplome: null,
         });
