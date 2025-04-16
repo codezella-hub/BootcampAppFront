@@ -1,0 +1,35 @@
+.success-container, .cancel-container {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f9f9f9;
+  }
+  
+  .success-box, .cancel-box {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    display: inline-block;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  
+  .success-box h1, .cancel-box h1 {
+    color: #28a745; /* or red for cancel */
+  }
+  
+  .success-actions .btn-home,
+  .success-actions .btn-my-courses,
+  .cancel-actions .btn-retry,
+  .cancel-actions .btn-home {
+    margin: 1rem;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    background: #4CAF50;
+    color: #fff;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  
+  .cancel-actions .btn-retry {
+    background: #dc3545;
+  }
+  
