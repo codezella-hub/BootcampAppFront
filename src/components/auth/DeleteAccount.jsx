@@ -1,17 +1,39 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTriangleExclamation, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faTriangleExclamation, faTrashCan, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { toast } from "react-toastify";
+import { useAuthStore } from "../../store/authStore";
+import axios from "axios";
 
 function DeleteAccount() {
+    const { logout } = useAuthStore();
     const [isConfirming, setIsConfirming] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleDeleteClick = () => {
-        if (!isConfirming) {
-            setIsConfirming(true);
-            return;
+    const handleDeleteAccount = async () => {
+        setIsDeleting(true);
+        try {
+            const response = await axios.delete(
+                'http://localhost:3000/api/delete-account',
+                {
+                    withCredentials: true,
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            );
+
+            toast.success(response.data.message);
+            await logout();
+            window.location.href = '/'; // Redirect to home page after logout
+
+        } catch (error) {
+            console.error('Account deletion failed:', error);
+            toast.error(error.response?.data?.message || 'Failed to delete account');
+        } finally {
+            setIsDeleting(false);
+            setIsConfirming(false);
         }
-        // Ajoutez ici la logique de suppression du compte
-        alert("Account deletion confirmed - this action is irreversible");
     };
 
     return (
@@ -41,20 +63,28 @@ function DeleteAccount() {
                                 <button
                                     onClick={() => setIsConfirming(false)}
                                     className="rts-btn btn-secondary"
+                                    disabled={isDeleting}
                                 >
                                     Cancel
                                 </button>
                                 <button
-                                    onClick={handleDeleteClick}
+                                    onClick={handleDeleteAccount}
                                     className="rts-btn btn-danger"
+                                    disabled={isDeleting}
                                 >
-                                    <FontAwesomeIcon icon={faTrashCan} /> Confirm Deletion
+                                    {isDeleting ? (
+                                        <FontAwesomeIcon icon={faSpinner} spin />
+                                    ) : (
+                                        <>
+                                            <FontAwesomeIcon icon={faTrashCan} /> Confirm Deletion
+                                        </>
+                                    )}
                                 </button>
                             </div>
                         </>
                     ) : (
                         <button
-                            onClick={handleDeleteClick}
+                            onClick={() => setIsConfirming(true)}
                             className="rts-btn btn-danger"
                         >
                             <FontAwesomeIcon icon={faTrashCan} /> Delete My Account

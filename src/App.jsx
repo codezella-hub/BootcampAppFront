@@ -41,6 +41,7 @@ import UpdateCandidat from './components/post/updateCandidat.jsx';
 import AddForum from "./components/Forum/addForum.jsx";
 import ForumList from "./components/Forum/ForumList.jsx";
 import ForumDetails from "./components/Forum/ForumDetails.jsx";
+import TwoFactorAuthVerify from "./components/auth/TwoFactorAuthVerify.jsx";
 
 
 
@@ -112,6 +113,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgetPassword />} />
         <Route path="/check-your-email" element={<CheckYourEmail />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/verify-two-factor" element={<TwoFactorAuthVerify />} />
 
         <Route path="/update" element={<UpdateProfileInterface />} />
         <Route path="/ListCategory" element={<ListCategory />} />
