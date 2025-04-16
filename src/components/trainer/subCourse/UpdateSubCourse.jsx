@@ -4,8 +4,10 @@ import Footer from '../../student/Footer';
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useAuthStore } from '../../../store/authStore';
 
 function UpdateSubCourse() {
+    const { user} = useAuthStore();
     const { id } = useParams(); // Get the subcourse ID from the URL
     const navigate = useNavigate();
     const [ListCourse, setCourse] = useState([]);
@@ -14,7 +16,7 @@ function UpdateSubCourse() {
         title: '',
         order: '',
         course: '',
-        user: '660a1b2c3d4e5f6a7b8c9d0e2' // Static user ID
+        user: user._id // Static user ID
     });
 
     useEffect(() => {

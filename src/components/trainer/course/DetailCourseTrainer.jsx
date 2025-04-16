@@ -4,17 +4,19 @@ import Footer from '../../student/Footer';
 import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useAuthStore } from '../../../store/authStore';
 
 function DetailCourseTrainer() {
+    const { user} = useAuthStore();
     const { id } = useParams(); // Get the category ID from the URL
     const navigate = useNavigate();
     const [course, setCourse] = useState({});
     const [ListSubCourse, setSubCourse] = useState([]);
     const [ListVideos, setListVideos] = useState([]);
     const [subCourseId, setSubCourseId] = useState(null);
-    const [user, setUser] = useState({});
+    const [userO, setUser] = useState({});
     const [loadingVideos, setLoadingVideos] = useState(false);
-    const [AuthUserId] = useState("67acb60b2bdf783f2a130f4b"); // Static auth user ID
+    const [AuthUserId] =user._id;
 
     useEffect(() => {
         document.title = "Detail Course";
@@ -24,7 +26,7 @@ function DetailCourseTrainer() {
             .then(res => {
                 if (res.status === 200) {
                     setCourse(res.data);
-                    setCurrentUserId(res.data.user._id)
+                    setCurrentUserId(res.data.userO._id)
                 }
             })
             .catch(error => {
@@ -53,7 +55,7 @@ function DetailCourseTrainer() {
                 .then(res => {
                     if (res.status === 200) {
                         setListVideos(res.data);
-                        setUser(res.data[0].user);
+                        setUser(res.data[0].userO);
                         console.log(res.data);
                     }
                 })
@@ -403,7 +405,7 @@ function DetailCourseTrainer() {
                                         <span>2 Day left at this price!</span>
                                     </div>
                                     // In your JSX where buttons are rendered:
-                                    {AuthUserId === course?.user?._id ? (
+                                    {AuthUserId === course?.userO?._id ? (
                                         <Link to={`/UpdateCourse/${course._id}`} className="rts-btn btn-primary">
                                             Update Course
                                         </Link>
@@ -469,8 +471,8 @@ function DetailCourseTrainer() {
                                         <div className="body">
                                             <div className="author">
                                                 <img
-                                                    src={`http://localhost:3000${user.image}`}
-                                                    alt={user.name || "User Profile"}
+                                                    src={`http://localhost:3000${userO.image}`}
+                                                    alt={userO.name || "User Profile"}
                                                     style={{
                                                         width: "80px",
                                                         height: "80px",
@@ -479,7 +481,7 @@ function DetailCourseTrainer() {
                                                     }}
                                                 />
 
-                                                <span>{user.email}</span>
+                                                <span>{userO.email}</span>
                                             </div>
                                         </div>
                                     </div>

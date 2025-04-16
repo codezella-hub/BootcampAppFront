@@ -4,12 +4,14 @@ import Footer from '../../student/Footer'
 import Swal from 'sweetalert2';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useAuthStore } from '../../../store/authStore';
 
 function UpdateCourseAdmin() {
     const { id } = useParams(); // Get the course ID from the URL
     const [ListCategory, setCategory] = useState([]);
     const navigate = useNavigate();
     const [errorlist, setError] = useState({});
+    const { user} = useAuthStore();
     const [courseInput, setCourse] = useState({
         title: '',
         description: '',
@@ -22,7 +24,7 @@ function UpdateCourseAdmin() {
         rating: '',
         subtitles: '',
         category: '',
-        user: '660a1b2c3d4e5f6a7b8c9d0e2' // Static user ID added here
+        user: user._id // Static user ID added here
     });
     const [picture, setPicture] = useState(null);
     const [imageName, setImageName] = useState(""); // Store selected image name

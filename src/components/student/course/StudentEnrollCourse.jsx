@@ -3,12 +3,13 @@ import Header from '../Header'
 import LeftSideBar from '../LeftSideBar'
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { useAuthStore } from '../../../store/authStore';
 
 function StudentEnrollCourse() {
-
+      const { user} = useAuthStore();
   const [ListCourses, setCourses] = useState([]);
   //const userId = localStorage.getItem("userId");
-   const userId = "67acb60b2bdf783f2a130f4b"; // Replace with the actual user ID you want to use
+   const userId = user._id; // Replace with the actual user ID you want to use
 
   useEffect(() => {
     document.title = "List of Enrolled Courses";
