@@ -5,8 +5,10 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import _ from 'lodash';
+import { useAuthStore } from '../../../store/authStore';
 
 function VideoDetail() {
+    const { user} = useAuthStore();
     const { id, subCourseId } = useParams();
     const [video, setVideo] = useState(null);
     const [ListVideo, setVideos] = useState([]);
@@ -20,7 +22,7 @@ function VideoDetail() {
     const [initialProgress, setInitialProgress] = useState(0);
     const initialPositionSet = useRef(false);
     // Static user ID for testing
-    const STATIC_USER_ID = '64f1b2c3e4b0d8f9c8f9e8f8';
+    const STATIC_USER_ID = user._id;
     // Fetch initial progress and set video time
     useEffect(() => {
        // Modify fetchInitialProgress

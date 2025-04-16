@@ -53,8 +53,12 @@ export default function Login() {
         position: "top-center"
       });
 
-      await login(data.email, data.password);
-
+     const result= await login(data.email, data.password);
+      if (result?.requires2FA) {
+        toast.dismiss(toastId);
+        navigate('/verify-two-factor'); // Redirection vers la page de vérification
+        return;
+      }
       toast.update(toastId, {
         render: 'Login successful!',
         type: 'success',

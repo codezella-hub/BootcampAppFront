@@ -10,13 +10,15 @@ axios.defaults.withCredentials = true;
 
 export const useAuthStore = create(
     persist(
-        (set) => ({
+        (set, get) => ({
             user: null,
             isAuthenticated: false,
             error: null,
             isLoading: false,
             isCheckingAuth: true,
             message: null,
+            requires2FA: false,  // Nouvel état pour la 2FA
+            tempUserId: null,
 
             signup: async (data) => {
                 set({ isLoading: true, error: null });
@@ -29,18 +31,68 @@ export const useAuthStore = create(
                 }
             },
 
+
             login: async (email, password) => {
-                set({ isLoading: true, error: null });
+                set({ isLoading: true, error: null, requires2FA: false });
                 try {
                     const response = await axios.post(`${API_URL}/login`, { email, password });
+
+                    // Si 2FA est requis
+                    if (response.data.requires2FA) {
+                        set({
+                            requires2FA: true,
+                            tempUserId: response.data.tempUserId,
+                            isLoading: false,
+                            message: "OTP envoyé à votre email"
+                        });
+                        return { requires2FA: true };
+                    }
+
+                    // Si connexion normale
                     set({
                         isAuthenticated: true,
                         user: response.data.user,
                         error: null,
                         isLoading: false,
+                        requires2FA: false
                     });
+                    return { success: true };
+
                 } catch (error) {
-                    set({ error: error.response?.data?.message || "Error logging in", isLoading: false });
+                    set({
+                        error: error.response?.data?.message || "Error logging in",
+                        isLoading: false
+                    });
+                    throw error;
+                }
+            },
+
+            verifyOTP: async (otp) => {
+                set({ isLoading: true });
+                try {
+                    const response = await axios.post(`${API_URL}/login2fa`, {
+                        userId: get().tempUserId,
+                        otp
+                    }, {
+                        withCredentials: true
+                    });
+
+                    set({
+                        isAuthenticated: true,
+                        user: response.data.user,
+                        error: null,
+                        isLoading: false,
+                        requires2FA: false,
+                        tempUserId: null
+                    });
+
+                    return { success: true };
+
+                } catch (error) {
+                    set({
+                        error: error.response?.data?.message || "Invalid OTP",
+                        isLoading: false
+                    });
                     throw error;
                 }
             },

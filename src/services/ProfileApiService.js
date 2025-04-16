@@ -37,6 +37,20 @@ const ProfileApiService = {
             console.error('Error fetching profile picture:', error);
             return null;
         }
+    },
+    toggle2FA: async () => {
+        try {
+            const response = await axios.post(
+                `${API_BASE_URL}/active2fa`,
+                {},
+                {
+                    withCredentials: true
+                }
+            );
+            return response.data;
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Failed to toggle 2FA');
+        }
     }
 };
 

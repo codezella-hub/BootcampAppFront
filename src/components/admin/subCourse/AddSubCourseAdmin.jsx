@@ -4,16 +4,18 @@ import Footer from '../../student/Footer';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuthStore } from '../../../store/authStore';
 
 function AddSubCourseAdmin() {
     const navigate = useNavigate();
     const [ListCourse, setCourse] = useState([]);
     const [errorlist, setError] = useState({});
+    const { user} = useAuthStore();
     const [subCourseInput, setSubCourse] = useState({
         title: '',
         order: '',
         course: '',
-        user: '67acb60b2bdf783f2a130f4b' // Static user ID added here
+        user: user._id // Static user ID added here
     });
 
     useEffect(() => {

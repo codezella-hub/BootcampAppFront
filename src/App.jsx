@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register'; 
-import axios from "axios";
+
 import StudentEnrollCourse from './components/student/course/StudentEnrollCourse';  
 import Home from './components/Home';
 import AddCategory from './components/admin/categorie/AddCategory';
@@ -35,6 +35,12 @@ import UpdateCandidat from './components/post/updateCandidat.jsx';
 import AddForum from "./components/Forum/addForum.jsx";
 import ForumList from "./components/Forum/ForumList.jsx";
 import ForumDetails from "./components/Forum/ForumDetails.jsx";
+
+import TwoFactorAuthVerify from "./components/auth/TwoFactorAuthVerify.jsx";
+
+
+
+
 import UpdateCategory from './components/admin/categorie/UpdateCategory';
 import SubCourses from './components/student/course/SubCourses';
 import Video from './components/student/course/Video';
@@ -69,6 +75,7 @@ import QuizUpdate from "./components/Quiz/QuizUpdate.jsx";
 import QuizList from "./components/Quiz/QuizList.jsx";
 import QuizResult from "./components/Quiz/QuizResult.jsx";
 import TakeQuiz from "./components/Quiz/TakeQuiz.jsx";
+
 function App() {
   const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, user } = useAuthStore();
@@ -122,6 +129,22 @@ function App() {
           <Route path="delete-account" element={<DeleteAccount />} />
           <Route path="be-teacher" element={<TryToBeTeacher />} />
         </Route>
+
+        {/* Other routes */}
+        <Route path="/student/enroll-course" element={<StudentEnrollCourse />} />
+        <Route path="/verify-email" element={<VerifiedEmail />} />
+        <Route path="/login" element={
+          <RedirectAuthenticatedUser>
+          <Login />
+          </RedirectAuthenticatedUser>
+          } />
+        <Route path="/register" element={<Register />} />
+        <Route path="/AddCategory" element={<AddCategory />} />
+        <Route path="/forgot-password" element={<ForgetPassword />} />
+        <Route path="/check-your-email" element={<CheckYourEmail />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/verify-two-factor" element={<TwoFactorAuthVerify />} />
+
 
         {/* Admin Routes */}
         <Route path="/ListCategory" element={<ListCategory />} />

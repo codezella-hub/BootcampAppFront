@@ -4,8 +4,10 @@ import Footer from '../../student/Footer'
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuthStore } from '../../../store/authStore';
 
 function AddCourse() {
+    const { user} = useAuthStore();
     const [ListCategory, setCategory] = useState([]);
     const navigate = useNavigate();
     const [errorlist, setError] = useState({});
@@ -21,7 +23,7 @@ function AddCourse() {
         rating: '',
         subtitles: '',
         category: '',
-        user: '67cd9bb397aad71d4f08b63f' // Static user ID added here
+        user: user._id, // Assuming you want to set the user ID here
     });
     const [picture, setPicture] = useState(null);
     const [imageName, setImageName] = useState(""); // Store selected image name

@@ -4,11 +4,14 @@ import LeftSideBar from '../../student/LeftSideBar';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from '../../../store/authStore';
 
 function ListCourse() {
   const navigate = useNavigate();
   const [ListCourses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { user} = useAuthStore();
+  const userId = user._id; // Replace with the actual user ID you want to use
 
   useEffect(() => {
     document.title = "List of courses";
@@ -18,7 +21,7 @@ function ListCourse() {
   const fetchCourses = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`/api/courses/user/67acb60b2bdf783f2a130f4b`);
+      const response = await axios.get(`/api/courses/user/${userId}`);
       
       if (response.status === 200) {
         // Make sure the response data matches our expected structure
