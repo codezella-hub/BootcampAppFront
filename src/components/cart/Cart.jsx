@@ -169,7 +169,7 @@ const Cart = () => {
         <div className="container">
           <div className="row">
             <div className="col-lg-12">
-              <div className="breadcrumb-main-wrapper">
+            <div className="breadcrumb-main-wrapper">
                 <h1 className="title">Cart</h1>
                 <div className="pagination-wrapper">
                   <Link to="/">Home</Link>

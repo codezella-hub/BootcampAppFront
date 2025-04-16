@@ -192,3 +192,16 @@
 .btn-primary:hover {
   background: #4430b3;
 }
+.rts-bread-crumbarea-1 {
+  background-color: #553CDF !important; /* Set the full container background */
+  padding: 40px 0;
+  margin-bottom: 40px;
+}
+.rts-bread-crumbarea-1 {
+  background-color: #553CDF !important;
+  padding: 40px 0;
+  margin-bottom: 40px;
+}
+.breadcrumb-main-wrapper .title {
+  color: #ffffff !important;
+}
