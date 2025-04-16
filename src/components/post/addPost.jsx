@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import postApi from "../../services/postApi.js";
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
+import { useAuthStore } from '../../store/authStore.js';
 
 const AddPost = () => {
+  const { user} = useAuthStore();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -10,7 +12,7 @@ const AddPost = () => {
     location: "",
     company: "",
     salary: "",
-    idUser: "67b8be03d74ad328bb66ccb6",
+    idUser: user._id,
   });
 
   const handleChange = (e) => {
@@ -44,7 +46,7 @@ const AddPost = () => {
         location: "",
         company: "",
         salary: "",
-        idUser: "67b8be03d74ad328bb66ccb6",
+        idUser: user._id,
       });
     } catch (error) {
       console.error("Erreur lors de l'ajout du post :", error);

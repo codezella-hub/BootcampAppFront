@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
 import forumApi from "../../services/forumApi.js"; // Assure-toi que le chemin est correct
 import { Link } from "react-router-dom";
+import { useAuthStore } from '../../store/authStore.js';
 
 function MyForum() {
   const [forums, setForums] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [activeTab, setActiveTab] = useState("list");
-  const [user, setUser] = useState("67b8be03d74ad328bb66ccb6");
+  const { user} = useAuthStore();
     const [searchTerm, setSearchTerm] = useState(""); 
 
   useEffect(() => {
     // Appel à la fonction pour récupérer les forums
     const fetchForums = async () => {
       try {
-        const response = await forumApi.getForumByIduser(user);
+        const response = await forumApi.getForumByIduser(user._id);
         setForums(response.data);
       } catch (error) {
         console.error("Erreur lors de la récupération des forums", error);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import postApi from "../../services/postApi.js"; // assure-toi que postApi a une méthode getPostById(id)
-import Header from "../student/Header.jsx";
+import postApi from "../../services/postApi.js"; 
+import Header from "../commun/Header.jsx";
 import forumApi from "../../services/forumApi.js";
 
 function DetailPost() {
@@ -20,7 +20,7 @@ function DetailPost() {
         if (postData.idUser) {
           try {
             const userResponse = await forumApi.getuserById(postData.idUser);
-            setUser(userResponse.data);
+            setUser(userResponse.data.user);
           } catch (error) {
             console.error("Erreur lors de la récupération de user", error);
           }
@@ -64,7 +64,11 @@ function DetailPost() {
                             <div class="author">
                             {user && (
                                     <img
-                                        src={`http://localhost:3000${user.image}`}
+                                        src={
+                                          user.picture
+                                            ? `http://localhost:3000/uploads/user/${user.picture}`
+                                            : user.avatar
+                                        }
                                         alt={user.fullName}
                                         style={{ width: "50px", height: "50px", borderRadius: "50%", marginRight: "10px" }}
                                     />

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import postApi from "../../services/postApi.js";
 import forumApi from "../../services/forumApi.js";
 import { Link } from "react-router-dom";
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
+import { useAuthStore } from '../../store/authStore.js';
 
 const MyPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -10,7 +11,7 @@ const MyPosts = () => {
   const [selectedRequirement, setSelectedRequirement] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [Users, setUsers] = useState({});
-  const [user, setUser] = useState("67b8be03d74ad328bb66ccb6");
+  const { user} = useAuthStore();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -19,7 +20,7 @@ const MyPosts = () => {
           const postsData = res.data;
       
           // 🔽 Filtrer uniquement les posts du user
-          const userPosts = postsData.filter((post) => post.idUser === user);
+          const userPosts = postsData.filter((post) => post.idUser === user._id);
           setPosts(userPosts);
       
           const usersData = {};
@@ -27,7 +28,7 @@ const MyPosts = () => {
             userPosts.map(async (post) => {
               if (!usersData[post.idUser]) {
                 const response = await forumApi.getuserById(post.idUser);
-                usersData[post.idUser] = response.data;
+                usersData[post.idUser] = response.data.user;
               }
             })
           );
@@ -130,7 +131,11 @@ const MyPosts = () => {
                   <h4>{post.title}</h4>
                   <div>
                   <img
-                    src={`http://localhost:3000${Users[post.idUser]?.image}`}
+                    src={
+                      Users[post.idUser]?.picture
+                        ? `http://localhost:3000/uploads/user/${Users[post.idUser]?.picture}`
+                        : Users[post.idUser]?.avatar
+                    }
                     alt={Users[post.idUser]?.fullName }
                     style={{ width: "30px", height: "30px", borderRadius: "50%", marginRight: "10px" }}
                     />

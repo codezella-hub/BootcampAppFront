@@ -4,8 +4,10 @@ import Footer from '../../student/Footer';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuthStore } from '../../../store/authStore';
 
 function AddVideo() {
+    const { user} = useAuthStore();
     const [ListSubCourse, setSubCourse] = useState([]);
     const navigate = useNavigate();
     const [errorlist, setError] = useState({});
@@ -116,7 +118,7 @@ function AddVideo() {
         formData.append('subCourse', videoInput.subCourse);
         formData.append('video', videoFile); // Use 'video' as the field name
         formData.append('thumbnail', thumbnailFile); // Use 'thumbnail' as the field name
-        formData.append('user', '67acb60b2bdf783f2a130f4b'); // Add static user ID
+        formData.append('user', user._id); // Add static user ID
 
         axios.post(`/api/addVideo`, formData, {
             headers: {

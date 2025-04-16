@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import postApi from "../../services/postApi.js";
 import { useParams, useNavigate  } from "react-router-dom";
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
+import { useAuthStore } from '../../store/authStore.js';
 
 const UpdatePost = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
+  const { user} = useAuthStore(); 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -12,7 +14,7 @@ const UpdatePost = () => {
     location: "",
     company: "",
     salary: "",
-    idUser: "67b8be03d74ad328bb66ccb6", 
+    idUser: user._id, 
   });
   const navigate = useNavigate(); 
 

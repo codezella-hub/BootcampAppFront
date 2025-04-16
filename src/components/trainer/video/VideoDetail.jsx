@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { useAuthStore } from '../../../store/authStore';
 
 function VideoDetail() {
-    const { user} = useAuthStore();
+    const { user } = useAuthStore();
     const { id, subCourseId } = useParams();
     const [video, setVideo] = useState(null);
     const [ListVideo, setVideos] = useState([]);
@@ -23,58 +23,66 @@ function VideoDetail() {
     const initialPositionSet = useRef(false);
     // Static user ID for testing
     const STATIC_USER_ID = user._id;
+
+
+const handleNavigateToQuiz = () => {
+  const courseId = video.subCourse.course;
+  const subCourseId = video.subCourse._id;
+  navigate(`/quiz-create/${courseId}/${subCourseId}`);
+};
+
     // Fetch initial progress and set video time
     useEffect(() => {
-       // Modify fetchInitialProgress
-const fetchInitialProgress = async () => {
-    try {
-        const response = await axios.get(`/api/videoProgress/${id}`);
-        if (response.status === 200) {
-            setProgressId(response.data._id);
-            setIsMarkedDone(response.data.completed);
-            setInitialProgress(response.data.watchedDuration || 0);
-            
-            // Initialize current time state
-            setCurrentTime(response.data.watchedDuration || 0);
-        }
-    } catch (error) {
-        console.log("No progress found, starting fresh");
-        // Create initial progress record
-        try {
-            const newProgress = await axios.post(`/api/UpdateVideoProgress/${id}`, {
-                user: STATIC_USER_ID,
-                video: id,
-                currentTime: 0,
-                duration: videoDuration
-            });
-            setProgressId(newProgress.data._id);
-        } catch (error) {
-            console.error("Error creating initial progress:", error);
-        }
-    }
-};
+        // Modify fetchInitialProgress
+        const fetchInitialProgress = async () => {
+            try {
+                const response = await axios.get(`/api/videoProgress/${id}`);
+                if (response.status === 200) {
+                    setProgressId(response.data._id);
+                    setIsMarkedDone(response.data.completed);
+                    setInitialProgress(response.data.watchedDuration || 0);
+
+                    // Initialize current time state
+                    setCurrentTime(response.data.watchedDuration || 0);
+                }
+            } catch (error) {
+                console.log("No progress found, starting fresh");
+                // Create initial progress record
+                try {
+                    const newProgress = await axios.post(`/api/UpdateVideoProgress/${id}`, {
+                        user: STATIC_USER_ID,
+                        video: id,
+                        currentTime: 0,
+                        duration: videoDuration
+                    });
+                    setProgressId(newProgress.data._id);
+                } catch (error) {
+                    console.error("Error creating initial progress:", error);
+                }
+            }
+        };
         fetchInitialProgress();
     }, [id]);
 
- // Modify sendProgressUpdate to handle completion state
-const sendProgressUpdate = async (currentTime) => {
-    try {
-        const response = await axios.put(`/api/UpdateVideoProgress/${progressId}`, {
-            user: STATIC_USER_ID,
-            video: id,
-            currentTime,
-            duration: videoDuration
-        });
-        
-        // Update completion state from response
-        if (response.data.completed) {
-            setIsMarkedDone(true);
-            setVideoProgress(prev => ({ ...prev, [id]: true }));
+    // Modify sendProgressUpdate to handle completion state
+    const sendProgressUpdate = async (currentTime) => {
+        try {
+            const response = await axios.put(`/api/UpdateVideoProgress/${progressId}`, {
+                user: STATIC_USER_ID,
+                video: id,
+                currentTime,
+                duration: videoDuration
+            });
+
+            // Update completion state from response
+            if (response.data.completed) {
+                setIsMarkedDone(true);
+                setVideoProgress(prev => ({ ...prev, [id]: true }));
+            }
+        } catch (error) {
+            console.error('Error updating progress:', error);
         }
-    } catch (error) {
-        console.error('Error updating progress:', error);
-    }
-};
+    };
 
     // 2-second debounced update instead of 5
     const debouncedUpdate = useCallback(
@@ -82,36 +90,36 @@ const sendProgressUpdate = async (currentTime) => {
         [progressId, videoDuration]
     );
 
-   // Modify handleTimeUpdate
-const handleTimeUpdate = (e) => {
-    const ct = e.target.currentTime;
-    setCurrentTime(ct);
-    
-    // Check for auto-completion
-    if (videoDuration > 0 && (ct / videoDuration) >= 0.95) {
-        debouncedUpdate.flush();
-    } else {
-        debouncedUpdate(ct);
-    }
-};
+    // Modify handleTimeUpdate
+    const handleTimeUpdate = (e) => {
+        const ct = e.target.currentTime;
+        setCurrentTime(ct);
+
+        // Check for auto-completion
+        if (videoDuration > 0 && (ct / videoDuration) >= 0.95) {
+            debouncedUpdate.flush();
+        } else {
+            debouncedUpdate(ct);
+        }
+    };
     // Save progress when leaving page
     useEffect(() => {
-   // Modify beforeunload handler
-const handleBeforeUnload = () => {
-    if (videoRef.current && progressId) {
-        const ct = videoRef.current.currentTime;
-        const data = new URLSearchParams();
-        data.append('user', STATIC_USER_ID);
-        data.append('video', id);
-        data.append('currentTime', ct);
-        data.append('duration', videoDuration);
-        
-        navigator.sendBeacon(
-            `/api/UpdateVideoProgress/${progressId}`,
-            data
-        );
-    }
-};
+        // Modify beforeunload handler
+        const handleBeforeUnload = () => {
+            if (videoRef.current && progressId) {
+                const ct = videoRef.current.currentTime;
+                const data = new URLSearchParams();
+                data.append('user', STATIC_USER_ID);
+                data.append('video', id);
+                data.append('currentTime', ct);
+                data.append('duration', videoDuration);
+
+                navigator.sendBeacon(
+                    `/api/UpdateVideoProgress/${progressId}`,
+                    data
+                );
+            }
+        };
 
         window.addEventListener('beforeunload', handleBeforeUnload);
         return () => {
@@ -195,14 +203,14 @@ const handleBeforeUnload = () => {
 
 
     // Add cleanup effect
-useEffect(() => {
-    return () => {
-        if (videoRef.current) {
-            const ct = videoRef.current.currentTime;
-            sendProgressUpdate(ct);
-        }
-    };
-}, [progressId, videoDuration]);
+    useEffect(() => {
+        return () => {
+            if (videoRef.current) {
+                const ct = videoRef.current.currentTime;
+                sendProgressUpdate(ct);
+            }
+        };
+    }, [progressId, videoDuration]);
     const openCamera = async () => {
         try {
             const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -302,24 +310,24 @@ useEffect(() => {
             <div style={{ display: 'flex', marginTop: '20px', padding: '0 20px' }}>
                 <div style={{ flex: 3, marginRight: '20px' }}>
                     <div style={{ backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}>
-                    <video
-    key={video?.url}
-    ref={videoRef}
-    onLoadedMetadata={(e) => {
-        setVideoDuration(e.target.duration);
-        if (!initialPositionSet.current) {
-            e.target.currentTime = initialProgress;
-            // Watch 30 seconds → refresh → should resume at 30s
-// Add debug logs in onLoadedMetadata:
-console.log('Setting initial time to:', initialProgress);
-            initialPositionSet.current = true;
-        }
-    }}
-    onTimeUpdate={handleTimeUpdate}
-    controls
-    autoPlay
-    style={{ width: '100%', height: '600px', objectFit: 'contain' }}
->
+                        <video
+                            key={video?.url}
+                            ref={videoRef}
+                            onLoadedMetadata={(e) => {
+                                setVideoDuration(e.target.duration);
+                                if (!initialPositionSet.current) {
+                                    e.target.currentTime = initialProgress;
+                                    // Watch 30 seconds → refresh → should resume at 30s
+                                    // Add debug logs in onLoadedMetadata:
+                                    console.log('Setting initial time to:', initialProgress);
+                                    initialPositionSet.current = true;
+                                }
+                            }}
+                            onTimeUpdate={handleTimeUpdate}
+                            controls
+                            autoPlay
+                            style={{ width: '100%', height: '600px', objectFit: 'contain' }}
+                        >
                             <source src={video?.url} type="video/mp4" />
                             Your browser does not support the video tag.
                         </video>
@@ -332,7 +340,16 @@ console.log('Setting initial time to:', initialProgress);
                                     <h5 className="title">{video.title}</h5>
                                 </a>
                             </div>
-                            <button className="rts-btn btn-primary with-arrow" onClick={handleStartQuiz}>Start quiz</button>
+                            {user.role === 'user' ? (
+  <button className="rts-btn btn-primary with-arrow" onClick={handleStartQuiz}>
+    Start quiz
+  </button>
+) : (
+  <button className="rts-btn btn-primary with-arrow" onClick={handleNavigateToQuiz}>
+    Create quiz
+  </button>
+)}
+
                         </div>
                     </div>
 

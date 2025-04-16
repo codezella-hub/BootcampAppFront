@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
 import forumApi from "../../services/forumApi.js";
 import { Navigate } from "react-router-dom";
-
+import { useAuthStore } from '../../store/authStore.js';
+ 
 function AddForum() {
+  const { user} = useAuthStore();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     categorie: "",
-    user:"67b8be03d74ad328bb66ccb6",
+    user:user._id,
     image:"",
   });
  
@@ -17,7 +19,7 @@ function AddForum() {
   const [imagePreview, setImagePreview] = useState(null);
   const [imageName, setImageName] = useState(""); 
   const [categories, setCategories] = useState([]);
-  const [user,setUser]=useState("67b8be03d74ad328bb66ccb6")
+
 
   useEffect(() => {
     // Récupérer les catégories depuis l'API

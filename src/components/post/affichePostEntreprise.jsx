@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import postApi from "../../services/postApi.js"; // Assurez-vous que postApi contient toutes les méthodes nécessaires
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
 import forumApi from "../../services/forumApi.js"; // Assurez-vous d'avoir un service forumApi pour récupérer l'utilisateur
 
 
@@ -99,7 +99,11 @@ const AffichePostEntreprise = () => {
                   <div className="author">
                     {user && (
                       <img
-                        src={`http://localhost:3000${user.image}`}
+                        src={
+                          user.user.picture
+                            ? `http://localhost:3000/uploads/user/${user.user.picture}`
+                            : user.user.avatar
+                        }
                         alt={user.fullName}
                         style={{
                           width: "50px",
@@ -122,67 +126,77 @@ const AffichePostEntreprise = () => {
         </div>
       </div>
 
-      <div className="tab-content mt--50" id="myTabContent">
-        <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-          <div className="course-content-wrapper">
-            <div className="module-wrapper">
-              <h5 className="title">Description</h5>
-              <p className="disc">{post.description}</p>
-              <h6 className="title">Exigences</h6>
-              <div className="inner-content">
-                <div className="single-wrapper">
-                  {post.requirements.map((req, index) => (
-                    <div className="single-codule" key={index}>
-                      <i className="fa-regular fa-check"></i>
-                      <p>{req}</p>
-                    </div>
-                  ))}
-                </div>
+      <div className="container mt-5">
+  <div className="row">
+    
+    <div className="col-xl-8 col-md-12 col-sm-12 col-12">
+      <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <div className="course-content-wrapper">
+          <div className="module-wrapper">
+            <h5 className="title">Description</h5>
+            <p className="disc">{post.description}</p>
+            <h6 className="title">Exigences</h6>
+            <div className="inner-content">
+              <div className="single-wrapper">
+                {post.requirements.map((req, index) => (
+                  <div className="single-codule" key={index}>
+                    <i className="fa-regular fa-check"></i>
+                    <p>{req}</p>
+                  </div>
+                ))}
               </div>
             </div>
-
-            <button>
-              <Link to={`/addCandidat/${post._id}`} className="rts-btn btn-primary mt-2">
-                Postuler
-              </Link>
-            </button>
           </div>
+          <button>
+            <Link to={`/addCandidat/${post._id}`} className="rts-btn btn-primary mt-2">
+              Postuler
+            </Link>
+          </button>
         </div>
       </div>
+    </div>
 
-      {/* Candidats */}
-<div style={{ marginTop: "40px" }}>
-  <h5>Candidats pour cette offre</h5>
   
-  {candidates.length === 0 ? (
-    <p>Aucun candidat pour cette offre.</p>
-  ) : (
-    <ul>
-      {candidates.map((candidate) => (
-        <li key={candidate._id} style={{ marginBottom: "10px" }}>
-          <div>
-            <strong>{candidate.name}</strong>
-            <p>{candidate.email}</p>
-            <span
-              style={{
-                color: candidate.status === "accepted" ? "green" :
-                       candidate.status === "rejected" ? "red" :
-                       "goldenrod",
-                fontWeight: "bold"
-              }}
-            >
-              {candidate.status === "accepted" ? "Accepté" :
-               candidate.status === "rejected" ? "Rejeté" : "En attente"}
-            </span>
-          </div>
-          <Link to={`/CandidatDetailsEntreprise/${candidate._id}`} className="rts-btn btn-primary mt-2">
-            Afficher
-          </Link>
-        </li>
-      ))}
-    </ul>
-  )}
+    <div className="col-xl-4 col-md-12 col-sm-12 col-12">
+    <div className="course-content-wrapper">
+    <div className="module-wrapper">
+      <div style={{ marginTop: "20px" }}>
+        <h5>Candidats pour cette offre</h5>
+        {candidates.length === 0 ? (
+          <p>Aucun candidat pour cette offre.</p>
+        ) : (
+          <ul style={{ paddingLeft: 0, listStyle: "none" }}>
+            {candidates.map((candidate) => (
+              <li key={candidate._id} style={{ marginBottom: "15px", borderBottom: "1px solid #eee", paddingBottom: "10px" }}>
+                <div>
+                  <strong>{candidate.name}</strong>
+                  <p>{candidate.email}</p>
+                  <span
+                    style={{
+                      color: candidate.status === "accepted" ? "green" :
+                            candidate.status === "rejected" ? "red" :
+                            "goldenrod",
+                      fontWeight: "bold"
+                    }}
+                  >
+                    {candidate.status === "accepted" ? "Accepté" :
+                    candidate.status === "rejected" ? "Rejeté" : "En attente"}
+                  </span>
+                </div>
+                <Link to={`/CandidatDetailsEntreprise/${candidate._id}`} className="rts-btn btn-primary mt-2">
+                  Afficher
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+    </div>
+    </div>
+  </div>
 </div>
+
 
     </>
   );

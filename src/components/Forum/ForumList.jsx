@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
 import forumApi from "../../services/forumApi.js"; 
 import { Link } from "react-router-dom";
+import { useAuthStore } from '../../store/authStore.js';
 
 function ForumList() {
   const [forums, setForums] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [searchTerm, setSearchTerm] = useState(""); 
+  const [searchTerm, setSearchTerm] = useState("");
+   
   
   useEffect(() => {
     const fetchForums = async () => {

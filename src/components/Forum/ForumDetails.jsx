@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import forumApi from "../../services/forumApi.js";
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
+import { useAuthStore } from '../../store/authStore.js';
 
 function ForumDetails() {
   const { id } = useParams();
   const [forum, setForum] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-  const [userConnect, setUserConnect] = useState(null); 
-  const [user, setUser] = useState(null); //hot lena user b token
+  const [userCreated, setUsercreated] = useState(null); 
   const [liked, setLiked] = useState(true);
   const [commentUsers, setCommentUsers] = useState({});
   const [forums, setForums] = useState([]); 
   const [courses, setCourses] = useState([]); 
+  const {user} = useAuthStore();
 
 
   useEffect(() => {
@@ -51,27 +52,13 @@ function ForumDetails() {
         console.error("Erreur lors de la récupération des utilisateurs des commentaires", error);
       }
     };
-    const checkUserCreated = async () => {
-      try {
-        const response = await forumApi.getuserById(forum.user);
-        setUser(response.data);
-      } catch (error) {
-        console.error("Erreur lors de la récupération de user", error);
-      }
-    };
-    const checkUser = async () => {
-      try {
-        const response = await forumApi.getuserById("67bd8cdb87376136b500b5c3");//hot lena user b token
-        setUserConnect(response.data);
-      } catch (error) {
-        console.error("Erreur lors de la récupération de user", error);
-      }
-    };
+  
+   
     // Vérifier si l'utilisateur a liké ce forum
     const checkIfLiked = async () => {
       try {
         const response = await forumApi.getLikesByForum(id);
-        const userLiked = response.data.some((like) => like.user === userConnect._id);
+        const userLiked = response.data.some((like) => like.user === user._id);
         setLiked(userLiked);
       } catch (error) {
         console.error("Erreur lors de la récupération des likes", error);
@@ -92,13 +79,24 @@ function ForumDetails() {
         console.error("Erreur lors de la récupération du forum", error);
       }
     };
+    const checkUserCreated = async () => {
+      try {
+        const response = await forumApi.getuserById(forum.user);
+        setUsercreated(response.data.user);
+        console.log(response.data.user)
+        
+        
+      } catch (error) {
+        console.error("Erreur lors de la récupération de user", error);
+      }
+    };
     fetchForumDetails(); 
-    checkUser();
+   
     checkUserCreated();
     checkIfLiked(); 
     fetchForums();
     fetchCourses();
-    
+  
     
   
    
@@ -106,7 +104,7 @@ function ForumDetails() {
 
   const handleLike = async () => {
     try {
-      await forumApi.likeForum(id, userConnect._id);
+      await forumApi.likeForum(id, user._id);
       setLiked(true);
       
     } catch (error) {
@@ -116,7 +114,7 @@ function ForumDetails() {
 
   const handleRemoveLike = async () => {
     try {
-      await forumApi.removeLike(id, userConnect._id);
+      await forumApi.removeLike(id, user._id);
       setLiked(false);
        
     } catch (error) {
@@ -128,7 +126,7 @@ function ForumDetails() {
     
     if (newComment.trim()) {
       try {
-        const response = await forumApi.addComment(id, newComment,userConnect._id);
+        const response = await forumApi.addComment(id, newComment,user._id);
         setComments([...comments, response.data]); 
         setNewComment(""); 
       } catch (error) {
@@ -171,14 +169,18 @@ function ForumDetails() {
                             <div class="user-info">
                             <div class="single">
    
-                      {user ? (
+                      {userCreated ? (
                           <span>
                               <img
-                                  src={`http://localhost:3000${user.image}`} 
-                                  alt={user.fullName}
-                                  style={{ width: "30px", height: "30px", borderRadius: "50%", marginRight: "10px" }}
+                                  src={
+                                    userCreated.picture
+                                      ? `http://localhost:3000/uploads/user/${userCreated.picture}`
+                                      : userCreated.avatar
+                                  }
+                                  
+                                  style={{ width: "50px", height: "50px", borderRadius: "50%", marginRight: "10px" }}
                               />
-                              {user.fullName}
+                              {userCreated.fullName}
                           </span>
                       ) : (
                           <span>Loading...</span>
@@ -234,7 +236,7 @@ function ForumDetails() {
                     <div class="recent-post-single">
                                     <div class="thumbnail">
                                         <a href={`/forum/${forum._id}`}><img src={`http://localhost:3000${forum.image}`} alt="forum" key={forum._id}
-                                        style={{ width: "150px", height: "100px" }}/></a>
+                                        style={{ width: "100px", height: "100px" }}/></a>
                                     </div>
                                     <div class="content-area text-start">
                                       
@@ -263,25 +265,30 @@ function ForumDetails() {
                 </div>
             </div>
              
-            <div class="col-xl-8 col-md-12 col-sm-12 col-12">
+            <div class="col-xl-7 col-md-12 col-sm-12 col-12">
                 <div class="rts-single-wized search">
                     <div class="wized-body mt--0">
                     <h3>Comments</h3>
                   {comments.map((comment, index) => (
                     <div key={index} className="comment">
                       {commentUsers[comment.user] ? (
-                        <div className={`comment-header ${comment.user === userConnect._id ? "sentUser" : "receivedUser"}`}>
+                        <div className={`comment-header ${comment.user === user._id ? "sentUser" : "receivedUser"}`}>
                           <img
-                            src={`http://localhost:3000${commentUsers[comment.user].image}`}
+                            src={
+                              commentUsers[comment.user].user.picture
+                                ? `http://localhost:3000/uploads/user/${commentUsers[comment.user].user.picture}`
+                                : commentUsers[comment.user].user.avatar
+                            }
                             alt={commentUsers[comment.user].fullName}
                             style={{ width: "30px", height: "30px", borderRadius: "50%", marginRight: "10px" }}
                           />
+                          
                           <strong>{commentUsers[comment.user].fullName}</strong>
                         </div>
                       ) : (
                         <span>Loading user...</span>
                       )}
-                      <div className={`comment-box ${comment.user === userConnect._id ? "sent" : "received"}`}>
+                      <div className={`comment-box ${comment.user === user._id ? "sent" : "received"}`}>
                         <p>{comment.content}</p>
                       </div>
 

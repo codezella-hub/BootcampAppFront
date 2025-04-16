@@ -59,7 +59,7 @@ const forumApi = {
     return axios.get(`http://localhost:3000/api/like-count/${forumId}`);
   },
   getuserById: (userId) => {
-    return axios.get(`http://localhost:3000/api/user/${userId}`);
+    return axios.get(`http://localhost:3000/api/adminUser/${userId}`);
   },
   getcoursesByCategory: (categoryId) => {
     return axios.get(`http://localhost:3000/api/courseCategory/${categoryId}`);

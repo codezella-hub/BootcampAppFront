@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import postApi from "../../services/postApi.js";
 import forumApi from "../../services/forumApi.js";
 import { Link } from "react-router-dom";
-import Header from "../student/Header.jsx";
+import Header from "../commun/Header.jsx";
 
 const PostList = () => {
   const [posts, setPosts] = useState([]);
@@ -23,11 +23,12 @@ const PostList = () => {
             postsData.map(async (post) => {
               if (!usersData[post.idUser]) {
                 const response = await forumApi.getuserById(post.idUser);
-                usersData[post.idUser] = response.data;
+                usersData[post.idUser] = response.data.user;
               }
             })
           );
           setUsers(usersData);
+          
       
           const allRequirements = postsData.flatMap((post) => post.requirements || []);
           const unique = [...new Set(allRequirements)];
@@ -115,11 +116,17 @@ const PostList = () => {
                   <h4>{post.title}</h4>
                   <div>
                   <img
-                    src={`http://localhost:3000${Users[post.idUser]?.image}`}
-                    alt={Users[post.idUser]?.fullName }
+                    src={
+                      Users[post.idUser]?.picture
+                        ? `http://localhost:3000/uploads/user/${Users[post.idUser].picture}`
+                        : Users[post.idUser]?.avatar
+                    }
+                    alt={Users[post.idUser]?.fullName}
                     style={{ width: "30px", height: "30px", borderRadius: "50%", marginRight: "10px" }}
-                    />
+                  />
+
                   <strong>{post.company}</strong>
+                  <p>{Users[post.idUser]?.fullName}</p>
                   </div>
                   <p>{post.description}</p>
                   
