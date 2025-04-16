@@ -8,6 +8,8 @@ const QuizApi = {
     }),
     getAllQuizzes: () => axios.get(API_URL),
 
+    getQuizBySubCourse: (subCourseId) => axios.get(`${API_URL}/subCourse/${subCourseId}`),
+
     getQuizById: (id) => axios.get(`${API_URL}/${id}`),
 
     updateQuiz: (id, quizData) => axios.put(`${API_URL}/${id}`, quizData, {
