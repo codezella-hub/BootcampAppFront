@@ -366,7 +366,7 @@ const checkPaymentStatus = () => {
                                                         }}
                                                     >
                                                         <span>{subCourse.title}</span>
-                                                        <span>3 Lectures . 9 min</span>
+                                                        <span>time</span>
                                                     </button>
                                                 </h2>
                                                 <div
@@ -381,7 +381,7 @@ const checkPaymentStatus = () => {
                                                         ) : (
                                                             ListVideos.length > 0 ? (
                                                                 ListVideos.map(video => (
-                                                                    <Link key={video._id} to={`/VideoDetail/${video._id}`} className="play-vedio-wrapper">
+                                                                    <Link key={video._id} to={`/VideoDetail/${video._id}/${subCourse._id}`} className="play-vedio-wrapper">
                                                                         <div className="left">
                                                                             <i className="fa-light fa-circle-play" />
                                                                             <span>{video.title}</span>
