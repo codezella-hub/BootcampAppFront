@@ -79,6 +79,7 @@ import TakeQuiz from "./components/Quiz/TakeQuiz.jsx";
 import Success from "./components/payment/success";
 import Cancel from "./components/payment/cancel";
 import Cart from "./components/cart/Cart";
+import ResponsesUserListe from "./components/Quiz/ResponsesUserListe.jsx";
 
 function App() {
   const userId ='88888888'
@@ -221,6 +222,10 @@ function App() {
 
         <Route path={"/quizResult/:responseId"} element={<QuizResult/>} />
         <Route path={"/quiz/:id"} element={<TakeQuiz/>} />
+
+        <Route path='/respenses' element={<DashboardInterface />} >
+          <Route index element={<ResponsesUserListe />} />
+        </Route>
 
         <Route path="/cart" element={<Cart userId={userId} cartItems={cartItems} />} />
         <Route path="/success" element={<Success />} />
