@@ -20,7 +20,7 @@ const TakeQuiz = () => {
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
-                const res = await quizApi.getQuizById(id);
+                const res = await quizApi.getQuizBySubCourse(id);
                 setQuiz(res.data);
 
                 // Initialize answers state with all questions having empty selections
@@ -77,7 +77,7 @@ const TakeQuiz = () => {
         // If no answer is selected for a question, store a fallback value such as "No Answer"
         const payload = {
             user_id,
-            quiz_id: id,
+            quiz_id: quiz._id,
             course_id: quiz.courseId,      // ✅ Add this
             subCourse_id: quiz.subCourseId, // ✅ Add this
 

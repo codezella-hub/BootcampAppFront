@@ -9,7 +9,7 @@ const QuizApi = {
     getAllQuizzes: () => axios.get(API_URL),
 
     getQuizBySubCourse: (subCourseId) => axios.get(`${API_URL}/subCourse/${subCourseId}`),
-    getQuizByCourse: (subCourseId) => axios.get(`${API_URL}/course/${subCourseId}`),
+    getQuizByCourse: (CourseId) => axios.get(`${API_URL}/course/${CourseId}`),
     getQuizByUser: (userId) => axios.get(`${API_URL}/user/${userId}`),
 
     getQuizById: (id) => axios.get(`${API_URL}/${id}`),

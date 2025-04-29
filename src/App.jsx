@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/auth/Login';
-import Register from './components/auth/Register'; 
+import Register from './components/auth/Register';
+import { useState } from "react";
 
 import StudentEnrollCourse from './components/student/course/StudentEnrollCourse';  
 import Home from './components/Home';
@@ -75,8 +76,14 @@ import QuizUpdate from "./components/Quiz/QuizUpdate.jsx";
 import QuizList from "./components/Quiz/QuizList.jsx";
 import QuizResult from "./components/Quiz/QuizResult.jsx";
 import TakeQuiz from "./components/Quiz/TakeQuiz.jsx";
+import Success from "./components/payment/success";
+import Cancel from "./components/payment/cancel";
+import Cart from "./components/cart/Cart";
 
 function App() {
+  const userId ='88888888'
+  const [cartItems, setCartItems] = useState([]);
+
   const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, user } = useAuthStore();
 
@@ -214,6 +221,10 @@ function App() {
 
         <Route path={"/quizResult/:responseId"} element={<QuizResult/>} />
         <Route path={"/quiz/:id"} element={<TakeQuiz/>} />
+
+        <Route path="/cart" element={<Cart userId={userId} cartItems={cartItems} />} />
+        <Route path="/success" element={<Success />} />
+        <Route path="/cancel" element={<Cancel />} />
 
         {/* Not found  Route */}
         <Route path={"/*"} element={<Notfound/>} />
