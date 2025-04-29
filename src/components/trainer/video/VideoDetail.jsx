@@ -31,6 +31,12 @@ const handleNavigateToQuiz = () => {
   navigate(`/quiz-create/${courseId}/${subCourseId}`);
 };
 
+const passQuiz = () => {
+    const courseId = video.subCourse.course;
+    const subCourseId = video.subCourse._id;
+    navigate(`/quiz/${subCourseId}`);
+  };
+
     // Fetch initial progress and set video time
     useEffect(() => {
         // Modify fetchInitialProgress
@@ -341,7 +347,7 @@ const handleNavigateToQuiz = () => {
                                 </a>
                             </div>
                             {user.role === 'user' ? (
-  <button className="rts-btn btn-primary with-arrow" onClick={handleStartQuiz}>
+  <button className="rts-btn btn-primary with-arrow" onClick={passQuiz}>
     Start quiz
   </button>
 ) : (
