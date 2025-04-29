@@ -1,8 +1,8 @@
-import React from "react";
+import  "react";
 import { Link } from "react-router-dom";
 import Header from "../cart/Header";
 import Footer from "../cart/Footer";
-import "./Success.css";
+import "./success.css";
 
 const Success = () => {
   return (
