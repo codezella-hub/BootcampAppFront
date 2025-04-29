@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Header from "../cart/Header";
 import Footer from "../cart/Footer";
-import "./Cancel.css";
+import "./cancel.css";
 
 const Cancel = () => {
   return (
