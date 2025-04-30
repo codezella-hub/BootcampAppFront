@@ -82,6 +82,7 @@ import Cart from "./components/cart/Cart";
 import HomeRooms from "./components/rooms/HomeRooms.jsx";
 import Room from "./components/rooms/Room.jsx";
 import ChatBot from "./components/chatBot/ChatBot.jsx";
+import ResponsesUserListe from "./components/Quiz/ResponsesUserListe.jsx";
 
 function App() {
   const userId ='88888888'
@@ -228,6 +229,10 @@ function App() {
 
         <Route path={"/quizResult/:responseId"} element={<QuizResult/>} />
         <Route path={"/quiz/:id"} element={<TakeQuiz/>} />
+
+        <Route path='/respenses' element={<DashboardInterface />} >
+          <Route index element={<ResponsesUserListe />} />
+        </Route>
 
         <Route path="/cart" element={<Cart userId={userId} cartItems={cartItems} />} />
         <Route path="/success" element={<Success />} />

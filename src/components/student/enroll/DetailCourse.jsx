@@ -366,7 +366,7 @@ const checkPaymentStatus = () => {
                                                         }}
                                                     >
                                                         <span>{subCourse.title}</span>
-                                                        <span>time</span>
+                                                        <span>3 Lectures . 9 min</span>
                                                     </button>
                                                 </h2>
                                                 <div

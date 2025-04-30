@@ -10,7 +10,6 @@ function StudentEnrollCourse() {
   const [ListCourses, setCourses] = useState([]);
   //const userId = localStorage.getItem("userId");
    const userId = user._id; // Replace with the actual user ID you want to use
-   console.log(userId);
 
   useEffect(() => {
     document.title = "List of Enrolled Courses";

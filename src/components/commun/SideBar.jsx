@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 
 function SideBar() {
     return (
@@ -12,7 +13,7 @@ function SideBar() {
                     </a>
                     {/* single item end */}
                     {/* single item */}
-                    <a href="my-profile.html" className="single-item active">
+                    <a href="my-profile.html" className="single-item ">
                         <i className="fa-regular fa-user"/>
                         <p>My Profile</p>
                     </a>
@@ -36,10 +37,11 @@ function SideBar() {
                     </a>
                     {/* single item end */}
                     {/* single item */}
-                    <a href="quiz-attempts.html" className="single-item">
-                        <i className="fa-sharp fa-light fa-bullseye-pointer"/>
-                        <p>My Quiz Attempts</p>
-                    </a>
+                    {/* -------- link to quiz attmps for student  -------- */}
+                    <Link to="/respenses" className="single-item" style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginBottom: "12px" }}>
+                        <i className="fa-sharp fa-light fa-bullseye-pointer" />
+                        <p style={{ margin: 0 }}>My&nbsp;Quiz&nbsp;Attempts</p>
+                    </Link>
                     {/* single item end */}
                     {/* single item */}
                     <a href="order-history.html" className="single-item">

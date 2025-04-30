@@ -112,7 +112,7 @@ function UpdateCategory() {
                     icon: 'success',
                     confirmButtonText: 'OK',
                 }).then(() => {
-                    //navigate('/login'); // Navigate after success
+                    navigate('/ListCategory'); // Navigate after success
                 });
             } else {
                 Swal.fire({
