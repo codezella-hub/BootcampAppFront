@@ -118,6 +118,7 @@ function App() {
           <Route path="AllCourses" element={<AllCourses />} />
           <Route path="homeRooms" element={<HomeRooms />} />
           <Route path="chat" element={<ChatBot />} />
+          <Route path="AddCategory" element={<AddCategory />} />
 
 
         </Route>
@@ -133,6 +134,10 @@ function App() {
         {/* Dashboard Routes */}
         <Route path='/dashboard' element={<DashboardInterface />} >
           <Route index element={<MyProfile />} />
+
+        <Route path="ListCourseAdmin" element={<ListCourseAdmin />} />
+          <Route path="ListCategory" element={<ListCategory />} />
+
         </Route>
 
         {/* Profile Routes */}

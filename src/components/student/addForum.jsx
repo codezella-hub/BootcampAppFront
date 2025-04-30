@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import Header from "./Header";
+import Header from '../commun/Header.jsx'
+import Footer from '../../commun/FooterPrinciple.jsx'
 import forumApi from "../../services/forumApi"; 
 
 function AddForum() {

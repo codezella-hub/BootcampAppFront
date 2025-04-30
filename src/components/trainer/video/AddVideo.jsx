@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../../student/Header';
-import Footer from '../../student/Footer';
+import Header from '../../commun/Header.jsx'
+import Footer from '../../commun/FooterPrinciple.jsx'
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useAuthStore } from '../../../store/authStore';
 
 function AddVideo() {
+    const [uploadProgress, setUploadProgress] = useState(0);
     const { user} = useAuthStore();
     const [ListSubCourse, setSubCourse] = useState([]);
     const navigate = useNavigate();
@@ -68,89 +69,127 @@ function AddVideo() {
         }
     };
 
-    const AddVideoSubmit = (e) => {
-        e.preventDefault(); // Prevent form refresh
+    const AddVideoSubmit = async (e) => {
+        e.preventDefault();
 
-        let errors = {};
-        let missingFields = [];
+        // Validation
+        const errors = {};
+        const missingFields = [];
 
-        // Validate required fields
-        const requiredFields = ['order', 'subCourse'];
-        requiredFields.forEach(field => {
-            if (!videoInput[field]) {
-                errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
-                missingFields.push(field.charAt(0).toUpperCase() + field.slice(1));
-            }
-        });
+        // Required field check
+        if (!videoInput.order) {
+            errors.order = "Order is required";
+            missingFields.push("Order");
+        }
+        if (!videoInput.subCourse) {
+            errors.subCourse = "Subcourse is required";
+            missingFields.push("Subcourse");
+        }
+
+        // File validation
         if (!videoFile) {
             errors.video = "Video is required";
             missingFields.push("Video");
         } else if (videoFile.type !== 'video/mp4') {
-            errors.video = "Only MP4 videos are allowed";
+            errors.video = "Only MP4 videos allowed";
             missingFields.push("Video");
         }
+
         if (!thumbnailFile) {
             errors.thumbnail = "Thumbnail is required";
             missingFields.push("Thumbnail");
-        } else {
-            const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
-            if (!validImageTypes.includes(thumbnailFile.type)) {
-                errors.thumbnail = "Only JPG, PNG, and GIF images are allowed";
-                missingFields.push("Thumbnail");
-            }
+        } else if (!['image/jpeg', 'image/png'].includes(thumbnailFile.type)) {
+            errors.thumbnail = "Only JPG/PNG allowed";
+            missingFields.push("Thumbnail");
         }
 
         if (Object.keys(errors).length > 0) {
-            setError(errors); // Store the errors in state
-
+            setError(errors);
             Swal.fire({
-                title: 'Error!',
-                text: `Please fill in the following fields: ${missingFields.join(", ")}`,
-                icon: 'error',
-                confirmButtonText: 'OK',
+                title: 'Missing Fields',
+                html: `Required: <b>${missingFields.join(', ')}</b>`,
+                icon: 'error'
             });
-
-            return; // Stop the function if there are errors
+            return;
         }
 
+        // Prepare form data
         const formData = new FormData();
         formData.append('order', videoInput.order);
         formData.append('subCourse', videoInput.subCourse);
-        formData.append('video', videoFile); // Use 'video' as the field name
-        formData.append('thumbnail', thumbnailFile); // Use 'thumbnail' as the field name
-        formData.append('user', user._id); // Add static user ID
+        formData.append('video', videoFile);
+        formData.append('thumbnail', thumbnailFile);
+        formData.append('user', user._id);
 
-        axios.post(`/api/addVideo`, formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-                "Accept": "application/json",
-            },
-        }).then(res => {
-            if (res.status === 201) {
-                Swal.fire({
+        try {
+            // Show progress alert
+            const progressSwal = Swal.fire({
+                title: 'Uploading...',
+                html: `
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-text">0% uploaded</div>
+            `,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            // Upload request
+            const response = await axios.post('/api/addVideo', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                onUploadProgress: (progressEvent) => {
+                    const percent = Math.round(
+                        (progressEvent.loaded * 100) / progressEvent.total
+                    );
+                    // Update progress bar in real-time
+                    const progressBar = document.querySelector('.progress-bar');
+                    const progressText = document.querySelector('.progress-text');
+                    if (progressBar && progressText) {
+                        progressBar.style.width = `${percent}%`;
+                        progressText.textContent = `${percent}% uploaded`;
+                    }
+                }
+            });
+
+            // Close progress dialog
+            await progressSwal.close();
+
+            // Handle success
+            if (response.status === 201) {
+                await Swal.fire({
                     title: 'Success!',
-                    text: 'Video added successfully!',
+                    text: 'Video added successfully',
                     icon: 'success',
-                    confirmButtonText: 'OK',
-                }).then(() => {
-                    navigate('/ListVideo'); // Navigate after success
+                    confirmButtonText: 'OK'
                 });
-            } else {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'Something went wrong!',
-                    icon: 'error',
-                    confirmButtonText: 'Try Again',
-                });
+
+                // Reset form
+                setVideoInput({ order: '', subCourse: '' });
+                setVideoFile(null);
+                setThumbnailFile(null);
+                setVideoName('');
+                setThumbnailName('');
+                setVideoPreview(null);
+                setThumbnailPreview(null);
+
+                // Navigate to video list
+                navigate('/ListVideo');
             }
-        }).catch(err => {
+        } catch (error) {
+            // Handle errors
+            const errorMessage = error.response?.data?.message ||
+                error.response?.data?.error ||
+                'Upload failed. Please try again.';
+
             Swal.fire({
                 title: 'Error!',
-                text: 'Network error. Please try again later.',
+                text: errorMessage,
                 icon: 'error',
-                confirmButtonText: 'OK',
+                confirmButtonText: 'OK'
             });
-        });
+        }
     };
 
     return (

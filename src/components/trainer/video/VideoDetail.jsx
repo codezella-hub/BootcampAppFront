@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import Header from '../../student/Header';
-import Footer from '../../student/Footer';
+import Header from '../../commun/Header.jsx'
+import Footer from '../../commun/FooterPrinciple.jsx'
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';

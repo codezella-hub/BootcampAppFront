@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Header from "../cart/Header";
-import Footer from "../cart/Footer";
+import Header from '../commun/Header.jsx'
+import Footer from '../commun/FooterPrinciple.jsx'
 import "./cancel.css";
 
 const Cancel = () => {

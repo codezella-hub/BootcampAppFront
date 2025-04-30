@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 
 import { ArrowRight } from 'lucide-react';
-import './room.css'
+
 import {useNavigate} from "react-router-dom";
 function HomeRooms() {
     const [roomID, setRoomID] = useState("");

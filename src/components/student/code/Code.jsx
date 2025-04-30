@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-import Header from '../Header'
-import Footer from '../../Footer'
+import Header from '../../commun/Header.jsx'
+import Footer from '../../commun/FooterPrinciple.jsx'
 
 const Code = () => {
   const [sourceCode, setSourceCode] = useState('');
