@@ -79,6 +79,9 @@ import TakeQuiz from "./components/Quiz/TakeQuiz.jsx";
 import Success from "./components/payment/success";
 import Cancel from "./components/payment/cancel";
 import Cart from "./components/cart/Cart";
+import HomeRooms from "./components/rooms/HomeRooms.jsx";
+import Room from "./components/rooms/Room.jsx";
+import ChatBot from "./components/chatBot/ChatBot.jsx";
 
 function App() {
   const userId ='88888888'
@@ -112,8 +115,12 @@ function App() {
         <Route path="/" element={<GlobalInterface />} >
           <Route index element={<Home />} />
           <Route path="AllCourses" element={<AllCourses />} />
-        </Route>
+          <Route path="homeRooms" element={<HomeRooms />} />
+          <Route path="chat" element={<ChatBot />} />
 
+
+        </Route>
+        <Route path="room/:roomID" element={<Room />} />
         {/* Auth Routes */}
         <Route path="/login" element={<RedirectAuthenticatedUser><Login /></RedirectAuthenticatedUser>} />
         <Route path="/register" element={<Register />} />
