@@ -116,7 +116,9 @@ const TakeQuiz = () => {
 
         const payload = {
             user_id,
-            quiz_id: id,
+            quiz_id: quiz.id,
+            subCourse_id: quiz.subCourseId,
+            course_id: quiz.courseId,
             answers: quiz.questions.map((q) => {
                 const answer = answers.find((a) => a.question_id === q._id);
                 return {
