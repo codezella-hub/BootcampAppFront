@@ -1,0 +1,122 @@
+/* -------------------------------------------------
+   Global design tokens (couleurs, typographies…)
+-------------------------------------------------- */
+:root {
+    /* Palette principale */
+    --color-primary: #553cdf;
+    --color-primary-gym: #b10d00;
+    --color-primary-kitchen: #ff6d1c;
+
+    /* Neutres & fonds */
+    --color-secondary: #1f1f25;
+    --color-secondary-2: #110c2d;
+    --color-body: #737477;
+    --color-body-2: #f9f8ff;
+    --color-white: #ffffff;
+
+    /* États */
+    --color-success: #3eb75e;
+    --color-danger: #ff0003;
+    --color-warning: #ff8f3c;
+    --color-info: #1ba2db;
+
+    /* Réseaux sociaux (optionnel) */
+    --color-facebook: #3b5997;
+    --color-twitter: #1ba1f2;
+    --color-youtube: #ed4141;
+    --color-linkedin: #0077b5;
+    --color-pinterest: #e60022;
+    --color-instagram: #c231a1;
+    --color-vimeo: #00adef;
+    --color-twitch: #6441a3;
+    --color-discord: #7289da;
+
+    /* Typographie (inter / hind par défaut) */
+    --font-primary: "Inter", sans-serif;
+    --font-secondary: "Hind", sans-serif;
+
+    /* Interlignes & tailles (utiles si tu veux uniformiser) */
+    --h1: 60px;
+    --h2: 40px;
+    --h3: 30px;
+    --h4: 26px;
+    --h5: 24px;
+    --h6: 18px;
+
+    --font-size-b1: 18px;
+    --font-size-b2: 16px;
+    --font-size-b3: 12px;
+
+    --transition: 0.3s;
+}
+
+/* -------------------------------------------------
+   Page background + animation swirl
+-------------------------------------------------- */
+.quiz-bg {
+    min-height: 100vh;
+    /* dégradé radial violet/bleu sombre inspiré de la palette */
+    background: radial-gradient(circle at 30% 30%, var(--color-secondary-2) 0%, var(--color-secondary) 70%);
+    animation: swirl 18s ease-in-out infinite alternate;
+}
+
+@keyframes swirl {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* -------------------------------------------------
+   Glassmorphism cards (héro + questions)
+-------------------------------------------------- */
+.glass-card,
+.glass-card-sm {
+    background: rgba(255, 255, 255, 0.08);      /* vitre très transparente */
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(14px);                 /* effet de flou */
+    -webkit-backdrop-filter: blur(14px);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.glass-card:hover,
+.glass-card-sm:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 34px rgba(0, 0, 0, 0.25);
+}
+
+.glass-card-sm {
+    padding: 1.5rem 1.25rem;
+}
+
+/* Ombres & bordures colorées (succès / danger) */
+.border-success { border-color: var(--color-success) !important; }
+.border-danger  { border-color: var(--color-danger)  !important; }
+
+/* -------------------------------------------------
+   Circular score SVG wrapper (préserve ratio)
+-------------------------------------------------- */
+.circle-wrap {
+    width: 160px;
+    height: 160px;
+    flex-shrink: 0;
+}
+
+/* -------------------------------------------------
+   Spinner ton sur ton (optionnel)
+-------------------------------------------------- */
+.spinner-border.text-light {
+    color: var(--color-primary);
+}
+
+/* -------------------------------------------------
+   Typo utilitaire (optionnel)
+-------------------------------------------------- */
+body {
+    font-family: var(--font-primary);
+    color: var(--color-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--color-white);
+    font-family: var(--font-primary);
+}
