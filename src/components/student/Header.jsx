@@ -5,19 +5,22 @@ import  { useEffect, useState } from 'react';
 import Profile from '../auth/Profile';
 function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
+  
   useEffect(() => {
     const verifyUser = async () => {
+      try {
         const result = await checkAuth();
-        if (result.success) {
-          setIsLoggedIn(true);
-          
-      } else {
-          setIsLoggedIn(false);
+        setIsLoggedIn(result.success); // Directement utiliser le booléen
+      } catch (error) {
+        console.error("Erreur lors de la vérification de l'authentification :", error);
+        setIsLoggedIn(false); // Si une erreur survient, on considère l'utilisateur comme non connecté
       }
-       
     };
+  
 
-    verifyUser(); // Call the function to check authentication status
+    verifyUser();
+   
+    // Call the function to check authentication status
 }, []);
   return (
 <header className="header-one v-2 header--sticky">
@@ -294,9 +297,20 @@ function Header() {
                       <li><a href="blog-details.html">Blog Details</a></li>
                     </ul>
                   </li>
-                  
-                    <a className="has-dropdown" href="/Forums">Forum</a>
-                  
+                  <li className="has-dropdown">
+                    <a className="nav-link" href="#">Forum</a>
+                    <ul className="submenu">
+                    <li><a href="/Forums">Forums</a></li>
+                    <li><a href="/Myforum">My Forum</a></li>
+                    </ul>
+                  </li>
+                  <li className="has-dropdown">
+                  <a className="nav-link" href="/posts">Jobs</a>
+                  <ul className="submenu">
+                    <li><a href="/MyPosts">my offers</a></li>
+                    <li><a href="/MyCandidats">my applications</a></li>
+                    </ul>
+                    </li>
                 </ul>
               </nav>
             </div>
@@ -314,14 +328,14 @@ function Header() {
             </div>
             <div className="buttons-area">
             {isLoggedIn ? (
-                      <Profile></Profile>
-               
+                       <Profile></Profile>
+                      
                
             ) : (
               <>
-              <a href="registration.html" className="rts-btn btn-primary"><Link to="/login">Sign In</Link></a>
-              <a href="registration.html" className="rts-btn btn-primary"><Link to="/register">Sign Up</Link></a>
-              </>
+                      <a href="registration.html" className="rts-btn btn-primary"><Link to="/login">Sign In</Link></a>
+                      <a href="registration.html" className="rts-btn btn-primary"><Link to="/register">Sign Up</Link></a>
+                      </>
             )}
               
             </div>

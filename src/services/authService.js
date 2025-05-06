@@ -56,8 +56,10 @@ const AUTH_STORAGE_KEYS = {
 
 export const logout = async () => {
     try {
-        await axios.post(`${API_URL}/logout`); // Appel à votre fonction logout dans le backend
+        await axios.post(`${API_URL}/logout`, {}, { withCredentials: true }); // Appel à votre fonction logout dans le backend
         localStorage.clear();
+       
+
         isLoggedIn = false ; // Vide le localStorage
     } catch (error) {
         console.error('Logout failed:', error);
@@ -65,7 +67,7 @@ export const logout = async () => {
 };
 
 export const test = () => {
-    return getUserId != null && getUserRole != null;
+    return getUserId == null && getUserRole == null;
 }
    
 

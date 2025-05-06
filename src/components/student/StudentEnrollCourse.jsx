@@ -1,5 +1,6 @@
-
-import Header from '../student/Header'
+import React from 'react'
+import Header from '../commun/Header.jsx'
+import Footer from '../../commun/FooterPrinciple.jsx'
 import LeftSideBar from './LeftSideBar'
 
 function StudentEnrollCourse() {
