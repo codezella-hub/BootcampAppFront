@@ -86,6 +86,7 @@ import Payment from "./components/payment/Payment";
 import Success from "./components/payment/success"; // corrected casing if needed
 import Cancel from "./components/payment/Cancel";
 import CouponList from "./components/coupon/CouponList";
+import EyeTracker from './components/EyeTracker.jsx';
 function App() {
   const userId ='88888888'
   const [cartItems, setCartItems] = useState([]);
@@ -140,6 +141,9 @@ function App() {
         <Route path="CandidatDetailsEntreprise/:id" element={<CandidatDetailsEntreprise />} />
         <Route path="MyCandidats" element={<MyCandidats />} />
         <Route path="updateCandidat/:id" element={<UpdateCandidat />} />
+
+        {/* eyeTracker */}
+        <Route path="/eye-tracker" element={<EyeTracker />} />
 
 
         </Route>

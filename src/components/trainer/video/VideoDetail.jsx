@@ -6,6 +6,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import _ from 'lodash';
 import { useAuthStore } from '../../../store/authStore';
+import HiddenEyeTracker from '../../HiddenEyeTracker.jsx';
 
 function VideoDetail() {
     const { user } = useAuthStore();
@@ -24,6 +25,16 @@ function VideoDetail() {
     // Static user ID for testing
     const STATIC_USER_ID = user._id;
 
+    //eyesTracker
+    const [concentration, setConcentration] = useState(null);
+    const handleLogConcentration = () => {
+        if (concentration !== null) {
+          console.log(`Concentration moyenne pendant la vidéo : ${concentration}%`);
+        } else {
+          console.log("Aucune donnée de concentration disponible pour l’instant.");
+        }
+      };
+      ////////
 
 const handleNavigateToQuiz = () => {
   const courseId = video.subCourse.course;
@@ -339,6 +350,12 @@ const passQuiz = () => {
                         </video>
                     </div>
 
+
+{/* Eye tracking caché */}
+<HiddenEyeTracker onDataUpdate={(value) => setConcentration(value)} />
+
+
+
                     <div style={{ margin: '20px 0' }}>
                         <div className="single-upcoming-events" key={video._id} style={{ margin: '40px 40px 60px 40px' }}>
                             <div className="information">
@@ -354,11 +371,13 @@ const passQuiz = () => {
   <button className="rts-btn btn-primary with-arrow" onClick={handleNavigateToQuiz}>
     Create quiz
   </button>
+  
 )}
+
 
                         </div>
                     </div>
-
+  
                     <div style={{ margin: '20px 0' }}>
                         <div className="single-upcoming-events" key={video._id} style={{ margin: '40px 40px 60px 40px' }}>
                             <div className="information">
@@ -379,6 +398,10 @@ const passQuiz = () => {
                             </button>
                         </div>
                     </div>
+                    {/* Bouton pour voir la concentration moyenne */}
+  <button className="rts-btn btn-primary with-arrow" onClick={handleLogConcentration}>
+        Afficher la concentration dans la console
+      </button>
                 </div>
 
                 <div style={{ flex: 1, maxWidth: '400px' }}>
