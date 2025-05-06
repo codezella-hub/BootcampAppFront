@@ -48,8 +48,12 @@ const passQuiz = () => {
     navigate(`/quiz/${subCourseId}`);
   };
 
+
+
+
     // Fetch initial progress and set video time
     useEffect(() => {
+        
         // Modify fetchInitialProgress
         const fetchInitialProgress = async () => {
             try {
@@ -78,8 +82,30 @@ const passQuiz = () => {
                 }
             }
         };
+
+        ///eyeTracker//////////////
+        const handleUnload = () => {
+            if (concentration !== null && user._id && id) {
+              axios.post('http://localhost:3000/api/concentration', {
+                userId: user._id,
+                videoId: id,
+                concentration: parseFloat(concentration),
+              }).then(() => {
+                console.log('Concentration sauvegardée');
+              }).catch((err) => {
+                console.error('Erreur d\'enregistrement :', err);
+              });
+            }
+          };
+      
+          window.addEventListener('beforeunload', handleUnload);
+          return () => {
+            handleUnload(); // on save aussi lors du démontage
+            window.removeEventListener('beforeunload', handleUnload);
+          };
+          //////////////
         fetchInitialProgress();
-    }, [id]);
+    }, [id,concentration]);
 
     // Modify sendProgressUpdate to handle completion state
     const sendProgressUpdate = async (currentTime) => {
@@ -353,6 +379,7 @@ const passQuiz = () => {
 
 {/* Eye tracking caché */}
 <HiddenEyeTracker onDataUpdate={(value) => setConcentration(value)} />
+    
 
 
 
@@ -398,10 +425,17 @@ const passQuiz = () => {
                             </button>
                         </div>
                     </div>
+
+
                     {/* Bouton pour voir la concentration moyenne */}
-  <button className="rts-btn btn-primary with-arrow" onClick={handleLogConcentration}>
-        Afficher la concentration dans la console
+                    <button className="rts-btn btn-primary with-arrow" onClick={() => {
+        console.log(`Concentration : ${concentration}%`);
+      }}>
+        Afficher concentration
       </button>
+
+
+      
                 </div>
 
                 <div style={{ flex: 1, maxWidth: '400px' }}>
