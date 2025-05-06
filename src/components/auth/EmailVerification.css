@@ -1,0 +1,127 @@
+.email-verification-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    padding: 20px;
+}
+
+.email-verification-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+.title {
+    color: #553CDF;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.instruction {
+    color: #6c757d;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.code-inputs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 10px;
+}
+
+.code-input {
+    width: 50px;
+    height: 60px;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.code-input:focus {
+    border-color: #553CDF;
+    box-shadow: 0 0 0 3px rgba(85, 60, 223, 0.2);
+}
+
+.error-message {
+    color: #dc3545;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.verify-button {
+    background-color: #553CDF;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s;
+}
+
+.verify-button:hover {
+    background-color: #4834b4;
+}
+
+.verify-button:disabled {
+    background-color: #b2a8e6;
+    cursor: not-allowed;
+}
+
+.spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+/* EmailVerification.css */
+.resend-message {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.resend-link {
+    background: none;
+    border: none;
+    color: #553CDF;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    font-size: inherit;
+}
+
+.resend-link:hover {
+    color: #3a2a9c;
+    text-decoration: none;
+}
+
+.resend-link:disabled {
+    color: #b2a8e6;
+    cursor: not-allowed;
+    text-decoration: none;
+}

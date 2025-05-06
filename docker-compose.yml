@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  react_app:
+    build: .
+    container_name: react_app
+    ports:
+      - "5173:80"  # rediriger le port 80 du conteneur vers le port 3000 de l'hôte
+    restart: always
