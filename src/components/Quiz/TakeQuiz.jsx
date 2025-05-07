@@ -4,26 +4,30 @@ import quizApi from "../../services/quizapi";
 import responseApi from "../../services/responseApi";
 import * as blazeface from "@tensorflow-models/blazeface";
 import "@tensorflow/tfjs";
-import { useAuthStore } from '../../store/authStore.js';
+import { useAuthStore } from "../../store/authStore.js";
 
 const TakeQuiz = () => {
     const { user } = useAuthStore();
     const { id } = useParams();
     const [quiz, setQuiz] = useState(null);
+    const [error, setError] = useState("");          // ← added
     const [answers, setAnswers] = useState([]);
     const [startTime, setStartTime] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
     const navigate = useNavigate();
-    const user_id = user._id; // Assuming user._id is the user ID you want to use
+    const user_id = user._id;
 
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
                 const res = await quizApi.getQuizBySubCourse(id);
-                setQuiz(res.data);
 
-                // Initialize answers state with all questions having empty selections
+                if (!res?.data || !res.data.questions?.length) {
+                    throw new Error("QuizNotFound");
+                }
+
+                setQuiz(res.data);
                 setAnswers(
                     res.data.questions.map((q) => ({
                         question_id: q._id,
@@ -34,6 +38,7 @@ const TakeQuiz = () => {
                 setStartTime(Date.now());
             } catch (err) {
                 console.error("Error fetching quiz:", err);
+                setError("Quiz non trouvé. Veuillez vérifier votre cours.");
             }
         };
         fetchQuiz();
@@ -43,12 +48,9 @@ const TakeQuiz = () => {
         setAnswers((prev) =>
             prev.map((a) => {
                 if (a.question_id !== qId) return a;
-
-                // Toggle the selected option
                 const updatedOptions = a.selected_options.includes(value)
-                    ? a.selected_options.filter((opt) => opt !== value) // Remove if already selected
-                    : [...a.selected_options, value]; // Add if not selected
-
+                    ? a.selected_options.filter((opt) => opt !== value)
+                    : [...a.selected_options, value];
                 return { ...a, selected_options: updatedOptions };
             })
         );
@@ -57,11 +59,8 @@ const TakeQuiz = () => {
     const handleSubmit = async () => {
         const endTime = Date.now();
         const timeTaken = Math.floor((endTime - startTime) / 1000);
-
-        // Evaluate each answer based on the selected options and the correct answer.
         const evaluatedAnswers = answers.map((a) => {
             const q = quiz.questions.find((q) => q._id === a.question_id);
-            // Assuming each question object has a "correct" field.
             const correctSet = new Set([q.correct]);
             const selectedSet = new Set(a.selected_options);
             const isCorrect =
@@ -74,28 +73,20 @@ const TakeQuiz = () => {
         const score = (correctCount / quiz.questions.length) * 100;
         const isPassed = score >= 50;
 
-        // If no answer is selected for a question, store a fallback value such as "No Answer"
         const payload = {
             user_id,
             quiz_id: quiz._id,
-            course_id: quiz.courseId,      // ✅ Add this
-            subCourse_id: quiz.subCourseId, // ✅ Add this
-
-
-            answers: evaluatedAnswers.map((a) => {
-                const answerString = a.selected_options.join(", ") || "No Answer";
-                return {
-                    question_id: a.question_id,
-                    selected_option: answerString,
-                    is_correct: a.is_correct,
-                };
-            }),
+            course_id: quiz.courseId,
+            subCourse_id: quiz.subCourseId,
+            answers: evaluatedAnswers.map((a) => ({
+                question_id: a.question_id,
+                selected_option: a.selected_options.join(", ") || "No Answer",
+                is_correct: a.is_correct,
+            })),
             score,
             isPassed,
             timeTaken,
         };
-
-
 
         try {
             console.log("Payload being sent to the backend:", payload);
@@ -110,21 +101,26 @@ const TakeQuiz = () => {
         }
     };
 
-    const autoSubmitZeroScore = async (reason = "Auto-submit") => {
-        const endTime = Date.now();
-        const timeTaken = Math.floor((endTime - startTime) / 1000);
+    const autoSubmitZeroScore = async (reason = "Auto‑submit") => {
+        const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+        const normalizedAnswers = quiz.questions.map((q) => {
+            const existing = answers.find((a) => a.question_id === q._id);
+            return {
+                question_id: q._id,
+                selected_option:
+                    existing?.selected_options?.length
+                        ? existing.selected_options.join(", ")
+                        : "No Answer",
+                is_correct: false,
+            };
+        });
 
         const payload = {
             user_id,
-            quiz_id: id,
-            answers: quiz.questions.map((q) => {
-                const answer = answers.find((a) => a.question_id === q._id);
-                return {
-                    question_id: q._id,
-                    selected_option: answer?.selected_options.join(", ") || "No Answer",
-                    is_correct: false,
-                };
-            }),
+            quiz_id: quiz._id,
+            course_id: quiz.courseId,
+            subCourse_id: quiz.subCourseId,
+            answers: normalizedAnswers,
             score: 0,
             isPassed: false,
             attemptNumber: 1,
@@ -132,16 +128,17 @@ const TakeQuiz = () => {
         };
 
         try {
-            const res = await responseApi.submitResponse(payload);
+            console.log("Auto‑submit payload ➜", payload);
+            const { data } = await responseApi.submitResponse(payload);
             setSubmitted(true);
-            alert(`Quiz failed! Reason: ${reason}`);
-            navigate(`/quizResult/${res.data._id}`);
+            alert(`Quiz failed!\nReason: ${reason}`);
+            navigate(`/quizResult/${data._id}`);
         } catch (err) {
-            console.error("Auto-submit error:", err);
+            console.error("Auto‑submit error:", err);
+            alert("Failed to auto‑submit your quiz. Please check your connection.");
         }
     };
 
-    // Auto-submit if the user changes tabs
     useEffect(() => {
         const handleVisibilityChange = async () => {
             if (document.visibilityState === "hidden" && !submitted && quiz) {
@@ -153,7 +150,6 @@ const TakeQuiz = () => {
             document.removeEventListener("visibilitychange", handleVisibilityChange);
     }, [quiz, answers, startTime, submitted]);
 
-    // Face detection using Blazeface model
     useEffect(() => {
         let model;
         let video = document.createElement("video");
@@ -165,8 +161,6 @@ const TakeQuiz = () => {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                 video.srcObject = stream;
                 video.play();
-
-                // Add video preview to the document
                 document.body.appendChild(video);
                 video.style.position = "fixed";
                 video.style.bottom = "10px";
@@ -210,9 +204,11 @@ const TakeQuiz = () => {
 
     const currentQuestion = quiz?.questions[currentIndex];
     const selectedOptions =
-        answers.find((a) => a.question_id === currentQuestion?._id)?.selected_options || [];
+        answers.find((a) => a.question_id === currentQuestion?._id)
+            ?.selected_options || [];
     const progress = ((currentIndex + 1) / (quiz?.questions.length || 1)) * 100;
 
+    if (error) return <p style={{ textAlign: "center", marginTop: "2rem" }}>{error}</p>; // ← added
     if (!quiz) return <p>Loading quiz...</p>;
     if (submitted) return <p>✅ Quiz submitted! Score will be reviewed.</p>;
 
@@ -270,9 +266,7 @@ const TakeQuiz = () => {
             </div>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <button
-                    onClick={() =>
-                        setCurrentIndex((prev) => Math.max(prev - 1, 0))
-                    }
+                    onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
                     disabled={currentIndex === 0}
                     style={{
                         padding: "10px 20px",
