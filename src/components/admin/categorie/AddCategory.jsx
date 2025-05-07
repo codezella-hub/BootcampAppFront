@@ -91,7 +91,7 @@ AddCategory() {
                     icon: 'success',
                     confirmButtonText: 'OK',
                 }).then(() => {
-                    navigate('/login'); // Navigate after success
+                    navigate('/ListCategory'); // Navigate after success
                 });
             } else {
                 Swal.fire({
@@ -116,7 +116,7 @@ AddCategory() {
 
     return (
         <div>    {/* banner area start */}
-            <Header />
+
             <div>
                 {/* bread crumb area */}
                 <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
@@ -312,7 +312,7 @@ AddCategory() {
             </div>
 
 
-            <Footer />
+
 
         </div>
     )

@@ -15,7 +15,7 @@ function ListSubCourse() {
 
   useEffect(() => {
     document.title = "List of courses";
-    axios.get(`/api/SubCourses/course/`)
+    axios.get(`/api/SubCourses/`)
       .then(res => {
         if (res.status === 200) {
           setSubCourse(res.data);

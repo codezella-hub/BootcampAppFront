@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/auth/Login';
-import Register from './components/auth/Register'; 
+import Register from './components/auth/Register';
+import { useState } from "react";
 
 import StudentEnrollCourse from './components/student/course/StudentEnrollCourse';  
 import Home from './components/Home';
@@ -76,7 +77,19 @@ import QuizList from "./components/Quiz/QuizList.jsx";
 import QuizResult from "./components/Quiz/QuizResult.jsx";
 import TakeQuiz from "./components/Quiz/TakeQuiz.jsx";
 
+import Cart from "./components/cart/Cart";
+import HomeRooms from "./components/rooms/HomeRooms.jsx";
+import Room from "./components/rooms/Room.jsx";
+import ChatBot from "./components/chatBot/ChatBot.jsx";
+import ResponsesUserListe from "./components/Quiz/ResponsesUserListe.jsx";
+import Payment from "./components/payment/Payment";
+import Success from "./components/payment/success"; // corrected casing if needed
+import Cancel from "./components/payment/Cancel";
+import CouponList from "./components/coupon/CouponList";
 function App() {
+  const userId ='88888888'
+  const [cartItems, setCartItems] = useState([]);
+
   const ProtectedRoute = ({ children }) => {
     const { isAuthenticated, user } = useAuthStore();
 
@@ -89,11 +102,11 @@ function App() {
 
   const RedirectAuthenticatedUser = ({ children }) => {
     const { isAuthenticated, user } = useAuthStore();
-  
+
     if (isAuthenticated && user.isVerified) {
       return <Navigate to='/' replace />;
     }
-  
+
     return children;
   };
 
@@ -104,9 +117,15 @@ function App() {
         {/* Global Interface Routes */}
         <Route path="/" element={<GlobalInterface />} >
           <Route index element={<Home />} />
-          <Route path="AllCourses" element={<AllCourses />} />
-        </Route>
 
+          <Route path="AllCourses" element={<AllCourses />} />
+          <Route path="homeRooms" element={<HomeRooms />} />
+          <Route path="chat" element={<ChatBot />} />
+          <Route path="AddCategory" element={<AddCategory />} />
+
+
+        </Route>
+        <Route path="room/:roomID" element={<Room />} />
         {/* Auth Routes */}
         <Route path="/login" element={<RedirectAuthenticatedUser><Login /></RedirectAuthenticatedUser>} />
         <Route path="/register" element={<Register />} />
@@ -118,6 +137,10 @@ function App() {
         {/* Dashboard Routes */}
         <Route path='/dashboard' element={<DashboardInterface />} >
           <Route index element={<MyProfile />} />
+
+        <Route path="ListCourseAdmin" element={<ListCourseAdmin />} />
+          <Route path="ListCategory" element={<ListCategory />} />
+
         </Route>
 
         {/* Profile Routes */}
@@ -214,6 +237,17 @@ function App() {
 
         <Route path={"/quizResult/:responseId"} element={<QuizResult/>} />
         <Route path={"/quiz/:id"} element={<TakeQuiz/>} />
+
+        <Route path='/respenses' element={<DashboardInterface />} >
+          <Route index element={<ResponsesUserListe />} />
+        </Route>
+
+
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Payment />} />
+        <Route path="/success" element={<Success />} />
+        <Route path="/cancel" element={<Cancel />} />
+        <Route path="/admin/coupons" element={<CouponList />} />
 
         {/* Not found  Route */}
         <Route path={"/*"} element={<Notfound/>} />

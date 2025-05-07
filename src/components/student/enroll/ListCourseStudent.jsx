@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import Header from '../Header'
+import Header from '../../commun/Header.jsx'
+import Footer from '../../commun/FooterPrinciple.jsx'
 import LeftSideBar from '../LeftSideBar'
 import axios from 'axios';
 import Swal from 'sweetalert2';

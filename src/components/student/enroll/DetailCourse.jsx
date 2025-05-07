@@ -1,6 +1,6 @@
 import React, { use, useEffect, useState } from 'react';
-import Header from '../../student/Header';
-import Footer from '../../student/Footer';
+import Header from '../../commun/Header.jsx'
+import Footer from '../../commun/FooterPrinciple.jsx'
 import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -381,7 +381,7 @@ const checkPaymentStatus = () => {
                                                         ) : (
                                                             ListVideos.length > 0 ? (
                                                                 ListVideos.map(video => (
-                                                                    <Link key={video._id} to={`/VideoDetail/${video._id}`} className="play-vedio-wrapper">
+                                                                    <Link key={video._id} to={`/VideoDetail/${video._id}/${subCourse._id}`} className="play-vedio-wrapper">
                                                                         <div className="left">
                                                                             <i className="fa-light fa-circle-play" />
                                                                             <span>{video.title}</span>

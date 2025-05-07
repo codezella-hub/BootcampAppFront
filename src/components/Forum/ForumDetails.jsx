@@ -236,7 +236,7 @@ function ForumDetails() {
                     <div class="recent-post-single">
                                     <div class="thumbnail">
                                         <a href={`/forum/${forum._id}`}><img src={`http://localhost:3000${forum.image}`} alt="forum" key={forum._id}
-                                        style={{ width: "100px", height: "100px" }}/></a>
+                                        style={{ width: "100px", height: "10 0px" }}/></a>
                                     </div>
                                     <div class="content-area text-start">
                                       

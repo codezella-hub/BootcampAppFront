@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams ,useNavigate} from "react-router-dom";
 import postApi from "../../services/postApi.js";
-import Header from "../commun/Header.jsx";
+import Header from '../commun/Header.jsx'
 import { useAuthStore } from '../../store/authStore.js';
 
 const AddCandidat = () => {

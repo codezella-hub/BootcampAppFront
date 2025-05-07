@@ -7,6 +7,7 @@ import {
   useElements,
 } from '@stripe/react-stripe-js';
 import { getOrderByUserId } from '../../services/orderAPI';
+import {useAuthStore} from "../../store/authStore.js";
 
 const stripePromise = loadStripe('pk_test_51QyQ9GPr7Wx2VC7r2cJomZjfiM47Pypu2bMv8AVNvkuhHJTkXv90ScMt0Ve2qMVpy6J88GBc6pIQNHdJdFqLq6zd00eUXIns2i');
 
@@ -20,11 +21,11 @@ const CheckoutForm = ({ onSuccess, onFailure }) => {
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
-
+  const { user } = useAuthStore();
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const userId = "88888888"; // Replace with dynamic user ID retrieval
+        const userId = user._id; // Replace with dynamic user ID retrieval
         const orders = await getOrderByUserId(userId);
         const total = orders.reduce((total, order) => total + calculateSubtotal(order?.items || []), 0);
         setTotalAmount(total);

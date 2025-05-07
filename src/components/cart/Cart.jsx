@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { getOrders, deleteOrder, getCourseById } from "../../services/orderAPI";
 import { loadStripe } from "@stripe/stripe-js";
-import Header from "./Header";
-import Footer from "./Footer";
+
+import Footer from "../cart/Footer";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 import "./Cart.css";
+import Header from "../commun/Header.jsx";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -24,54 +24,48 @@ const Cart = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const data = await getOrders();
+      const userString = localStorage.getItem("auth-storage");
+      const userId = userString ? JSON.parse(userString)?.state?.user?._id : null;
 
-      const enrichedOrders = await Promise.all(
-        data.map(async (order) => {
-          const enrichedItems = await Promise.all(
-            order.items.map(async (item) => {
-              let courseTitle = "Untitled Course";
-              let courseImage = "/assets/images/shop/01.jpg";
+      if (!userId) {
+        console.warn("No userId found in localStorage.");
+        setOrders([]);
+        return;
+      }
 
-              const courseId =
-                typeof item.courseId === "object"
-                  ? item.courseId._id?.toString?.() || item.courseId.toString?.()
-                  : item.courseId;
+      const response = await axios.get(`/api/orders/user-id/${userId}`);
+      const data = response.data;
 
-              if (!courseId) {
-                console.warn("Missing courseId in item:", item);
-                return { ...item, courseTitle, courseImage };
-              }
+      if (!Array.isArray(data)) {
+        console.warn("Expected array but got:", data);
+        setOrders([]);
+        return;
+      }
 
-              try {
-                const course = await getCourseById(courseId);
-                if (course) {
-                  courseTitle = course.title;
-                  courseImage = course.courseImage;
-                } else {
-                  console.warn("Course not found for ID:", courseId);
-                }
-              } catch (err) {
-                console.warn("Failed to fetch course details", err);
-              }
-
-              return {
-                ...item,
-                courseTitle,
-                courseImage,
-                courseId: courseId,
-              };
-            })
-          );
-
-          return { ...order, items: enrichedItems };
-        })
-      );
+      // Add fallback for missing info
+      const enrichedOrders = data.map((order) => ({
+        ...order,
+        items: order.items.map((item) => ({
+          ...item,
+          courseTitle: item?.courseId?.title || "Untitled Course",
+          courseImage: item?.courseId?.courseImage || "/assets/images/shop/01.jpg",
+          courseId:
+            typeof item.courseId === "object"
+              ? item.courseId._id?.toString() || item.courseId.toString()
+              : item.courseId,
+        })),
+      }));
 
       setOrders(enrichedOrders);
     } catch (error) {
-      console.error("Error fetching orders:", error);
-      setOrders([]);
+      if (error.response?.status === 404) {
+        console.info("No orders found for this user.");
+        setOrders([]);
+      } else {
+        console.error("Error fetching orders:", error);
+        Swal.fire("Error", "Failed to load your cart. Please try again.", "error");
+        setOrders([]);
+      }
     } finally {
       setLoading(false);
     }
@@ -80,28 +74,26 @@ const Cart = () => {
   const handleDeleteOrder = async (orderId) => {
     if (!orderId) return;
 
-    Swal.fire({
+    const confirmResult = await Swal.fire({
       title: "Are you sure?",
-      text: "Do you really want to delete this order?",
+      text: "Do you want to delete this item from your cart?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await deleteOrder(orderId);
-          setOrders((prevOrders) =>
-            prevOrders.filter((order) => order._id !== orderId)
-          );
-          Swal.fire("Deleted!", "Your order has been deleted.", "success");
-        } catch (error) {
-          console.error("Error deleting order:", error);
-          Swal.fire("Error", "Failed to delete the order.", "error");
-        }
-      }
     });
+
+    if (!confirmResult.isConfirmed) return;
+
+    try {
+      await axios.delete(`/api/orders/${orderId}`);
+      setOrders((prev) => prev.filter((order) => order._id !== orderId));
+      Swal.fire("Deleted!", "Your order has been removed.", "success");
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      Swal.fire("Error", "Failed to delete the order. Please try again.", "error");
+    }
   };
 
   const calculateSubtotal = (items = []) =>
@@ -116,50 +108,108 @@ const Cart = () => {
     return subtotal - discount;
   };
 
-  const handleApplyCoupon = (e) => {
+  const handleApplyCoupon = async (e) => {
     e.preventDefault();
     const trimmed = couponCode.trim();
 
-    const validCoupons = {
-      HelloWorld: 10,
-      WELCOME25: 25,
-      STUDENT50: 50,
-    };
-
-    if (!trimmed || !validCoupons[trimmed]) {
+    if (!trimmed) {
       setDiscountPercent(0);
-      Swal.fire("Invalid Coupon", "This coupon does not exist.", "error");
+      Swal.fire("Invalid Coupon", "Please enter a coupon code.", "error");
       return;
     }
 
-    const discount = validCoupons[trimmed];
-    setDiscountPercent(discount);
-    Swal.fire("Coupon Applied!", `You received a ${discount}% discount.`, "success");
+    try {
+      const response = await axios.post("/api/coupons/validate", {
+        couponCode: trimmed,
+      });
+
+      const { discount, valid } = response.data;
+
+      if (!valid) {
+        setDiscountPercent(0);
+        Swal.fire("Invalid Coupon", "This coupon does not exist.", "error");
+      } else {
+        setDiscountPercent(discount);
+        Swal.fire(
+          "Coupon Applied!",
+          `You received a ${discount}% discount.`,
+          "success"
+        );
+      }
+    } catch (error) {
+      console.error("Error applying coupon:", error);
+      Swal.fire("Error", "Failed to apply coupon. Please try again.", "error");
+    }
   };
 
   const handleCheckout = async () => {
+    setProcessingCheckout(true);
+  
     try {
-      setProcessingCheckout(true);
       const stripe = await stripePromise;
       if (!stripe) throw new Error("Stripe failed to load");
-
-      const response = await axios.post("/api/payment/create-checkout-session", {
-        items: orders.flatMap((order) => order.items),
+  
+      const userString = localStorage.getItem("auth-storage");
+      const userId = userString ? JSON.parse(userString)?.state?.user?._id : null;
+  
+      if (!userId) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Required',
+          text: 'Please log in to proceed to checkout.',
+        });
+        return;
+      }
+  
+      const items = orders.flatMap((order) =>
+        order.items.map((item) => ({
+          courseId: item.courseId,
+          quantity: item.quantity,
+          price: item.price,
+          title: item.courseTitle,
+          image: item.courseImage,
+        }))
+      );
+  
+      const payload = {
+        items,
+        amount: calculateTotal(),
+        userid: userId,
         couponCode: couponCode.trim(),
-      });
-
+      };
+  
+      console.log("📦 Sending payload to backend:", payload);
+  
+      const response = await axios.post("/api/payment/create-checkout-session", payload);
+  
+      const sessionId = response.data.sessionId || response.data.id;
+      if (!sessionId) {
+        throw new Error("No session ID returned from the backend");
+      }
+  
+      // ✅ Add after the Stripe redirect: on success, clear the cart + enroll
       const { error } = await stripe.redirectToCheckout({
-        sessionId: response.data.sessionId,
+        sessionId,
       });
-
-      if (error) throw new Error(error.message);
+  
+      if (!error) {
+        // Optional: we don't do anything here because Stripe will redirect
+      } else {
+        console.error("Stripe redirect error:", error);
+        throw new Error(error.message);
+      }
     } catch (error) {
-      console.error("Error during checkout:", error);
-      Swal.fire("Error", "Checkout failed. Please try again.", "error");
+      console.error("❌ Error during checkout:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Checkout Error',
+        text: error?.response?.data?.error || error.message || 'Checkout failed. Please try again.',
+      });
     } finally {
       setProcessingCheckout(false);
     }
   };
+  
 
   return (
     <div className="page-container">
@@ -169,7 +219,7 @@ const Cart = () => {
         <div className="container">
           <div className="row">
             <div className="col-lg-12">
-            <div className="breadcrumb-main-wrapper">
+              <div className="breadcrumb-main-wrapper">
                 <h1 className="title">Cart</h1>
                 <div className="pagination-wrapper">
                   <Link to="/">Home</Link>
@@ -204,44 +254,54 @@ const Cart = () => {
                   </thead>
                   <tbody>
                     {orders.map((order) =>
-                      order?.items?.map((item) => {
-                        const courseIdStr =
-                          typeof item.courseId === "object"
-                            ? item.courseId._id?.toString?.() || item.courseId.toString?.()
-                            : item.courseId;
-
-                        return (
-                          <tr key={`${order?._id}-${courseIdStr}`}>
-                            <td className="product-remove">
-                              <button onClick={() => handleDeleteOrder(order?._id)} className="remove" aria-label="Remove this item">
-                                ✕
-                              </button>
-                            </td>
-                            <td className="product-thumbnail">
-                              <Link to={`/course/${courseIdStr}`}>
-                                <img src={item?.courseImage || "/assets/images/shop/01.jpg"} alt={item?.courseTitle || "Course"} className="cart-image" />
-                              </Link>
-                            </td>
-                            <td className="product-name">
-                              <Link to={`/course/${courseIdStr}`}>{item?.courseTitle || "Untitled Course"}</Link>
-                            </td>
-                            <td className="product-price">
-                              <span className="amount">TND {(item?.price || 0).toFixed(2)}</span>
-                            </td>
-                            <td className="product-quantity">{item?.quantity || 1}</td>
-                            <td className="product-subtotal">
-                              <span className="amount">
-                                TND {((item?.price || 0) * (item?.quantity || 1)).toFixed(2)}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })
+                      order.items.map((item) => (
+                        <tr key={`${order._id}-${item._id}`}>
+                          <td className="product-remove">
+                            <button
+                              onClick={() => handleDeleteOrder(order._id)}
+                              className="remove"
+                              aria-label="Remove this item"
+                            >
+                              ✕
+                            </button>
+                          </td>
+                          <td className="product-thumbnail">
+                            <Link to={`/course/${item.courseId}`}>
+                              <img
+                                src={item.courseImage}
+                                alt={item.courseTitle}
+                                className="cart-image"
+                              />
+                            </Link>
+                          </td>
+                          <td className="product-name">
+                            <Link to={`/course/${item.courseId}`}>
+                              {item.courseTitle}
+                            </Link>
+                          </td>
+                          <td className="product-price">
+                            <span className="amount">
+                              TND {(item?.price || 0).toFixed(2)}
+                            </span>
+                          </td>
+                          <td className="product-quantity">
+                            {item?.quantity || 1}
+                          </td>
+                          <td className="product-subtotal">
+                            <span className="amount">
+                              TND {((item?.price || 0) * (item?.quantity || 1)).toFixed(2)}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
                     )}
                     <tr>
                       <td colSpan="6" className="actions">
-                      <div className="coupon-section" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                      <form onSubmit={handleApplyCoupon} className="coupon">
+                        <div
+                          className="coupon-section"
+                          style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
+                        >
+                          <form onSubmit={handleApplyCoupon} className="coupon">
                             <input
                               type="text"
                               name="coupon_code"
@@ -284,7 +344,7 @@ const Cart = () => {
                       </tr>
                     </tbody>
                   </table>
-<div className="proceed-to-checkout" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                  <div className="proceed-to-checkout" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                     <button
                       onClick={handleCheckout}
                       disabled={processingCheckout}

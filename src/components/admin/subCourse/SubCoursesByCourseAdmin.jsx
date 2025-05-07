@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../../student/Header';
+import Header from '../../commun/Header.jsx'
+import Footer from '../../commun/FooterPrinciple.jsx'
 import LeftSideBar from '../../student/LeftSideBar';
 import axios from 'axios';
 import { Link, useParams } from 'react-router-dom';

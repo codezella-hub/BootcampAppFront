@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import Header from '../../student/Header';
-import Footer from '../../student/Footer';
+import Header from '../../commun/Header.jsx'
+import Footer from '../../commun/FooterPrinciple.jsx'
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -30,6 +30,12 @@ const handleNavigateToQuiz = () => {
   const subCourseId = video.subCourse._id;
   navigate(`/quiz-create/${courseId}/${subCourseId}`);
 };
+
+const passQuiz = () => {
+    const courseId = video.subCourse.course;
+    const subCourseId = video.subCourse._id;
+    navigate(`/quiz/${subCourseId}`);
+  };
 
     // Fetch initial progress and set video time
     useEffect(() => {
@@ -341,7 +347,7 @@ const handleNavigateToQuiz = () => {
                                 </a>
                             </div>
                             {user.role === 'user' ? (
-  <button className="rts-btn btn-primary with-arrow" onClick={handleStartQuiz}>
+  <button className="rts-btn btn-primary with-arrow" onClick={passQuiz}>
     Start quiz
   </button>
 ) : (
