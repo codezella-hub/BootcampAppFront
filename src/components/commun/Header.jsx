@@ -111,7 +111,14 @@ function Header() {
                                                         <li className="has-dropdown">
                                                             <Link className="nav-link" >Courses</Link>
                                                             <ul className="submenu">
-                                                                <li><Link to="/ListCourseStudent">List Course</Link></li>
+                                                                <li><Link to="/allcourses">List Course</Link></li>
+
+                                                            </ul>
+                                                        </li>
+                                                        <li className="has-dropdown">
+                                                            <Link className="nav-link" >Dashboard</Link>
+                                                            <ul className="submenu">
+                                                                <li><Link to="/dashboard">mm</Link></li>
 
                                                             </ul>
                                                         </li>
@@ -142,14 +149,8 @@ function Header() {
 
                                                         {user.role === "professor" && (
                                                             <>
-                                                                <li className="has-dropdown">
-                                                                    <Link className="nav-link"
-                                                                          to="/ListSubCourse">SubCourses</Link>
-                                                                </li>
-                                                                <li className="has-dropdown">
-                                                                    <Link className="nav-link"
-                                                                          to="/ListVideo">Videos</Link>
-                                                                </li>
+                                                              
+                                                             
                                                                 <li className="has-dropdown">
                                                                     <Link className="nav-link"
                                                                           to="/Code">Code</Link>

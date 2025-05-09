@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../../commun/Header.jsx'
-import Footer from '../../commun/FooterPrinciple.jsx'
+import Header from '../../commun/Header.jsx';
+import Footer from '../../commun/FooterPrinciple.jsx';
 import LeftSideBar from '../../student/LeftSideBar';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -10,22 +10,30 @@ import { useAuthStore } from '../../../store/authStore';
 function ListCourse() {
   const navigate = useNavigate();
   const [ListCourses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { user} = useAuthStore();
-  const userId = user._id; // Replace with the actual user ID you want to use
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState('');
+  const [categories, setCategories] = useState([]);
+  const { user } = useAuthStore();
+  const userId = user._id;
 
   useEffect(() => {
     document.title = "List of courses";
     fetchCourses();
+    fetchCategories();
   }, []);
+
+  useEffect(() => {
+    filterCourses();
+  }, [searchTerm, selectedCategoryId, ListCourses]);
 
   const fetchCourses = async () => {
     try {
       setIsLoading(true);
       const response = await axios.get(`/api/courses/user/${userId}`);
-      
+
       if (response.status === 200) {
-        // Make sure the response data matches our expected structure
         const coursesData = response.data.courses || response.data;
         setCourses(Array.isArray(coursesData) ? coursesData : []);
       }
@@ -35,6 +43,51 @@ function ListCourse() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get('/api/categories');
+      if (response.status === 200) {
+        setCategories(response.data.categories || []);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  const filterCourses = () => {
+    let filtered = [...ListCourses];
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(course =>
+        course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply category filter
+    if (selectedCategoryId) {
+      filtered = filtered.filter(course =>
+        course.category && course.category._id === selectedCategoryId
+      );
+    }
+
+    setFilteredCourses(filtered);
+  };
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleCategoryFilter = (e) => {
+    setSelectedCategoryId(e.target.value);
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedCategoryId('');
   };
 
   const handleDeleteCourse = (id) => {
@@ -63,47 +116,33 @@ function ListCourse() {
   };
 
   return (
-    <div>
-      <Header />
-      {/* dashboard banner area start */}
-      <div className="dashboard-banner-area-wrapper">
-      <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
-                    <div className="container">
-                        <div className="row">
-                            <div className="col-lg-12">
-                                <div className="breadcrumb-main-wrapper">
-                                    <h1 className="title">List Course</h1>
-                                    <div className="pagination-wrapper">
-                                        <a href="index-2.html">Home</a>
-                                        <i className="fa-regular fa-chevron-right" />
-                                        <a className="active" href="create-course.html">List Course</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-      <div className="dashboard--area-main pt--100">
-        <div className="container">
-          <div className="row g-5">
-            <div className="col-lg-3">
-              <LeftSideBar />
-            </div>
-
-            <div className="col-lg-9">
+    <div className="col-lg-9">
               <div className="exrolled-course-wrapper-dashed">
-                <h5 className="title">My Courses</h5>
+              
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
                   <li className="nav-item" role="presentation">
                     <button className="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">
-                      My Courses
+                      List Courses
                     </button>
                   </li>
                 </ul>
 
                 <div className="tab-content mt--30" id="myTabContent">
+                {(user.role === 'admin' || user.role === 'professor') ? (
+  <div className="mt--30">
+    <div className="d-flex align-items-center justify-content-between mb-3">
+      <h5 className="title mb-0">All Courses</h5>
+      <div>
+        <Link to={`/AddCourse`} type="button" className="rts-btn btn-primary">
+        Add New Course
+        </Link>
+      </div>
+    </div>
+
+  </div>
+) : null}
+
+                  <br /><br />
                   <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                     {isLoading ? (
                       <div className="text-center py-5">
@@ -112,12 +151,12 @@ function ListCourse() {
                         </div>
                         <p>Loading courses...</p>
                       </div>
-                    ) : ListCourses.length > 0 ? (
+                    ) : filteredCourses.length > 0 ? (
                       <div className="row g-5">
-                        {ListCourses.map(item => (
+                        {filteredCourses.map(item => (
                           <div className="col-lg-4 col-md-6 col-sm-12 col-12" key={item._id}>
                             <div className="single-course-style-three enroll-course">
-                              <Link to={`/DetailCourseTrainer/${item._id}`} className="thumbnail">
+                              <Link to={`/DetailCourse/${item._id}`} className="thumbnail">
                                 <img
                                   src={`http://localhost:3000${item.courseImage}`}
                                   alt={item.title}
@@ -158,26 +197,28 @@ function ListCourse() {
                                     <span>{item.courseDuration} hours</span>
                                   </div>
                                 </div>
-                                <div className="course-actions mt-3">
-                                  <button 
-                                    onClick={() => navigate(`/SubCoursesByCourse/${item._id}`)} 
-                                    className="rts-btn btn-border"
-                                  >
-                                    SubCourses
-                                  </button>
-                                  <button 
-                                    onClick={() => navigate(`/UpdateCourse/${item._id}`)} 
-                                    className="rts-btn btn-border"
-                                  >
-                                    Update
-                                  </button>
-                                  <button 
-                                    onClick={() => handleDeleteCourse(item._id)} 
-                                    className="rts-btn btn-border"
-                                  >
-                                    Delete
-                                  </button>
-                                </div>
+                                {(user.role === 'admin' || user.role === 'professor') ? (
+                                  <div className="course-actions mt-3">
+                                    <button
+                                      onClick={() => navigate(`/SubCoursesByCourse/${item._id}`)}
+                                      className="rts-btn btn-border"
+                                    >
+                                      SubCourses
+                                    </button>
+                                    <button
+                                      onClick={() => navigate(`/UpdateCourse/${item._id}`)}
+                                      className="rts-btn btn-border"
+                                    >
+                                      Update
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteCourse(item._id)}
+                                      className="rts-btn btn-border"
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
+                                ) : null}
                               </div>
                             </div>
                           </div>
@@ -185,20 +226,14 @@ function ListCourse() {
                       </div>
                     ) : (
                       <div className="text-center py-5">
-                        <p>No courses found. Create your first course!</p>
-                        <Link to="/AddCourse" className="rts-btn btn-primary">
-                          Add New Course
-                        </Link>
+                        <p>No courses found matching your criteria.</p>
+
                       </div>
                     )}
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 

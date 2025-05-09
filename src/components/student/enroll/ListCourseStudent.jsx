@@ -5,12 +5,14 @@ import LeftSideBar from '../LeftSideBar'
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { Link } from 'react-router-dom';
+import { useAuthStore } from '../../../store/authStore';
 
 function ListCourseStudent() {
-
+  const { user } = useAuthStore();
   const [ListCourses, setCourses] = useState([]);
 
   useEffect(() => {
+
     document.title = "List of courses";
 
     axios.get(`/api/courses`)
@@ -26,28 +28,29 @@ function ListCourseStudent() {
   }, []);
   const handleDeleteCourse = (id) => {
     Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#007C00',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Confirm!'
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#007C00',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirm!'
     }).then((result) => {
-        if (result.isConfirmed) {
-            axios.delete(`/api/deleteCourse/${id}`)
-                .then(res => {
-                    if (res.status === 200) {
-                        Swal.fire('Deleted!', 'Course has been deleted.', 'success');
-                        setCourses(ListCourses.filter(course => course._id !== id));
-                    }
-                })
-                .catch(error => {
-                    Swal.fire('Error!', 'Failed to delete category.', 'error');
-                });
-        }
+      if (result.isConfirmed) {
+        axios.delete(`/api/deleteCourse/${id}`)
+          .then(res => {
+            if (res.status === 200) {
+              Swal.fire('Deleted!', 'Course has been deleted.', 'success');
+              setCourses(ListCourses.filter(course => course._id !== id));
+            }
+          })
+          .catch(error => {
+            Swal.fire('Error!', 'Failed to delete category.', 'error');
+          });
+      }
     });
-};
+  };
+  console.log(user);
   return (
 
     <div>
@@ -58,24 +61,21 @@ function ListCourseStudent() {
           <div className="row">
             <div className="col-lg-12">
               <div className="dashboard-banner-area-start bg_image  student-dashboard">
-                <div className="rating-area-banner-dashboard">
-                  <a href="become-instructor.html" className="create-btn"><i className="fa-regular fa-circle-plus" /> Become an Instructor</a>
-                </div>
+
                 <div className="author-profile-image-and-name">
                   <div className="profile-pic">
-                    <img src="/assets/images/dashboard/04.png" alt="dashboard" />
+                    <img src={"http://localhost:3000/uploads/user/" + user.picture} alt="dashboard" style={{
+                      width: "220px",
+                      height: "220px",
+                      borderRadius: "50%",
+                      objectFit: "cover"
+                    }} />
                   </div>
                   <div className="name-desig">
-                    <h1 className="title">Hachem Dhawadi</h1>
+                    <h1 className="title">{user.firstname + " " + user.lastname}</h1>
                     <div className="course-vedio">
-                      <div className="single">
-                        <i className="fa-thin fa-book" />
-                        <span>5 Course Enrolled</span>
-                      </div>
-                      <div className="single">
-                        <i className="fa-thin fa-file-certificate" />
-                        <span>4 Certificate</span>
-                      </div>
+
+
                     </div>
                   </div>
                 </div>
@@ -90,7 +90,7 @@ function ListCourseStudent() {
           <div className="container">
             <div className="row g-5">
               <div className="col-lg-3">
-                <LeftSideBar />
+               
               </div>
               <div className="col-lg-9">
                 <div className="exrolled-course-wrapper-dashed">
@@ -119,7 +119,7 @@ function ListCourseStudent() {
                                   <div className="tag-thumb">
                                     <span>{item.title}</span>
                                   </div>
-                                  </Link>
+                                </Link>
                                 <div className="body-area">
                                   <div className="course-top">
                                     <div className="tags">Best Seller</div>
