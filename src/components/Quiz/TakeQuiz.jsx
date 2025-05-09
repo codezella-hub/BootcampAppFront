@@ -151,56 +151,102 @@ const TakeQuiz = () => {
     }, [quiz, answers, startTime, submitted]);
 
     useEffect(() => {
-        let model;
-        let video = document.createElement("video");
+        let model, rafId, stream;
+        const video = document.createElement("video");
         let noFaceCount = 0;
 
+        // Fonction pour tout stopper et nettoyer
+        const stopTracking = () => {
+            // 1) annuler la boucle
+            if (rafId) cancelAnimationFrame(rafId);
+
+            // 2) arrêter la caméra
+            if (stream) {
+                stream.getTracks().forEach((t) => t.stop());
+                stream = null;
+            }
+
+            // 3) retirer la vidéo du DOM
+            video.pause();
+            video.srcObject = null;
+            video.remove();
+
+            // 4) libérer la mémoire du modèle
+            if (model && typeof model.dispose === "function") {
+                model.dispose();
+                model = null;
+            }
+        };
+
+        // Boucle de détection
+        const checkFace = async () => {
+            if (submitted || !quiz) return;
+
+            // si l’onglet est caché, on attend juste la visiblité
+            if (document.visibilityState !== "visible") {
+                rafId = requestAnimationFrame(checkFace);
+                return;
+            }
+
+            const predictions = await model.estimateFaces(video, false);
+
+            if (predictions.length === 0) {
+                noFaceCount++;
+                if (noFaceCount > 30) {
+                    await autoSubmitZeroScore("Face not detected");
+                    stopTracking();
+                    return;
+                }
+            } else {
+                noFaceCount = 0;
+            }
+
+            rafId = requestAnimationFrame(checkFace);
+        };
+
+        // Initialisation du tracking
         const initFaceTracking = async () => {
             try {
                 model = await blazeface.load();
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
                 video.srcObject = stream;
                 video.play();
+                Object.assign(video.style, {
+                    position: "fixed",
+                    bottom: "10px",
+                    right: "10px",
+                    width: "200px",
+                    border: "2px solid #ccc",
+                    zIndex: "9999",
+                });
                 document.body.appendChild(video);
-                video.style.position = "fixed";
-                video.style.bottom = "10px";
-                video.style.right = "10px";
-                video.style.width = "200px";
-                video.style.border = "2px solid #ccc";
-                video.style.zIndex = "9999";
 
-                const checkFace = async () => {
-                    if (submitted || !quiz) return;
-                    const predictions = await model.estimateFaces(video, false);
-                    console.log("Face predictions:", predictions);
-
-                    if (predictions.length === 0) {
-                        noFaceCount++;
-                        if (noFaceCount > 30) {
-                            await autoSubmitZeroScore("Face not detected");
-                        } else {
-                            requestAnimationFrame(checkFace);
-                        }
-                    } else {
-                        noFaceCount = 0;
-                        requestAnimationFrame(checkFace);
-                    }
+                video.onloadeddata = () => {
+                    rafId = requestAnimationFrame(checkFace);
                 };
-
-                video.onloadeddata = () => checkFace();
             } catch (err) {
                 console.warn("Webcam or model failed:", err);
             }
         };
 
+        // Écoute du changement de visibilité pour fermer la caméra immédiatement
+        const handleVisibility = () => {
+            if (document.visibilityState === "hidden") {
+                stopTracking();
+            }
+        };
+        document.addEventListener("visibilitychange", handleVisibility);
+
         initFaceTracking();
 
         return () => {
-            video.pause();
-            video.srcObject?.getTracks().forEach((track) => track.stop());
-            video.remove();
+            // cleanup final
+            stopTracking();
+            document.removeEventListener("visibilitychange", handleVisibility);
         };
     }, [quiz, answers, startTime, submitted]);
+
 
     const currentQuestion = quiz?.questions[currentIndex];
     const selectedOptions =
@@ -214,100 +260,120 @@ const TakeQuiz = () => {
 
     return (
         <div
-            className="container"
-            style={{ padding: "2rem", maxWidth: "600px", margin: "auto" }}
+            style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "100vh",
+                padding: "2rem"
+            }}
         >
-            <h2>{quiz.title}</h2>
             <div
+                className="container"
                 style={{
-                    height: "10px",
-                    background: "#e0e0e0",
-                    borderRadius: "5px",
-                    overflow: "hidden",
-                    marginBottom: "20px",
+
+                    width: "90%",
+                    padding: "2rem",
+                    background: "#fff",
+                    borderRadius: "8px",
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
                 }}
             >
+                <h2 style={{textAlign: "center"}}>{quiz.title}</h2>
                 <div
                     style={{
-                        width: `${progress}%`,
-                        backgroundColor: "#553CDF",
-                        height: "100%",
-                    }}
-                ></div>
-            </div>
-            <div style={{ marginBottom: "20px" }}>
-                <h4>
-                    {currentIndex + 1}. {currentQuestion.text}
-                </h4>
-                {currentQuestion.options.map((opt, idx) => (
-                    <div key={idx} style={{ marginBottom: "8px" }}>
-                        <label
-                            style={{
-                                display: "block",
-                                padding: "10px",
-                                background: selectedOptions.includes(opt)
-                                    ? "#d3c8ff"
-                                    : "#f0f0f0",
-                                borderRadius: "8px",
-                                cursor: "pointer",
-                            }}
-                        >
-                            <input
-                                type="checkbox"
-                                value={opt}
-                                checked={selectedOptions.includes(opt)}
-                                onChange={() => handleToggleSelect(currentQuestion._id, opt)}
-                                style={{ marginRight: "10px" }}
-                            />
-                            {opt}
-                        </label>
-                    </div>
-                ))}
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <button
-                    onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
-                    disabled={currentIndex === 0}
-                    style={{
-                        padding: "10px 20px",
-                        backgroundColor: "#ccc",
-                        borderRadius: "6px",
-                        border: "none",
+                        height: "10px",
+                        background: "#e0e0e0",
+                        borderRadius: "5px",
+                        overflow: "hidden",
+                        marginBottom: "20px",
                     }}
                 >
-                    Previous
-                </button>
-                {currentIndex < quiz.questions.length - 1 ? (
-                    <button
-                        onClick={() =>
-                            setCurrentIndex((prev) =>
-                                Math.min(prev + 1, quiz.questions.length - 1)
-                            )
-                        }
+                    <div
                         style={{
-                            padding: "10px 20px",
+                            width: `${progress}%`,
                             backgroundColor: "#553CDF",
-                            color: "white",
-                            borderRadius: "6px",
-                            border: "none",
+                            height: "100%",
                         }}
-                    >
-                        Next
-                    </button>
-                ) : (
+                    ></div>
+                </div>
+                <div style={{marginBottom: "20px"}}>
+                    <h4 style={{textAlign: "center"}}>
+                        {currentIndex + 1}. {currentQuestion.text}
+                    </h4>
+                    {currentQuestion.options.map((opt, idx) => (
+                        <div key={idx} style={{marginBottom: "8px"}}>
+                            <label
+                                style={{
+                                    display: "block",
+                                    padding: "10px",
+                                    background: selectedOptions.includes(opt)
+                                        ? "#d3c8ff"
+                                        : "#f0f0f0",
+                                    borderRadius: "8px",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <input
+                                    type="checkbox"
+                                    value={opt}
+                                    checked={selectedOptions.includes(opt)}
+                                    onChange={() => handleToggleSelect(currentQuestion._id, opt)}
+                                    style={{marginRight: "10px"}}
+                                />
+                                {opt}
+                            </label>
+                        </div>
+                    ))}
+                </div>
+                <div style={{display: "flex", justifyContent: "space-between" , gap: "20px", }}>
                     <button
-                        onClick={handleSubmit}
+                        onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
+                        disabled={currentIndex === 0}
                         style={{
                             padding: "10px 20px",
-                            backgroundColor: "green",
-                            color: "white",
+                            backgroundColor: "#ccc",
                             borderRadius: "6px",
                             border: "none",
+                            cursor: "pointer"
                         }}
                     >
-                        Submit Quiz
+                        Previous
                     </button>
-                )}
+                    {currentIndex < quiz.questions.length - 1 ? (
+                        <button
+                            onClick={() =>
+                                setCurrentIndex((prev) =>
+                                    Math.min(prev + 1, quiz.questions.length - 1)
+                                )
+                            }
+                            style={{
+                                padding: "10px 20px",
+                                backgroundColor: "#553CDF",
+                                color: "white",
+                                borderRadius: "6px",
+                                border: "none",
+                                cursor: "pointer"
+                            }}
+                        >
+                            Next
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleSubmit}
+                            style={{
+                                padding: "10px 20px",
+                                backgroundColor: "green",
+                                color: "white",
+                                borderRadius: "6px",
+                                border: "none",
+                                cursor: "pointer"
+                            }}
+                        >
+                            Submit Quiz
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );
