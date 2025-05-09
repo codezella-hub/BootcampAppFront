@@ -122,7 +122,7 @@ function UpdateSubCourse() {
     };
     return (
         <div>
-            <Header />
+           
             <div>
    
                 <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
@@ -261,7 +261,7 @@ function UpdateSubCourse() {
                     </svg>
                 </div>
             </div>
-            <Footer />
+            
         </div>
     );
 }

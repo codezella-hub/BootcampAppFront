@@ -91,7 +91,7 @@ AddCategory() {
                     icon: 'success',
                     confirmButtonText: 'OK',
                 }).then(() => {
-                    navigate('/ListCategory'); // Navigate after success
+                    navigate('/dashboard/ListCategory'); // Navigate after success
                 });
             } else {
                 Swal.fire({

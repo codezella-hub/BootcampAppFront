@@ -4,8 +4,10 @@ import Footer from '../../commun/FooterPrinciple.jsx'
 import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useAuthStore } from '../../../store/authStore';
 
 function DetailCourse() {
+    const { user } = useAuthStore();
     const { id } = useParams(); // Get the category ID from the URL
     const navigate = useNavigate();
     const [course, setCourse] = useState({});
@@ -13,12 +15,12 @@ function DetailCourse() {
     const [ListSubCourse, setSubCourse] = useState([]);
     const [ListVideos, setListVideos] = useState([]);
     const [subCourseId, setSubCourseId] = useState(null);
-    const [user, setUser] = useState({});
+    //const [user, setUser] = useState({});
     const [loadingVideos, setLoadingVideos] = useState(false);
     const [isPurchased, setIsPurchased] = useState(false);
     const [loadingPurchaseCheck, setLoadingPurchaseCheck] = useState(true);
 
-    const staticUserId = "67acb60b2bdf783f2a130f4b"; // Hardcoded static user ID
+    const staticUserId = user._id; // Hardcoded static user ID
     const staticReceiverId = "67eaf437c7bb7a0c6758b159"; // Add this line
 
     useEffect(() => {
@@ -77,7 +79,7 @@ function DetailCourse() {
                 .then(res => {
                     if (res.status === 200) {
                         setListVideos(res.data);
-                        setUser(res.data[0].user);
+                        //setUser(res.data[0].user);
                         console.log(res.data);
                     }
                 })
@@ -194,42 +196,41 @@ function DetailCourse() {
   // Update the renderPurchaseButtons function
   const renderPurchaseButtons = () => {
     if (loadingPurchaseCheck) {
-        return (
-            <button className="rts-btn btn-primary" disabled>
-                <div className="spinner-border spinner-border-sm" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                </div>
-            </button>
-        );
+      return (
+        <button className="rts-btn btn-primary" disabled>
+          <div className="spinner-border spinner-border-sm" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </button>
+      );
     }
-
+  
     if (isPurchased) {
-        return <button className="rts-btn btn-primary">Course Enrolled</button>;
-    }
-
-    return (
-        <>
-            <button 
-                onClick={handlePurchase} 
-                className="rts-btn btn-primary"
-                disabled={!course.price}
-            >
-                Purchase Course (${course.price})
-            </button>
-            <button className="rts-btn btn-border">Watch Preview</button>
-            <a
-            href={`http://localhost:3000/api/certificate/6818fe20f015f778c924e65f/${course._id}`}
-            className="rts-btn btn-border"
+      return (
+        <div className="d-flex gap-3">
+          <a
+            href={`http://localhost:3000/api/certificate/${user._id}/${course._id}`}
+            className="rts-btn btn-primary"
             download
-            >
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Get Certificate
-            </a>
-
-
-
-        </>
+          </a>
+        </div>
+      );
+    }
+  
+    return (
+      <button 
+        onClick={handlePurchase} 
+        className="rts-btn btn-primary"
+        disabled={!course.price}
+      >
+        Purchase Course (${course.price})
+      </button>
     );
-};
+  };
 
 const handlePurchase = () => {
     Swal.fire({
@@ -301,7 +302,7 @@ const checkPaymentStatus = () => {
     
     return (
         <div>
-            <Header />
+          
             {/* course details breadcrumb */}
             <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
                 <div className="container">
@@ -403,7 +404,19 @@ const checkPaymentStatus = () => {
                                                                     </Link>
                                                                 ))
                                                             ) : (
+                                                                <div className="text-center py-5">
                                                                 <p>No videos found for this subcourse...</p>
+                                                                {(user.role === 'admin' || user.role === 'professor') && (
+                                                                  <div className="d-flex justify-content-center mt-3">
+                                                                    <button 
+                                                                      onClick={() => navigate('/AddVideo')} 
+                                                                      className="rts-btn btn-primary"
+                                                                    >
+                                                                      Add New Video
+                                                                    </button>
+                                                                  </div>
+                                                                )}
+                                                              </div>
                                                             )
                                                         )}
                                                     </div>
@@ -578,7 +591,7 @@ const checkPaymentStatus = () => {
                                 {/* single course-sidebar */}
                                 <div className="course-side-bar">
                                     {/* course single sidebar */}
-                                    <div className="course-single-information">
+                                    {/*<div className="course-single-information">
                                         <h5 className="title">A course by</h5>
                                         <div className="body">
                                             <div className="author">
@@ -596,7 +609,7 @@ const checkPaymentStatus = () => {
                                                 <span>{user.email}</span>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div>*/}
                                     {/* course single sidebar end*/}
                                     {/* course single sidebar */}
                                     <div className="course-single-information">
@@ -1060,7 +1073,7 @@ const checkPaymentStatus = () => {
                 </div>
             </div>
             {/* course area end */}
-            <Footer />
+          
         </div>
 
     )

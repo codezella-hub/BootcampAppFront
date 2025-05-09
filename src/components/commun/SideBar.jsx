@@ -38,10 +38,11 @@ function SideBar() {
                     </a>
                     {/* single item end */}
                     {/* single item */}
-                    <a href="enroll-course.html" className="single-item">
+                
+                    <Link to="student/enroll-course" className="single-item">
                         <i className="fa-light fa-graduation-cap"/>
                         <p>Enrolled Courses</p>
-                    </a>
+                    </Link>
 
                     <a href="wishlist.html" className="single-item">
                         <i className="fa-sharp fa-light fa-bookmark"/>
@@ -84,10 +85,12 @@ function SideBar() {
                             <div className="dashboard-left-single-wrapper mt--40">
                                 <h4 className="title mb--5">Instructor</h4>
 
-                                <a href="my-course.html" className="single-item">
+                     
+
+                                <Link to="ListCourse" className="single-item">
                                     <i className="fa-light fa-book"/>
-                                    <p>My Courses</p>
-                                </a>
+                                    <p>List Course</p>
+                                </Link>
 
                                 <a href="my-bundles.html" className="single-item">
                                     <i className="fa-sharp fa-regular fa-layer-group"/>
@@ -128,6 +131,11 @@ function SideBar() {
                         {user.role === "admin" && (
                             <div className="dashboard-left-single-wrapper mt--40">
                                 <h4 className="title mb--5">Admin</h4>
+
+                                <Link to="ListCategory" className="single-item">
+                                    <i className="fa-light fa-book"/>
+                                    <p>List Category</p>
+                                </Link>
 
                                 <a href="my-course.html" className="single-item">
                                     <i className="fa-light fa-book"/>

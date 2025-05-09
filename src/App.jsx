@@ -118,8 +118,15 @@ function App() {
         {/* Global Interface Routes */}
         <Route path="/" element={<GlobalInterface />} >
           <Route index element={<Home />} />
-
           <Route path="AllCourses" element={<AllCourses />} />
+          <Route path="/ListVideo" element={<ListVideo />} />
+          <Route path="/VideoDetail/:id/:subCourseId" element={<VideoDetail />} />
+          <Route path="/UpdateSubCourse/:id" element={<UpdateSubCourse />} />
+          <Route path="/SubCoursesByCourse/:id" element={<SubCoursesByCourse />} />
+
+          <Route path="/UpdateCategory/:id" element={<UpdateCategory />} />
+          <Route path="/DetailCourse/:id" element={<DetailCourse />} />
+  
           <Route path="homeRooms" element={<HomeRooms />} />
           <Route path="chat" element={<ChatBot />} />
           <Route path="AddCategory" element={<AddCategory />} />
@@ -158,11 +165,12 @@ function App() {
 
         {/* Dashboard Routes */}
         <Route path='/dashboard' element={<DashboardInterface />} >
+
           <Route index element={<MyProfile />} />
-
-        <Route path="ListCourseAdmin" element={<ListCourseAdmin />} />
+          <Route path="ListCourse" element={<ListCourse />} />
+          <Route path="student/enroll-course" element={<StudentEnrollCourse />} />
           <Route path="ListCategory" element={<ListCategory />} />
-
+        <Route path="ListCourseAdmin" element={<ListCourseAdmin />} />
         </Route>
 
         {/* Profile Routes */}
@@ -194,7 +202,7 @@ function App() {
         {/* Admin Routes */}
         <Route path="/ListCategory" element={<ListCategory />} />
         <Route path="/AddCategory" element={<AddCategory />} />
-        <Route path="/UpdateCategory/:id" element={<UpdateCategory />} />
+
         <Route path="/ListCourseAdmin" element={<ListCourseAdmin />} />
         <Route path="/AddCourseAdmin" element={<AddCourseAdmin />} />
         <Route path="/UpdateCourseAdmin/:id" element={<UpdateCourseAdmin />} />
@@ -204,17 +212,17 @@ function App() {
         <Route path="/SubCoursesByCourseAdmin/:id" element={<SubCoursesByCourseAdmin />} />
 
         {/* Trainer Routes */}
-        <Route path="/ListCourse" element={<ListCourse />} />
+       
         <Route path="/AddCourse" element={<AddCourse />} />
         <Route path="/UpdateCourse/:id" element={<UpdateCourse />} />
         <Route path="/DetailCourseTrainer/:id" element={<DetailCourseTrainer />} />
         <Route path="/ListSubCourse" element={<ListSubCourse />} />
         <Route path="/AddSubCourse" element={<AddSubCourse />} />
-        <Route path="/UpdateSubCourse/:id" element={<UpdateSubCourse />} />
-        <Route path="/SubCoursesByCourse/:id" element={<SubCoursesByCourse />} />
+     
+ 
         <Route path="/AddVideo" element={<AddVideo />} />
         <Route path="/ListVideo" element={<ListVideo />} />
-        <Route path="/VideoDetail/:id/:subCourseId" element={<VideoDetail />} />
+    
         <Route path="/VideoPopUp/:id" element={<VideoPopUp />} />
         <Route path="/UpdateVideo/:id" element={<UpdateVideo />} />
 

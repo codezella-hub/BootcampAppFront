@@ -135,7 +135,7 @@ function UpdateCategory() {
 
     return (
         <div>    {/* banner area start */}
-            <Header />
+     
             <div>
                 {/* bread crumb area */}
                 <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
@@ -331,7 +331,7 @@ function UpdateCategory() {
             </div>
 
 
-            <Footer />
+            
 
         </div>
     )

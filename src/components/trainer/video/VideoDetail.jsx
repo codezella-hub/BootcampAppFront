@@ -348,7 +348,7 @@ const passQuiz = () => {
     };
     return (
         <div>
-            <Header />
+         
 
             <div style={{ display: 'flex', marginTop: '20px', padding: '0 20px' }}>
                 <div style={{ flex: 3, marginRight: '20px' }}>
@@ -496,7 +496,7 @@ const passQuiz = () => {
                 </div>
             </div>
 
-            <Footer />
+      
         </div>
     );
 }

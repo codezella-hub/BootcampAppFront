@@ -51,7 +51,7 @@ function ListVideo() {
     };
     return (
         <div>    {/* banner area start */}
-            <Header />
+           
             <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
                 <div className="container">
                     <div className="row">
@@ -114,7 +114,7 @@ function ListVideo() {
 
 
 
-            <Footer />
+           
 
         </div>
     )

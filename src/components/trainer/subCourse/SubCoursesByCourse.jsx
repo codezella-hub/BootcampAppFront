@@ -71,7 +71,7 @@ export default function SubCoursesByCourse() {
 
     return (
         <div>
-            <Header />
+           
             <div className="dashboard-banner-area-wrapper">
             <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
                     <div className="container">
@@ -95,7 +95,7 @@ export default function SubCoursesByCourse() {
                 <div className="container">
                     <div className="row g-5">
                         <div className="col-lg-3">
-                            <LeftSideBar />
+                            {/*<LeftSideBar />*/}
                         </div>
 
                         <div className="col-lg-9">

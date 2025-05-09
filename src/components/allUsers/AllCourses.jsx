@@ -43,18 +43,18 @@ function AllCourses() {
 
     return (
         <div>
-            <Header />
+         
             <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
                 <div className="container">
-                    <div className="row">
+                    <div className="row">cate
                         <div className="col-lg-12">
                             <div className="breadcrumb-main-wrapper">
-                                <h1 className="title">Create Course</h1>
+                                <h1 className="title">All Course</h1>
                                 {/* breadcrumb pagination area */}
                                 <div className="pagination-wrapper">
                                     <a href="index-2.html">Home</a>
                                     <i className="fa-regular fa-chevron-right" />
-                                    <a className="active" href="create-course.html">Create Course</a>
+                                    <a className="active" href="create-course.html">All Course</a>
                                 </div>
                                 {/* breadcrumb pagination area end */}
                             </div>
@@ -165,160 +165,8 @@ function AllCourses() {
                                         </div>
                                     </div>
                                 </div>
-                                {/* single filter wized end */}
-                                {/* single filter wized */}
-                                <div className="single-filter-left-wrapper">
-                                    <h6 className="title">Level</h6>
-                                    <div className="checkbox-filter filter-body">
-                                        <div className="checkbox-wrapper">
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="lavel-1" />
-                                                    <label htmlFor="lavel-1">All Levels</label><br />
-                                                </div>
-                                                <span className="number">(130)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="lavel-2" />
-                                                    <label htmlFor="lavel-2">Beginner</label><br />
-                                                </div>
-                                                <span className="number">(85)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="lavel-3" />
-                                                    <label htmlFor="lavel-3">Intermediate</label><br />
-                                                </div>
-                                                <span className="number">(210)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="lavel-4" />
-                                                    <label htmlFor="lavel-4">Expert</label><br />
-                                                </div>
-                                                <span className="number">(45)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* single filter wized end */}
-                                {/* single filter wized */}
-                                <div className="single-filter-left-wrapper">
-                                    <h6 className="title">Author</h6>
-                                    <div className="checkbox-filter filter-body">
-                                        <div className="checkbox-wrapper">
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="author-1" />
-                                                    <label htmlFor="author-1">Admin</label><br />
-                                                </div>
-                                                <span className="number">(130)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="author-2" />
-                                                    <label htmlFor="author-2">Sean Kaye</label><br />
-                                                </div>
-                                                <span className="number">(85)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="author-3" />
-                                                    <label htmlFor="author-3">David Travis</label><br />
-                                                </div>
-                                                <span className="number">(210)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="author-4" />
-                                                    <label htmlFor="author-4">Dr. Angela Yu</label><br />
-                                                </div>
-                                                <span className="number">(45)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* single filter wized end */}
-                                {/* single filter wized */}
-                                <div className="single-filter-left-wrapper">
-                                    <h6 className="title">Tage</h6>
-                                    <div className="checkbox-filter filter-body">
-                                        <div className="checkbox-wrapper">
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="Tage-1" />
-                                                    <label htmlFor="Tage-1">Course</label><br />
-                                                </div>
-                                                <span className="number">(10)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="Tage-2" />
-                                                    <label htmlFor="Tage-2">Education</label><br />
-                                                </div>
-                                                <span className="number">(85)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="Tage-3" />
-                                                    <label htmlFor="Tage-3">LMS</label><br />
-                                                </div>
-                                                <span className="number">(21)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* single filter wized end */}
-                                {/* single filter wized */}
-                                <div className="single-filter-left-wrapper">
-                                    <h6 className="title">Price</h6>
-                                    <div className="checkbox-filter filter-body last">
-                                        <div className="checkbox-wrapper">
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="price-1" />
-                                                    <label htmlFor="price-1">Free</label><br />
-                                                </div>
-                                                <span className="number">(6)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                            {/* single check box */}
-                                            <div className="single-checkbox-filter">
-                                                <div className="check-box">
-                                                    <input type="checkbox" id="price-2" />
-                                                    <label htmlFor="price-2">Paid</label><br />
-                                                </div>
-                                                <span className="number">(80)</span>
-                                            </div>
-                                            {/* single check box end */}
-                                        </div>
-                                    </div>
-                                </div>
-                                {/* single filter wized end */}
+
+
                                 <a href="#" className="rts-btn btn-border"><i className="fa-regular fa-x" /> Clear All Filters</a>
                             </div>
                             {/* course-filter-area end */}
@@ -338,14 +186,9 @@ function AllCourses() {
                                     </select>
                                 </div>
                                 <div className="right-filter">
-                                    <span>Showing 1-9 of 19 results</span>
+                                  
                                     <ul className="nav nav-tabs" id="myTab" role="tablist">
-                                        <li className="nav-item" role="presentation">
-                                            <button className="nav-link " id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="false">
-                                                <i className="fa-light fa-grid-2" />
-                                                <span>Grid</span>
-                                            </button>
-                                        </li>
+                                    
                                         <li className="nav-item" role="presentation">
                                             <button className="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="true">
                                                 <i className="fa-light fa-list" />
@@ -531,7 +374,6 @@ function AllCourses() {
             {/* course area end */}
 
 
-            <Footer />
 
 
         </div>
