@@ -1,110 +1,79 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import '../cart/Cart.css';
+import { useCartStore } from '../cartStore/cartStore';
 
-function Cart() {
+const SideCart = ({ isOpen, onClose }) => {
+    const { cartItems } = useCartStore();
+
+    const calculateTotal = () => {
+        return cartItems.reduce(
+            (total, item) => total + (item.price || 0),
+            0
+        );
+    };
+
     return (
-        <div>
-            {/* cart area start */}
-            {/* cart area start */}
-            <div className="cart-bar">
-                <div className="cart-header">
-                    <h3 className="cart-heading">MY CART (3 ITEMS)</h3>
-                    <div className="close-cart"><i className="fal fa-times" /></div>
+        <div className={`cart-sidebar ${isOpen ? 'open' : ''}`}>
+            <div className="sidebar-header">
+                <div className="cart-title">
+                    <span className="cart-icon">🛒</span>
+                    <h3>
+                        My Cart <span className="item-count">({cartItems.length} items)</span>
+                    </h3>
                 </div>
-                <div className="product-area">
-                    <div className="product-item">
-                        <div className="product-detail">
-                            <div className="product-thumb"><img src="assets/images/course/cart/01.jpg" alt="product-thumb" /></div>
-                            <div className="item-wrapper">
-                                <span className="product-name">Construct Map</span>
-                                <div className="item-wrapper">
-              <span className="product-variation"><span className="color">Green /</span>
-                <span className="size">XL</span></span>
-                                </div>
-                                <div className="item-wrapper">
-                                    <span className="product-qnty">3 ×</span>
-                                    <span className="product-price">$198.00</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="cart-edit">
-                            <div className="quantity-edit">
-                                <button className="button"><i className="fal fa-minus minus" /></button>
-                                <input type="text" className="input" defaultValue={3} />
-                                <button className="button plus">+<i className="fal fa-plus plus" /></button>
-                            </div>
-                            <div className="item-wrapper d-flex mr--5 align-items-center">
-                                <a href="#" className="product-edit"><i className="fal fa-edit" /></a>
-                                <a href="#" className="delete-cart"><i className="fal fa-times" /></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="product-item">
-                        <div className="product-detail">
-                            <div className="product-thumb"><img src="assets/images/course/cart/02.jpg" alt="product-thumb" /></div>
-                            <div className="item-wrapper">
-                                <span className="product-name"> Bridge product</span>
-                                <div className="item-wrapper">
-              <span className="product-variation"><span className="color">Green /</span>
-                <span className="size">XL</span></span>
-                                </div>
-                                <div className="item-wrapper">
-                                    <span className="product-qnty">2 ×</span>
-                                    <span className="product-price">$88.00</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="cart-edit">
-                            <div className="quantity-edit">
-                                <button className="button"><i className="fal fa-minus minus" /></button>
-                                <input type="text" className="input" defaultValue={2} />
-                                <button className="button plus">+<i className="fal fa-plus plus" /></button>
-                            </div>
-                            <div className="item-wrapper d-flex mr--5 align-items-center">
-                                <a href="#" className="product-edit"><i className="fal fa-edit" /></a>
-                                <a href="#" className="delete-cart"><i className="fal fa-times" /></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="product-item last-child">
-                        <div className="product-detail">
-                            <div className="product-thumb"><img src="assets/images/course/cart/03.jpg" alt="product-thumb" /></div>
-                            <div className="item-wrapper">
-                                <span className="product-name">Labour helmet</span>
-                                <div className="item-wrapper">
-              <span className="product-variation"><span className="color">Green /</span>
-                <span className="size">XL</span></span>
-                                </div>
-                                <div className="item-wrapper">
-                                    <span className="product-qnty">1 ×</span>
-                                    <span className="product-price">$289.00</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="cart-edit">
-                            <div className="quantity-edit">
-                                <button className="button"><i className="fal fa-minus minus" /></button>
-                                <input type="text" className="input" defaultValue={2} />
-                                <button className="button plus">+<i className="fal fa-plus plus" /></button>
-                            </div>
-                            <div className="item-wrapper d-flex mr--5 align-items-center">
-                                <a href="#" className="product-edit"><i className="fal fa-edit" /></a>
-                                <a href="#" className="delete-cart"><i className="fal fa-times" /></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="cart-bottom-area">
-      <span className="spend-shipping"><i className="fal fa-truck" /> SPENT <span className="amount">$199.00</span> MORE
-        FOR FREE SHIPPING</span>
-                    <span className="total-price">TOTAL: <span className="price">$556</span></span>
-                    <a href="checkout.html" className="checkout-btn cart-btn">PROCEED TO CHECKOUT</a>
-                    <a href="cart.html" className="view-btn cart-btn">VIEW CART</a>
-                </div>
+                <button className="close-sidebar" onClick={onClose}>×</button>
             </div>
-            {/* cart area edn */}
-            {/* cart area edn */}
+
+            <div className="sidebar-items">
+                {cartItems.length === 0 ? (
+                    <div className="empty-cart">
+                        <p>Your cart is empty</p>
+                    </div>
+                ) : (
+                    cartItems.map((item) => (
+                        <div key={item._id} className="cart-item">
+                            <img
+                                src={item.image || "/online-course.png"}
+                                alt={item.title || "Course image"}
+                                className="item-image"
+                            />
+                            <div className="cart-item-content">
+                                <div className="cart-item-header">
+                                    <div className="cart-item-title">
+                                        <h4>{item.title}</h4>
+                                        <p className="item-subtitle">
+                                            {item.variant || 'General'} &nbsp;|&nbsp; {(item.price || 0).toFixed(2)} TND
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="price-only">
+                                    <span className="price">
+                                        TND {(item.price || 0).toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {cartItems.length > 0 && (
+                <div className="sidebar-footer">
+                    <div className="cart-total">
+                        <span>Total:</span>
+                        <span className="total-amount">TND {calculateTotal().toFixed(2)}</span>
+                    </div>
+                    <Link to="/checkout" className="checkout-btn" onClick={onClose}>
+                        Proceed to Checkout
+                    </Link>
+                    <Link to="/cart" className="view-cart-btn" onClick={onClose}>
+                        View Full Cart
+                    </Link>
+                </div>
+            )}
         </div>
     );
-}
+};
 
-export default Cart;
+export default SideCart;
