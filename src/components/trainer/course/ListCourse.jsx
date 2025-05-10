@@ -200,7 +200,7 @@ function ListCourse() {
                                 {(user.role === 'admin' || user.role === 'professor') ? (
                                   <div className="course-actions mt-3">
                                     <button
-                                      onClick={() => navigate(`/SubCoursesByCourse/${item._id}`)}
+                                      onClick={() => navigate(`/dashboard/SubCoursesByCourse/${item._id}`)}
                                       className="rts-btn btn-border"
                                     >
                                       SubCourses

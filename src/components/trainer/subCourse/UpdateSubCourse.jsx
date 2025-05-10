@@ -107,7 +107,7 @@ function UpdateSubCourse() {
                         confirmButtonText: 'OK',
                     }).then(() => {
                         // Navigate to the course's subcourses page using the course ID
-                        navigate(`/SubCoursesByCourse/${subCourseInput.course}`);
+                        navigate(`/dashboard/SubCoursesByCourse/${subCourseInput.course}`);
                     });
                 }
             })

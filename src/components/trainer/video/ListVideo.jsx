@@ -73,38 +73,71 @@ function ListVideo() {
                     <div className="row">
                         <div className="col-lg-12">
                             {/* single up coming events */}
-                            <div className="upcoming-events-main-wrapper-1">
-                                {/* single */}
-                                {ListVideo.length > 0 ? (
-                                    ListVideo.map(video => (
-                                        <div className="single-upcoming-events" key={video._id}>
-                                            <Link to={`/UpdateVideo/${video._id}`} className="thumbnail">
-                                                <img src={`${video.thumbnail}`} width={300} height={200} alt={video.title}/>
-                                            </Link>
-                                            <div className="information">
-                                                <div className="date-details">
-                                                    <div className="date">
-                                                        <i className="fa-thin fa-calendar-days" />
-                                                        <p> {video.createdAt}</p>
-                                                    </div>
-                                                    <div className="time">
-                                                        <i className="fa-regular fa-clock" />
-                                                        <p>{video.duration}</p>
-                                                    </div>
-                                                </div>
-                                                <a href="event-details.html">
-                                                    <h5 className="title">{video.title}</h5>
-                                                </a>
-                                            </div>
-                                            <Link to={`/VideoDetail/${video._id}/${video.subCourse._id}`} className="rts-btn btn-primary with-arrow">Watch  <i className="fa-light fa-arrow-right" /></Link>
-                                            <button onClick={() => handleDeleteVideo(video._id)} className="rts-btn btn-border">Delete video</button>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p>No video found...</p>
-                                )}
-              
-                            </div>
+                            <div
+  className="upcoming-events-main-wrapper-1"
+  style={{
+    position: 'relative',
+    paddingTop: '60px', // Make space for the top-right button
+  }}
+>
+  {/* Fixed Top-right Add Video button */}
+  <div
+    style={{
+      position: 'absolute',
+      top: '10px',
+      right: '10px',
+      zIndex: 1000,
+    }}
+  >
+    <Link to="/AddVideo" className="rts-btn btn-primary">
+      Add New Video
+    </Link>
+  </div>
+
+  {/* Video list or fallback message */}
+  {ListVideo.length > 0 ? (
+    ListVideo.map((video) => (
+      <div className="single-upcoming-events" key={video._id}>
+        <Link to={`/UpdateVideo/${video._id}`} className="thumbnail">
+          <img
+            src={video.thumbnail}
+            width={300}
+            height={200}
+            alt={video.title}
+          />
+        </Link>
+        <div className="information">
+          <div className="date-details">
+            <div className="date">
+              <i className="fa-thin fa-calendar-days" />
+              <p>{video.createdAt}</p>
+            </div>
+            <div className="time">
+              <i className="fa-regular fa-clock" />
+              <p>{video.duration}</p>
+            </div>
+          </div>
+          <h5 className="title">{video.title}</h5>
+        </div>
+        <Link
+          to={`/VideoDetail/${video._id}/${video.subCourse._id}`}
+          className="rts-btn btn-primary with-arrow"
+        >
+          Watch <i className="fa-light fa-arrow-right" />
+        </Link>
+        <button
+          onClick={() => handleDeleteVideo(video._id)}
+          className="rts-btn btn-border"
+        >
+          Delete video
+        </button>
+      </div>
+    ))
+  ) : (
+    <p>No video found...</p>
+  )}
+</div>
+
                             {/* single up coming events end */}
                         </div>
                     </div>
