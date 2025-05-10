@@ -87,6 +87,8 @@ import Success from "./components/payment/success"; // corrected casing if neede
 import Cancel from "./components/payment/Cancel";
 import CouponList from "./components/coupon/CouponList";
 import EyeTracker from './components/EyeTracker.jsx';
+import HistoryOrderList from './components/historyOrders/HistoryOrderList.jsx';
+import { CartProvider } from './components/context/CartContext.jsx';
 function App() {
   const userId ='88888888'
   const [cartItems, setCartItems] = useState([]);
@@ -113,6 +115,7 @@ function App() {
 
   //axios.defaults.baseURL = "http://localhost:3000/"
   return (
+    <CartProvider>
     <Router>
       <Routes>
         {/* Global Interface Routes */}
@@ -263,10 +266,14 @@ function App() {
         <Route path="/cancel" element={<Cancel />} />
         <Route path="/admin/coupons" element={<CouponList />} />
 
+
+        <Route path="/historyOrders" element={<HistoryOrderList />} />
+
         {/* Not found  Route */}
         <Route path={"/*"} element={<Notfound/>} />
       </Routes>
     </Router>
+    </CartProvider>
   );
 }
 

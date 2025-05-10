@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Swal from 'sweetalert2'; // Import SweetAlert2 for pop-up messages
+import Swal from 'sweetalert2';
 
 const CouponForm = ({ onSuccess, existingCoupon }) => {
   const [code, setCode] = useState('');
@@ -8,24 +8,40 @@ const CouponForm = ({ onSuccess, existingCoupon }) => {
   const [expirationDate, setExpirationDate] = useState('');
   const [error, setError] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (existingCoupon) {
       setCode(existingCoupon.code);
       setDiscount(existingCoupon.discount);
-      setExpirationDate(existingCoupon.expirationDate.split('T')[0]); // ISO date format
+      setExpirationDate(existingCoupon.expirationDate.split('T')[0]);
+    } else {
+      resetForm();
     }
   }, [existingCoupon]);
 
-  // Handle the form submission
+  const resetForm = () => {
+    setCode('');
+    setDiscount('');
+    setExpirationDate('');
+    setError('');
+  };
+
+  useEffect(() => {
+    if (code && discount > 0 && discount <= 100 && expirationDate) {
+      setIsFormValid(true);
+      setError('');
+    } else {
+      setIsFormValid(false);
+      if (discount && (discount <= 0 || discount > 100)) {
+        setError('Discount must be between 1 and 100.');
+      }
+    }
+  }, [code, discount, expirationDate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate the form inputs
-    if (!code || discount <= 0 || discount > 100 || !expirationDate) {
-      setError("All fields are required and discount must be between 0 and 100.");
-      return;
-    }
+    setLoading(true);
 
     const payload = { code, discount, expirationDate };
 
@@ -36,82 +52,97 @@ const CouponForm = ({ onSuccess, existingCoupon }) => {
         await axios.post('http://localhost:3000/api/coupons', payload);
       }
 
-      // Reset form fields
-      setCode('');
-      setDiscount('');
-      setExpirationDate('');
-      setError('');
-      
-      // Show success message
+      resetForm();
       Swal.fire({
-        title: 'Success!',
-        text: 'Coupon has been created successfully!',
+        title: '🎉 Success!',
+        text: existingCoupon ? 'Coupon updated successfully!' : 'Coupon created successfully!',
         icon: 'success',
         confirmButtonText: 'OK',
         confirmButtonColor: '#3085d6',
-      }).then(() => {
-        onSuccess();
-      });
-    } catch (error) {
-      // Handle error
+      }).then(() => onSuccess());
+    } catch (err) {
       Swal.fire({
-        title: 'Error!',
-        text: 'Something went wrong! Please try again.',
+        title: '❌ Error!',
+        text: 'Something went wrong. Please try again.',
         icon: 'error',
         confirmButtonText: 'OK',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Validate form fields on change to enable/disable the submit button
-  useEffect(() => {
-    if (code && discount > 0 && discount <= 100 && expirationDate) {
-      setIsFormValid(true);
-    } else {
-      setIsFormValid(false);
-    }
-  }, [code, discount, expirationDate]);
-
   return (
-    <form onSubmit={handleSubmit} className="coupon-form mb-5 p-4 shadow-lg rounded">
-      <div className="mb-4">
-        <label htmlFor="code" className="form-label" style={{ color: '#6c757d' }}>Coupon Code</label>
-        <input
-          id="code"
-          className="form-control"
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-          placeholder="Enter Code"
-          required
-        />
-      </div>
-      <div className="mb-4">
-  <label htmlFor="discount" className="form-label" style={{ color: '#6c757d' }}>Discount (%)</label>
-  <input
-    id="discount"
-    className="form-control"
-    type="number"
-    value={discount}
-    onChange={(e) => setDiscount(e.target.value)}
-    placeholder="Enter Discount"
-    required
-    style={{ color: '#495057', backgroundColor: '#f8f9fa' }} // Input text color and background
-  />
-</div>
+    <div className="card shadow-sm rounded mb-5">
+      <div className="card-body">
+        <h5 className="card-title fw-bold mb-4 d-flex align-items-center">
+          <span role="img" aria-label="ticket" className="me-2">🎟️</span>
+          {existingCoupon ? 'Edit Coupon' : 'Create New Coupon'}
+        </h5>
 
-      <div className="mb-4">
-        <label htmlFor="expirationDate" className="form-label" style={{ color: '#6c757d' }}>Expiration Date</label>
-        <input
-          id="expirationDate"
-          className="form-control"
-          type="date"
-          value={expirationDate}
-          onChange={(e) => setExpirationDate(e.target.value)}
-          required
-        />
+        <form onSubmit={handleSubmit}>
+          <table className="table table-borderless">
+            <tbody>
+              <tr>
+                <td className="fw-semibold align-middle" style={{ width: '150px' }}>Coupon Code</td>
+                <td>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    placeholder="Enter coupon code"
+                    required
+                  />
+                </td>
+              </tr>
+
+              <tr>
+                <td className="fw-semibold align-middle">Discount (%)</td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    value={discount}
+                    onChange={(e) => setDiscount(e.target.value)}
+                    placeholder="Enter discount (1–100)"
+                    required
+                  />
+                </td>
+              </tr>
+
+              <tr>
+                <td className="fw-semibold align-middle">Expiration Date</td>
+                <td>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={expirationDate}
+                    onChange={(e) => setExpirationDate(e.target.value)}
+                    required
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          {error && <div className="alert alert-danger small py-2">{error}</div>}
+
+          <button
+            type="submit"
+            className="btn btn-primary w-100 d-flex justify-content-center align-items-center"
+            disabled={!isFormValid || loading}
+          >
+            {loading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Please wait...
+              </>
+            ) : existingCoupon ? 'Update Coupon' : 'Create Coupon'}
+          </button>
+        </form>
       </div>
-      <button type="submit" className="btn btn-primary w-100 py-2" disabled={!isFormValid}>Create Coupon</button>
-    </form>
+    </div>
   );
 };
 

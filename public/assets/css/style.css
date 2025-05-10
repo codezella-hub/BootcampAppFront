@@ -14500,21 +14500,7 @@ xclip
   margin-top: 8px !important;
   cursor: pointer;
 }
-.header-right-area-one .actions-area .cart i::after {
-  position: absolute;
-  content: "2";
-  right: -8px;
-  bottom: 14px;
-  height: 18px;
-  width: 18px;
-  background: var(--color-primary);
-  border-radius: 50%;
-  font-size: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-}
+
 
 @media only screen and (max-width: 1320px) {
   .main-nav-one ul li.has-dropdown .megamenu-hub li ul:first-child::after {

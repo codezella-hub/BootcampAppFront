@@ -5,12 +5,13 @@ import { Link } from 'react-router-dom';
 import Footer from '../Footer';
 import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
+import { useCartStore } from '../cartStore/cartStore';
 function AllCourses() {
     const [ListCourses, setCoursesApi] = useState([]);
     const [courses, setCourses] = useState([]);
     const [filteredCourses, setFilteredCourses] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-
+     const { addToCart } = useCartStore();
 
     useEffect(() => {
         document.title = "List of courses";
@@ -40,6 +41,45 @@ function AllCourses() {
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
     };
+    
+        const handleAddToCart = async (course) => {
+            const userString = localStorage.getItem("auth-storage");
+            const userObj = userString ? JSON.parse(userString) : null;
+            const userId = userObj?.state?.user?._id;
+    
+            if (!userId) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Required',
+                    text: 'Please log in to add courses to your cart.',
+                });
+                return;
+            }
+    
+            try {
+                await axios.post('/api/orders', {
+                    items: [{ courseId: course._id, quantity: 1 }],
+                    userid: userId
+                });
+    
+                addToCart({ ...course, quantity: 1 });
+    
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to cart!',
+                    text: `${course.title} has been added to your cart.`,
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to add the course to your cart. Please try again.',
+                });
+            }
+        };
 
     return (
         <div>
@@ -343,6 +383,12 @@ function AllCourses() {
                                                                     )}
                                                                 </div>
                                                             </div>
+                                                            <button
+                                                                onClick={() => handleAddToCart(course)}
+                                                                className="rts-btn btn-primary mt-3"
+                                                            >
+                                                                Add to Cart
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 ))}
