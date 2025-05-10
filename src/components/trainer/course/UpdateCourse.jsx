@@ -166,7 +166,7 @@ function UpdateCourse() {
                     icon: 'success',
                     confirmButtonText: 'OK',
                 }).then(() => {
-                    navigate('/ListCourse'); // Navigate after success
+                    navigate('/dashboard/ListCourse'); // Navigate after success
                 });
             } else {
                 Swal.fire({

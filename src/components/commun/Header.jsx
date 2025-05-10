@@ -116,6 +116,13 @@ function Header() {
                                                             </ul>
                                                         </li>
                                                         <li className="has-dropdown">
+                                                            <Link className="nav-link" >Videos</Link>
+                                                            <ul className="submenu">
+                                                                <li><Link to="/ListVideo">Videos</Link></li>
+
+                                                            </ul>
+                                                        </li>
+                                                        <li className="has-dropdown">
                                                             <Link className="nav-link" >Dashboard</Link>
                                                             <ul className="submenu">
                                                                 <li><Link to="/dashboard">mm</Link></li>
@@ -139,7 +146,7 @@ function Header() {
                                                         {user.role === "user" && (
                                                             <>
                                                             <li className="has-dropdown">
-                                                                <Link className="nav-link" to="/student/enroll-course">Enrolled Courses</Link>
+                                                                <Link className="nav-link" to="/dashboard/student/enroll-course">Enrolled Courses</Link>
                                                             </li>
                                                             <li className="has-dropdown">
                                                             <Link className="nav-link" to="/cart">My Cart</Link>

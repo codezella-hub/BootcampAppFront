@@ -89,7 +89,7 @@ function SideBar() {
 
                                 <Link to="ListCourse" className="single-item">
                                     <i className="fa-light fa-book"/>
-                                    <p>List Course</p>
+                                    <p>My Course</p>
                                 </Link>
 
                                 <a href="my-bundles.html" className="single-item">
