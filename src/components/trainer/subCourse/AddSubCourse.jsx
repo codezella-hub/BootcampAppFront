@@ -91,7 +91,7 @@ function AddSubCourse() {
                     icon: 'success',
                     confirmButtonText: 'OK',
                 });
-                navigate(`/SubCoursesByCourse/${subCourseInput.course}`);
+                navigate(`/dashboard/SubCoursesByCourse/${subCourseInput.course}`);
             }
         } catch (err) {
             Swal.fire({

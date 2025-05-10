@@ -122,7 +122,7 @@ function App() {
           <Route path="/ListVideo" element={<ListVideo />} />
           <Route path="/VideoDetail/:id/:subCourseId" element={<VideoDetail />} />
           <Route path="/UpdateSubCourse/:id" element={<UpdateSubCourse />} />
-          <Route path="/SubCoursesByCourse/:id" element={<SubCoursesByCourse />} />
+
 
           <Route path="/UpdateCategory/:id" element={<UpdateCategory />} />
           <Route path="/DetailCourse/:id" element={<DetailCourse />} />
@@ -167,6 +167,7 @@ function App() {
         <Route path='/dashboard' element={<DashboardInterface />} >
 
           <Route index element={<MyProfile />} />
+          <Route path="SubCoursesByCourse/:id" element={<SubCoursesByCourse />} />
           <Route path="ListCourse" element={<ListCourse />} />
           <Route path="student/enroll-course" element={<StudentEnrollCourse />} />
           <Route path="ListCategory" element={<ListCategory />} />

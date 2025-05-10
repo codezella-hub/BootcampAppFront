@@ -22,6 +22,7 @@ function DetailCourse() {
 
     const staticUserId = user._id; // Hardcoded static user ID
     const staticReceiverId = "67eaf437c7bb7a0c6758b159"; // Add this line
+    const isCreator = user && course.user && user._id === course.user._id;
 
     useEffect(() => {
         document.title = "Detail Course";
@@ -193,116 +194,183 @@ function DetailCourse() {
         });
     };
 
-  // Update the renderPurchaseButtons function
-  const renderPurchaseButtons = () => {
-    if (loadingPurchaseCheck) {
-      return (
-        <button className="rts-btn btn-primary" disabled>
-          <div className="spinner-border spinner-border-sm" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </button>
-      );
-    }
-  
-    if (isPurchased) {
-      return (
-        <div className="d-flex gap-3">
-          <a
-            href={`http://localhost:3000/api/certificate/${user._id}/${course._id}`}
-            className="rts-btn btn-primary"
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Get Certificate
-          </a>
-        </div>
-      );
-    }
-  
-    return (
-      <button 
-        onClick={handlePurchase} 
-        className="rts-btn btn-primary"
-        disabled={!course.price}
-      >
-        Purchase Course (${course.price})
-      </button>
-    );
-  };
+    // Update the renderPurchaseButtons function
+    const renderPurchaseButtons = () => {
+        if (loadingPurchaseCheck) {
+            return (
+                <button className="rts-btn btn-primary" disabled>
+                    <div className="spinner-border spinner-border-sm" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                </button>
+            );
+        }
 
-const handlePurchase = () => {
-    Swal.fire({
-        title: 'Confirm Purchase',
-        html: `
-            <div style="text-align: left">
-                <p>You're purchasing:</p>
-                <h4>${course.title}</h4>
-                <p>Price: $${course.price}</p>
-            </div>
-        `,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Proceed to PayPal',
-        cancelButtonText: 'Cancel',
-        showLoaderOnConfirm: true,
-        allowOutsideClick: () => !Swal.isLoading(),
-        preConfirm: () => {
-            return axios.post('/api/paypal/pay', {
-                amount: course.price,
-                userId: staticUserId,
-                courseId: id,
-                receiverId: staticReceiverId
-            })
-            .then(response => {
-                if (!response.data.approvalUrl) {
-                    throw new Error('No approval URL received');
+        // Check if the user is the creator of the course
+        //const isCreator = user && course.user && user._id === course.user;
+
+        if (isCreator || isPurchased) {
+            return (
+                <>
+                    <a
+                        href={`http://localhost:3000/api/certificate/${user._id}/${course._id}`}
+                        className="rts-btn btn-primary"
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Get Certificate
+                    </a>
+                </>
+            );
+
+        }
+
+        return (
+            <button
+                onClick={handlePurchase}
+                className="rts-btn btn-primary"
+                disabled={!course.price}
+            >
+                Purchase Course (${course.price})
+            </button>
+        );
+    };
+    const handlePurchase = () => {
+        Swal.fire({
+          title: '<strong style="font-size: 1.5rem; color: #2a3042">Confirm Your Purchase</strong>',
+          html: `
+            <div style="text-align: left; color: #5a6169">
+              <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                ${course.courseImage ? `
+                  <img src="http://localhost:3000${course.courseImage}" 
+                       style="width: 100px; height: 60px; object-fit: cover; border-radius: 8px;">` : ''
                 }
-                return response.data.approvalUrl;
-            })
-            .catch(error => {
-                Swal.showValidationMessage(
-                    error.response?.data?.error || 'Payment initiation failed'
-                );
-                return null;
+                <div>
+                  <h4 style="margin: 0; color: #2a3042; font-weight: 600">${course.title}</h4>
+                  ${course.category ? `
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                      <i class="fa-solid fa-tag" style="color: #6c757d; font-size: 0.9rem"></i>
+                      <span style="font-size: 0.9rem">${course.category}</span>
+                    </div>` : ''
+                  }
+                </div>
+              </div>
+      
+              <div style="border-top: 1px solid #e9ecef; padding-top: 1rem; margin-top: 1rem;">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fa-solid fa-wallet" style="color: #4a90e2"></i>
+                    <span>Price:</span>
+                  </div>
+                  <div style="font-weight: 600; color: #2a3042">
+                    $${course.price}
+                  </div>
+      
+                  ${course.courseDuration ? `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <i class="fa-solid fa-clock" style="color: #4a90e2"></i>
+                      <span>Duration:</span>
+                    </div>
+                    <div style="font-weight: 600; color: #2a3042">
+                      ${course.courseDuration} hours
+                    </div>` : ''
+                  }
+      
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fa-solid fa-shield-alt" style="color: #4a90e2"></i>
+                    <span>Guarantee:</span>
+                  </div>
+                  <div style="font-weight: 600; color: #2a3042">
+                    30-day Refund
+                  </div>
+                </div>
+              </div>
+      
+              <div style="margin-top: 1.5rem; background: #f8f9fa; padding: 1rem; border-radius: 8px;">
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <i class="fa-solid fa-circle-info" style="color: #6c757d"></i>
+                  <span style="font-size: 0.9rem">You'll be redirected to PayPal to complete your payment</span>
+                </div>
+              </div>
+            </div>
+          `,
+          icon: 'info',
+          iconColor: '#4a90e2',
+          showCancelButton: true,
+          confirmButtonText: 'Continue to PayPal',
+          cancelButtonText: 'Cancel',
+          showLoaderOnConfirm: true,
+          allowOutsideClick: () => !Swal.isLoading(),
+          customClass: {
+            popup: 'custom-swal-popup',
+            confirmButton: 'custom-confirm-btn',
+            cancelButton: 'custom-cancel-btn'
+          },
+          preConfirm: () => {
+            return axios.post('/api/paypal/pay', {
+              amount: course.price,
+              userId: staticUserId,
+              courseId: id,
+              receiverId: staticReceiverId
+            }).then(response => {
+              if (!response.data.approvalUrl) throw new Error('No approval URL received');
+              return response.data.approvalUrl;
             });
-        }
-    }).then((result) => {
-        if (result.isConfirmed && result.value) {
-            // Open PayPal in a new tab
-            window.open(result.value, '_blank');
-            // Poll for payment completion
-            checkPaymentStatus();
-        }
-    });
-};
-
-const checkPaymentStatus = () => {
-    const paymentCheckInterval = setInterval(() => {
-        axios.get(`/api/paypal/purchased-course/${staticUserId}/${id}`)
+          }
+        }).then((result) => {
+          if (result.isConfirmed && result.value) {
+            const popup = window.open(
+              result.value, 
+              'PayPal', 
+              'width=600,height=700,top=100,left=100'
+            );
+      
+            if (!popup || popup.closed) {
+              Swal.fire('Error', 'Please allow popups to complete the payment', 'error');
+              return;
+            }
+      
+            const popupCheckInterval = setInterval(() => {
+              if (popup.closed) {
+                clearInterval(popupCheckInterval);
+                checkPaymentStatus();
+              }
+            }, 500);
+          }
+        });
+      };
+      
+      const checkPaymentStatus = () => {
+        Swal.fire({
+          title: 'Verifying Payment',
+          text: 'Please wait while we confirm your payment...',
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading()
+        });
+      
+        const paymentCheckInterval = setInterval(() => {
+          axios.get(`/api/paypal/purchased-course/${staticUserId}/${id}`)
             .then(() => {
-                clearInterval(paymentCheckInterval);
-                setIsPurchased(true);
-                Swal.fire('Success!', 'Payment completed successfully!', 'success');
+              clearInterval(paymentCheckInterval);
+              Swal.close();
+              setIsPurchased(true);
+              Swal.fire('Success!', 'Payment completed successfully!', 'success');
             })
-            .catch(() => {
-                // Continue polling until timeout
-            });
-    }, 3000); // Check every 3 seconds
-
-    // Timeout after 2 minutes
-    setTimeout(() => {
-        clearInterval(paymentCheckInterval);
-        Swal.fire('Timeout', 'Payment verification timed out', 'warning');
-    }, 120000);
-};
+            .catch(() => { /* Ignore errors until timeout */ });
+        }, 3000);
+      
+        // Timeout after 2 minutes
+        setTimeout(() => {
+          clearInterval(paymentCheckInterval);
+          Swal.fire('Timeout', 'Payment verification timed out', 'warning');
+        }, 120000);
+      };
 
 
-    
     return (
         <div>
-          
+
             {/* course details breadcrumb */}
             <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
                 <div className="container">
@@ -391,32 +459,56 @@ const checkPaymentStatus = () => {
                                                             <p>Loading videos...</p>
                                                         ) : (
                                                             ListVideos.length > 0 ? (
-                                                                ListVideos.map(video => (
-                                                                    <Link key={video._id} to={`/VideoDetail/${video._id}/${subCourse._id}`} className="play-vedio-wrapper">
-                                                                        <div className="left">
-                                                                            <i className="fa-light fa-circle-play" />
-                                                                            <span>{video.title}</span>
+                                                                ListVideos.map(video => {
+                                                                    const canAccess = isCreator || isPurchased;
+                                                                    return canAccess ? (
+                                                                        <Link
+                                                                            key={video._id}
+                                                                            to={`/VideoDetail/${video._id}/${subCourse._id}`}
+                                                                            className="play-vedio-wrapper"
+                                                                        >
+                                                                            <div className="left">
+                                                                                <i className="fa-light fa-circle-play" />
+                                                                                <span>{video.title}</span>
+                                                                            </div>
+                                                                            <div className="right">
+                                                                                <span className="play">Preview</span>
+                                                                                <span>{video.duration} sec</span>
+                                                                            </div>
+                                                                        </Link>
+                                                                    ) : (
+                                                                        <div
+                                                                            key={video._id}
+                                                                            className="play-vedio-wrapper disabled"
+                                                                            onClick={() => {
+                                                                                Swal.fire('Access Restricted', 'Purchase the course to watch this video.', 'info');
+                                                                            }}
+                                                                        >
+                                                                            <div className="left">
+                                                                                <i className="fa-light fa-circle-play" />
+                                                                                <span>{video.title}</span>
+                                                                            </div>
+                                                                            <div className="right">
+                                                                                <span className="play">Locked</span>
+                                                                                <span>{video.duration} sec</span>
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="right">
-                                                                            <span className="play">Preview</span>
-                                                                            <span>{video.duration} sec</span>
-                                                                        </div>
-                                                                    </Link>
-                                                                ))
+                                                                    );
+                                                                })
                                                             ) : (
                                                                 <div className="text-center py-5">
-                                                                <p>No videos found for this subcourse...</p>
-                                                                {(user.role === 'admin' || user.role === 'professor') && (
-                                                                  <div className="d-flex justify-content-center mt-3">
-                                                                    <button 
-                                                                      onClick={() => navigate('/AddVideo')} 
-                                                                      className="rts-btn btn-primary"
-                                                                    >
-                                                                      Add New Video
-                                                                    </button>
-                                                                  </div>
-                                                                )}
-                                                              </div>
+                                                                    <p>No videos found for this subcourse...</p>
+                                                                    {(user.role === 'admin' || user.role === 'professor') && (
+                                                                        <div className="d-flex justify-content-center mt-3">
+                                                                            <button
+                                                                                onClick={() => navigate('/AddVideo')}
+                                                                                className="rts-btn btn-primary"
+                                                                            >
+                                                                                Add New Video
+                                                                            </button>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
                                                             )
                                                         )}
                                                     </div>
@@ -425,7 +517,17 @@ const checkPaymentStatus = () => {
                                         </div>
                                     ))
                                 ) : (
-                                    <p>No subcourses available...</p>
+                                    <>
+                                        <p>No subcourses available...</p>
+
+                                        <Link
+                                            to="/AddSubCourse"
+                                            className="rts-btn btn-primary"
+                                        >
+                                            Add SubCourse
+                                        </Link>
+                                        <br></br>
+                                    </>
                                 )}
                             </div>
 
@@ -718,362 +820,8 @@ const checkPaymentStatus = () => {
                 </div>
             </div>
             {/* course details-area end */}
-            {/* course area start */}
-            <div className="rts-section-gapBottom  rts-feature-course-area">
-                <div className="container">
-                    <div className="row">
-                        <div className="col-lg-12">
-                            <div className="title-between-area">
-                                <div className="title-area-left-style">
-                                    <div className="pre-title">
-                                        <img src="/assets/images/banner/bulb.png" alt="icon" />
-                                        <span>More Similar Courses</span>
-                                    </div>
-                                    <h2 className="title">Related Courses</h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="row mt--50 ">
-                        <div className="col-lg-12">
-                            <div className="swiper swiper-float-right-course swiper-data" data-swiper="{
-                  &quot;spaceBetween&quot;:30,
-                  &quot;slidesPerView&quot;:4,
-                  &quot;loop&quot;: true,
-                  &quot;autoplay&quot;:{
-                      &quot;delay&quot;:&quot;2000&quot;
-                  },
-                  &quot;breakpoints&quot;:{
-                  &quot;0&quot;:{
-                      &quot;slidesPerView&quot;:1,
-                      &quot;spaceBetween&quot;:30},
-                  &quot;320&quot;:{
-                      &quot;slidesPerView&quot;:1,
-                      &quot;spaceBetween&quot;:30},
-                  &quot;480&quot;:{
-                      &quot;slidesPerView&quot;:1,
-                      &quot;spaceBetween&quot;:30},
-                  &quot;640&quot;:{
-                      &quot;slidesPerView&quot;:2,
-                      &quot;spaceBetween&quot;:30},
-                  &quot;1100&quot;:{
-                      &quot;slidesPerView&quot;:3,
-                      &quot;spaceBetween&quot;:30},
-                  &quot;1200&quot;:{
-                      &quot;slidesPerView&quot;:4,
-                      &quot;spaceBetween&quot;:30}
-                  }
-              }">
-                                <div className="swiper-wrapper">
-                                    <div className="swiper-slide">
-                                        {/* single course style two */}
-                                        <div className="single-course-style-three">
-                                            <a href="#" className="thumbnail">
-                                                <img src="/assets/images/course/01.jpg" alt="course" />
-                                                <div className="tag-thumb">
-                                                    <span>Marketing</span>
-                                                </div>
-                                            </a>
-                                            <div className="body-area">
-                                                <div className="course-top">
-                                                    <div className="tags">Best Seller</div>
-                                                    <div className="price">$49.50</div>
-                                                </div>
-                                                <a href="#">
-                                                    <h5 className="title">How to Write the Ultimate 1 Page
-                                                        Strategic Business Plan</h5>
-                                                </a>
-                                                <div className="teacher-stars">
-                                                    <div className="teacher"><span>Dr. Angela Yu</span></div>
-                                                    <ul className="stars">
-                                                        <li className="span">4.5</li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-regular fa-star" /></li>
-                                                    </ul>
-                                                </div>
-                                                <div className="leasson-students">
-                                                    <div className="lesson">
-                                                        <i className="fa-light fa-calendar-lines-pen" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                    <div className="students">
-                                                        <i className="fa-light fa-users" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {/* single course style two end */}
-                                    </div>
-                                    <div className="swiper-slide">
-                                        {/* single course style two */}
-                                        <div className="single-course-style-three">
-                                            <a href="#" className="thumbnail">
-                                                <img src="/assets/images/course/02.jpg" alt="course" />
-                                                <div className="tag-thumb">
-                                                    <span>Marketing</span>
-                                                </div>
-                                            </a>
-                                            <div className="body-area">
-                                                <div className="course-top">
-                                                    <div className="tags">Best Seller</div>
-                                                    <div className="price">$49.50</div>
-                                                </div>
-                                                <a href="#">
-                                                    <h5 className="title">The Complete Web Developer in
-                                                        2023: Zero to Mastery</h5>
-                                                </a>
-                                                <div className="teacher-stars">
-                                                    <div className="teacher"><span>Dr. Angela Yu</span></div>
-                                                    <ul className="stars">
-                                                        <li className="span">4.5</li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-regular fa-star" /></li>
-                                                    </ul>
-                                                </div>
-                                                <div className="leasson-students">
-                                                    <div className="lesson">
-                                                        <i className="fa-light fa-calendar-lines-pen" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                    <div className="students">
-                                                        <i className="fa-light fa-users" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {/* single course style two end */}
-                                    </div>
-                                    <div className="swiper-slide">
-                                        {/* single course style two */}
-                                        <div className="single-course-style-three">
-                                            <a href="#" className="thumbnail">
-                                                <img src="/assets/images/course/03.jpg" alt="course" />
-                                                <div className="tag-thumb">
-                                                    <span>Marketing</span>
-                                                </div>
-                                            </a>
-                                            <div className="body-area">
-                                                <div className="course-top">
-                                                    <div className="tags">Best Seller</div>
-                                                    <div className="price">$49.50</div>
-                                                </div>
-                                                <a href="#">
-                                                    <h5 className="title">User Experience The Ultimate
-                                                        Guide to Usability and UX</h5>
-                                                </a>
-                                                <div className="teacher-stars">
-                                                    <div className="teacher"><span>Dr. Angela Yu</span></div>
-                                                    <ul className="stars">
-                                                        <li className="span">4.5</li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-regular fa-star" /></li>
-                                                    </ul>
-                                                </div>
-                                                <div className="leasson-students">
-                                                    <div className="lesson">
-                                                        <i className="fa-light fa-calendar-lines-pen" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                    <div className="students">
-                                                        <i className="fa-light fa-users" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {/* single course style two end */}
-                                    </div>
-                                    <div className="swiper-slide">
-                                        {/* single course style two */}
-                                        <div className="single-course-style-three">
-                                            <a href="#" className="thumbnail">
-                                                <img src="/assets/images/course/04.jpg" alt="course" />
-                                                <div className="tag-thumb">
-                                                    <span>Marketing</span>
-                                                </div>
-                                            </a>
-                                            <div className="body-area">
-                                                <div className="course-top">
-                                                    <div className="tags">Best Seller</div>
-                                                    <div className="price">$49.50</div>
-                                                </div>
-                                                <a href="#">
-                                                    <h5 className="title">Complete Guitar Lessons System
-                                                        Beginner to Advanced</h5>
-                                                </a>
-                                                <div className="teacher-stars">
-                                                    <div className="teacher"><span>Dr. Angela Yu</span></div>
-                                                    <ul className="stars">
-                                                        <li className="span">4.5</li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-regular fa-star" /></li>
-                                                    </ul>
-                                                </div>
-                                                <div className="leasson-students">
-                                                    <div className="lesson">
-                                                        <i className="fa-light fa-calendar-lines-pen" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                    <div className="students">
-                                                        <i className="fa-light fa-users" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {/* single course style two end */}
-                                    </div>
-                                    <div className="swiper-slide">
-                                        {/* single course style two */}
-                                        <div className="single-course-style-three">
-                                            <a href="#" className="thumbnail">
-                                                <img src="/assets/images/course/05.jpg" alt="course" />
-                                                <div className="tag-thumb">
-                                                    <span>Marketing</span>
-                                                </div>
-                                            </a>
-                                            <div className="body-area">
-                                                <div className="course-top">
-                                                    <div className="tags">Best Seller</div>
-                                                    <div className="price">$49.50</div>
-                                                </div>
-                                                <a href="#">
-                                                    <h5 className="title">Automate the Boring Stuff with
-                                                        Python Programming</h5>
-                                                </a>
-                                                <div className="teacher-stars">
-                                                    <div className="teacher"><span>Dr. Angela Yu</span></div>
-                                                    <ul className="stars">
-                                                        <li className="span">4.5</li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-regular fa-star" /></li>
-                                                    </ul>
-                                                </div>
-                                                <div className="leasson-students">
-                                                    <div className="lesson">
-                                                        <i className="fa-light fa-calendar-lines-pen" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                    <div className="students">
-                                                        <i className="fa-light fa-users" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {/* single course style two end */}
-                                    </div>
-                                    <div className="swiper-slide">
-                                        {/* single course style two */}
-                                        <div className="single-course-style-three">
-                                            <a href="#" className="thumbnail">
-                                                <img src="/assets/images/course/06.jpg" alt="course" />
-                                                <div className="tag-thumb">
-                                                    <span>Marketing</span>
-                                                </div>
-                                            </a>
-                                            <div className="body-area">
-                                                <div className="course-top">
-                                                    <div className="tags">Best Seller</div>
-                                                    <div className="price">$49.50</div>
-                                                </div>
-                                                <a href="#">
-                                                    <h5 className="title">Automate the Boring Stuff with
-                                                        Python Programming</h5>
-                                                </a>
-                                                <div className="teacher-stars">
-                                                    <div className="teacher"><span>Dr. Angela Yu</span></div>
-                                                    <ul className="stars">
-                                                        <li className="span">4.5</li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-regular fa-star" /></li>
-                                                    </ul>
-                                                </div>
-                                                <div className="leasson-students">
-                                                    <div className="lesson">
-                                                        <i className="fa-light fa-calendar-lines-pen" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                    <div className="students">
-                                                        <i className="fa-light fa-users" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {/* single course style two end */}
-                                    </div>
-                                    <div className="swiper-slide">
-                                        {/* single course style two */}
-                                        <div className="single-course-style-three">
-                                            <a href="#" className="thumbnail">
-                                                <img src="/assets/images/course/07.jpg" alt="course" />
-                                                <div className="tag-thumb">
-                                                    <span>Marketing</span>
-                                                </div>
-                                            </a>
-                                            <div className="body-area">
-                                                <div className="course-top">
-                                                    <div className="tags">Best Seller</div>
-                                                    <div className="price">$49.50</div>
-                                                </div>
-                                                <a href="#">
-                                                    <h5 className="title">How to Write the Ultimate 1 Page
-                                                        Strategic Business Plan</h5>
-                                                </a>
-                                                <div className="teacher-stars">
-                                                    <div className="teacher"><span>Dr. Angela Yu</span></div>
-                                                    <ul className="stars">
-                                                        <li className="span">4.5</li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-solid fa-star" /></li>
-                                                        <li><i className="fa-sharp fa-regular fa-star" /></li>
-                                                    </ul>
-                                                </div>
-                                                <div className="leasson-students">
-                                                    <div className="lesson">
-                                                        <i className="fa-light fa-calendar-lines-pen" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                    <div className="students">
-                                                        <i className="fa-light fa-users" />
-                                                        <span>25 Lessons</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        {/* single course style two end */}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {/* course area end */}
-          
+
+
         </div>
 
     )

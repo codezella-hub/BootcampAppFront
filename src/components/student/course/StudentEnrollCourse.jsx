@@ -105,7 +105,7 @@ function StudentEnrollCourse() {
                 </div>
               ))
             ) : (
-              <p>Loading categories...</p>
+              <p>No Course Enrolled...</p>
             )}
 
             {/* single course style two end */}
