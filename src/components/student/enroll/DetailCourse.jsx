@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuthStore } from '../../../store/authStore';
+import certificasApi from "../../../services/certificas.js";
 
 function DetailCourse() {
     const { user } = useAuthStore();
@@ -193,7 +194,32 @@ function DetailCourse() {
             });
         });
     };
+//////check certif ////
+const handleGetCertificate = async () => {
+  try {
+    // Vérifie si certificate = true dans la commande pour ce cours et cet utilisateur
+    const checkDbRes = await axios.get(`http://localhost:3000/api/certificate/check-certificate/${user._id}/${course._id}`);
+    const { certificate } = checkDbRes.data;
 
+    if (certificate === true) {
+      // Générer directement le certificat sans vérification supplémentaire
+      const url = `http://localhost:3000/api/certificate/${user._id}/${course._id}`;
+      window.open(url, "_blank");
+    } else {
+      // Sinon faire la vérification complète via certificasApi
+      const res = await certificasApi.checkCertificas(user._id, course._id);
+      if (res.status === 200) {
+        const url = `http://localhost:3000/api/certificate/${user._id}/${course._id}`;
+        window.open(url, "_blank");
+      }
+    }
+  } catch (error) {
+    // Affiche les erreurs, qu'elles viennent du check API ou d'un problème serveur
+    alert(error.response?.data?.message || "Erreur lors de la vérification.");
+  }
+};
+
+  ////////////
     // Update the renderPurchaseButtons function
     const renderPurchaseButtons = () => {
         if (loadingPurchaseCheck) {
@@ -212,15 +238,9 @@ function DetailCourse() {
         if (isCreator || isPurchased) {
             return (
                 <>
-                    <a
-                        href={`http://localhost:3000/api/certificate/${user._id}/${course._id}`}
-                        className="rts-btn btn-primary"
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Get Certificate
-                    </a>
+                    <button onClick={handleGetCertificate} className="rts-btn btn-primary">
+        Get Certificate
+      </button>
                 </>
             );
 
@@ -234,8 +254,12 @@ function DetailCourse() {
             >
                 Purchase Course (${course.price})
             </button>
+
+            
         );
     };
+
+
     const handlePurchase = () => {
         Swal.fire({
           title: '<strong style="font-size: 1.5rem; color: #2a3042">Confirm Your Purchase</strong>',
@@ -367,6 +391,44 @@ function DetailCourse() {
         }, 120000);
       };
 
+        const handleAddToCart = async (course) => {
+            const userString = localStorage.getItem("auth-storage");
+            const userObj = userString ? JSON.parse(userString) : null;
+            const userId = userObj?.state?.user?._id;
+    
+            if (!userId) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Required',
+                    text: 'Please log in to add courses to your cart.',
+                });
+                return;
+            }
+    
+            try {
+                await axios.post('/api/orders', {
+                    items: [{ courseId: course._id, quantity: 1 }],
+                    userid: userId
+                });
+    
+                addToCart({ ...course, quantity: 1 });
+    
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to cart!',
+                    text: `${course.title} has been added to your cart.`,
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to add the course to your cart. Please try again.',
+                });
+            }
+        };
 
     return (
         <div>
