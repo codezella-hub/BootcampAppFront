@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuthStore } from '../../../store/authStore';
+import certificasApi from "../../../services/certificas.js";
 
 function DetailCourse() {
     const { user } = useAuthStore();
@@ -208,16 +209,10 @@ function DetailCourse() {
     if (isPurchased) {
       return (
         <div className="d-flex gap-3">
-          <a
-            href={`http://localhost:3000/api/certificate/${user._id}/${course._id}`}
-            className="rts-btn btn-primary"
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Get Certificate
-          </a>
-        </div>
+      <button onClick={handleGetCertificate} className="rts-btn btn-primary">
+        Get Certificate
+      </button>
+    </div>
       );
     }
   
@@ -297,6 +292,22 @@ const checkPaymentStatus = () => {
         Swal.fire('Timeout', 'Payment verification timed out', 'warning');
     }, 120000);
 };
+
+  const handleGetCertificate = async () => {
+    try {
+      const res = await certificasApi.checkCertificas(user._id, course._id);
+      if (res.status === 200) {
+        // Tout est bon, on peut télécharger le certificat
+        const url = `http://localhost:3000/api/certificate/${user._id}/${course._id}`;
+        window.open(url, "_blank");
+      }
+    } catch (error) {
+      // En cas d'erreur (ex: vidéos pas complétées)
+      alert(error.response?.data?.message || "Erreur lors de la vérification.");
+    }
+  };
+
+
 
 
     
