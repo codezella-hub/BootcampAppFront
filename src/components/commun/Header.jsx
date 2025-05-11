@@ -136,11 +136,8 @@ function Header() {
                                                             </ul>
                                                         </li>
                                                         <li className="has-dropdown">
-                                                            <Link className="nav-link" >Dashboard</Link>
-                                                            <ul className="submenu">
-                                                                <li><Link to="/dashboard">mm</Link></li>
-
-                                                            </ul>
+                                                            <Link to="/dashboard" className="nav-link" >Dashboard</Link>
+                                                            
                                                         </li>
                                                         {user.role === "admin" && (
                                                             <>

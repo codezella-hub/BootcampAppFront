@@ -86,7 +86,7 @@ function AllCourses() {
          
             <div className="rts-bread-crumbarea-1 rts-section-gap bg_image">
                 <div className="container">
-                    <div className="row">cate
+                    <div className="row">
                         <div className="col-lg-12">
                             <div className="breadcrumb-main-wrapper">
                                 <h1 className="title">All Course</h1>

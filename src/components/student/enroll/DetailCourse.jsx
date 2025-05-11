@@ -6,6 +6,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuthStore } from '../../../store/authStore';
 import certificasApi from "../../../services/certificas.js";
+import { useCartStore } from '../../cartStore/cartStore';   
+
 
 function DetailCourse() {
     const { user } = useAuthStore();
@@ -24,6 +26,7 @@ function DetailCourse() {
     const staticUserId = user._id; // Hardcoded static user ID
     const staticReceiverId = "67eaf437c7bb7a0c6758b159"; // Add this line
     const isCreator = user && course.user && user._id === course.user._id;
+    const { addToCart } = useCartStore();
 
     useEffect(() => {
         document.title = "Detail Course";
@@ -71,6 +74,31 @@ function DetailCourse() {
             .catch(error => {
                 console.error("Error fetching subcourses:", error);
             });
+                 /////check course payed////
+      
+  axios.get(`http://localhost:3000/api/orders/user-id/${staticUserId}`)
+  .then((response) => {
+    const orders = response.data;
+    console.log("orders:", orders);
+
+    // Extraire les IDs des cours achetés
+    const purchasedCourseIds = orders
+  .filter(order => order.payment === true) 
+  .flatMap(order =>
+    order.items?.map(item => item.courseId?._id) || []
+  );
+
+console.log("Liste des courseId achetés (commandes payées):", purchasedCourseIds);
+
+if (purchasedCourseIds.includes(id)) {
+  setIsPurchased(true);
+}
+  })
+  .catch((error) => {
+    console.error("Erreur lors de la vérification des cours achetés :", error);
+  });
+
+
 
     }, [id]); // Runs when `id` changes
 
@@ -218,8 +246,47 @@ const handleGetCertificate = async () => {
     alert(error.response?.data?.message || "Erreur lors de la vérification.");
   }
 };
+const handleAddToCart = async (course) => {
+            const userString = localStorage.getItem("auth-storage");
+            const userObj = userString ? JSON.parse(userString) : null;
+            const userId = userObj?.state?.user?._id;
+    
+            if (!userId) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Required',
+                    text: 'Please log in to add courses to your cart.',
+                });
+                return;
+            }
+    
+            try {
+                await axios.post('/api/orders', {
+                    items: [{ courseId: course._id, quantity: 1 }],
+                    userid: userId
+                });
+    
+                addToCart({ ...course, quantity: 1 });
+    
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to cart!',
+                    text: `${course.title} has been added to your cart.`,
+                    timer: 1500,
+                    showConfirmButton: false,
+                });
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to add the course to your cart. Please try again.',
+                });
+            }
+        };
 
   ////////////
+  
     // Update the renderPurchaseButtons function
     const renderPurchaseButtons = () => {
         if (loadingPurchaseCheck) {
@@ -248,12 +315,11 @@ const handleGetCertificate = async () => {
 
         return (
             <button
-                onClick={handlePurchase}
-                className="rts-btn btn-primary"
-                disabled={!course.price}
-            >
-                Purchase Course (${course.price})
-            </button>
+                                                                onClick={() => handleAddToCart(course)}
+                                                                className="rts-btn btn-primary mt-3"
+                                                            >
+                                                                Add to Cart
+                                                            </button>
 
             
         );
@@ -383,6 +449,9 @@ const handleGetCertificate = async () => {
             })
             .catch(() => { /* Ignore errors until timeout */ });
         }, 3000);
+
+   
+
       
         // Timeout after 2 minutes
         setTimeout(() => {
@@ -391,45 +460,7 @@ const handleGetCertificate = async () => {
         }, 120000);
       };
 
-        const handleAddToCart = async (course) => {
-            const userString = localStorage.getItem("auth-storage");
-            const userObj = userString ? JSON.parse(userString) : null;
-            const userId = userObj?.state?.user?._id;
-    
-            if (!userId) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Login Required',
-                    text: 'Please log in to add courses to your cart.',
-                });
-                return;
-            }
-    
-            try {
-                await axios.post('/api/orders', {
-                    items: [{ courseId: course._id, quantity: 1 }],
-                    userid: userId
-                });
-    
-                addToCart({ ...course, quantity: 1 });
-    
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Added to cart!',
-                    text: `${course.title} has been added to your cart.`,
-                    timer: 1500,
-                    showConfirmButton: false,
-                });
-            } catch (error) {
-                console.error("Error adding to cart:", error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to add the course to your cart. Please try again.',
-                });
-            }
-        };
-
+        
     return (
         <div>
 
@@ -522,7 +553,7 @@ const handleGetCertificate = async () => {
                                                         ) : (
                                                             ListVideos.length > 0 ? (
                                                                 ListVideos.map(video => {
-                                                                    const canAccess = isCreator || isPurchased;
+                                                                    const canAccess = isCreator ||isPurchased;
                                                                     return canAccess ? (
                                                                         <Link
                                                                             key={video._id}
