@@ -34,7 +34,7 @@ const Cart = () => {
         return;
       }
 
-      const response = await axios.get(`/api/orders/user-id/${userId}`);
+      const response = await axios.get(`/api/orders/user-id/pending/${userId}`);
       const data = response.data;
 
       if (!Array.isArray(data)) {

@@ -115,7 +115,7 @@ function DashboardBanner() {
                     <div className="row">
                         <div className="col-lg-12">
                             <div className="dashboard-banner-area-start bg_image">
-                                <div className="rating-area-banner-dashboard">
+                               { /*<div className="rating-area-banner-dashboard">
                                     <div className="stars">
                                         <span>4.5</span>
                                         <i className="fa-solid fa-star" />
@@ -126,7 +126,7 @@ function DashboardBanner() {
                                     </div>
                                     <p>Digital Marketing Instructor</p>
                                     <a href="create-course.html" className="create-btn"><i className="fa-regular fa-circle-plus" /> Create a New Course</a>
-                                </div>
+                                </div>*/}
                                 <div className="author-profile-image-and-name">
                                     <div className="profile-pic">
                                         {renderProfileImage()}
