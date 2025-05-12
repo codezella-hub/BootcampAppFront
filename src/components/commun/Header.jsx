@@ -109,7 +109,7 @@ function Header() {
                             <div className="header-one-wrapper">
                                 <div className="left-side-header">
                                     <a href="/" className="logo-area">
-                                        <img src="assets/images/logo/logo-1.svg" alt="logo" />
+                                        <img src="/assets/images/logo/logo-1.svg" alt="logo" />
                                     </a>
                                     <div className="main-nav-one">
                                         <nav>
@@ -128,13 +128,7 @@ function Header() {
 
                                                             </ul>
                                                         </li>
-                                                        <li className="has-dropdown">
-                                                            <Link className="nav-link">Dashboard ad</Link>
-                                                            <ul className="submenu">
-                                                                <li><Link to="/dash">Dashboard</Link></li>
-
-                                                            </ul>
-                                                        </li>
+                                                        
                                                         <li className="has-dropdown">
                                                             <Link className="nav-link">Videos</Link>
                                                             <ul className="submenu">
@@ -144,7 +138,10 @@ function Header() {
                                                         </li>
                                                         <li className="has-dropdown">
                                                             <Link to="/dashboard" className="nav-link">Dashboard</Link>
+                                                                <ul className="submenu">
+                                                                <li><Link to="/dash">Statistic</Link></li>
 
+                                                            </ul>
                                                         </li>
                                                         {user.role === "admin" && (
                                                             <>
@@ -162,14 +159,7 @@ function Header() {
 
                                                         {user.role === "user" && (
                                                             <>
-                                                                <li className="has-dropdown">
-                                                                    <Link className="nav-link"
-                                                                          to="/dashboard/student/enroll-course">Enrolled
-                                                                        Courses</Link>
-                                                                </li>
-                                                                <li className="has-dropdown">
-                                                                    <Link className="nav-link" to="/cart">My Cart</Link>
-                                                                </li>
+                                                                
                                                             </>
                                                         )}
 
@@ -188,7 +178,7 @@ function Header() {
 
                                                         )}
                                                         <li className="has-dropdown">
-                                                            <Link className="nav-link" to="/Forums">Chat</Link>
+                                                            <Link className="nav-link" to="#">Support</Link>
                                                             <ul className="submenu">
                                                                 <li className="has-dropdown">
                                                                     <Link className="nav-link"
@@ -196,6 +186,10 @@ function Header() {
                                                                 </li>
                                                                 <li className="has-dropdown">
                                                                     <Link className="nav-link" to="/chat">Chat</Link>
+                                                                </li>
+                                                                <li className="has-dropdown">
+                                                                    <Link className="nav-link"
+                                                                          to="/Code">Code</Link>
                                                                 </li>
 
                                                             </ul>
