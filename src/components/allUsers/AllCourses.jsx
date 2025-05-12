@@ -12,9 +12,30 @@ function AllCourses() {
     const [filteredCourses, setFilteredCourses] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
      const { addToCart } = useCartStore();
+     const [orderedCourseIds, setOrderedCourseIds] = useState([]);
 
     useEffect(() => {
         document.title = "List of courses";
+        ////fetch all orders ///
+        const fetchOrders = async () => {
+            const userString = localStorage.getItem("auth-storage");
+            const userObj = userString ? JSON.parse(userString) : null;
+            const userId = userObj?.state?.user?._id;
+            if (userId) {
+            try {
+                const res = await axios.get(`http://localhost:3000/api/orders/user-id/${userId}`);
+                    const pendingOrders = res.data.filter(order => order.status === "pending");
+                    const courseIds = pendingOrders.flatMap(order =>
+                        order.items.map(item => item.courseId._id)
+  );
+                setOrderedCourseIds(courseIds);
+                console.log("Ordered course IDs:", courseIds);
+            } catch (error) {
+                console.error("Failed to fetch orders:", error);
+            }
+}
+        };
+        fetchOrders();
         fetchCourses();
     }, []);
 
@@ -383,12 +404,12 @@ function AllCourses() {
                                                                     )}
                                                                 </div>
                                                             </div>
-                                                            <button
-                                                                onClick={() => handleAddToCart(course)}
-                                                                className="rts-btn btn-primary mt-3"
-                                                            >
-                                                                Add to Cart
-                                                            </button>
+                                                            {orderedCourseIds.includes(course._id) ? (
+
+                                                            <Link to="/cart" className="rts-btn btn-warning mt-3"> 
+                                                            Go to Cart </Link> ) :
+                                                             ( <button onClick={() => handleAddToCart(course)} className="rts-btn btn-primary mt-3" > 
+                                                             Add to Cart </button> )}
                                                         </div>
                                                     </div>
                                                 ))}

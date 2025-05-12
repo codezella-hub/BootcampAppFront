@@ -9,6 +9,7 @@ import certificasApi from "../../../services/certificas.js";
 import { useCartStore } from '../../cartStore/cartStore';   
 
 
+
 function DetailCourse() {
     const { user } = useAuthStore();
     const { id } = useParams(); // Get the category ID from the URL
@@ -27,6 +28,7 @@ function DetailCourse() {
     const staticReceiverId = "67eaf437c7bb7a0c6758b159"; // Add this line
     const isCreator = user && course.user && user._id === course.user._id;
     const { addToCart } = useCartStore();
+    const [orderedCourseIds, setOrderedCourseIds] = useState([]);
 
     useEffect(() => {
         document.title = "Detail Course";
@@ -98,7 +100,25 @@ if (purchasedCourseIds.includes(id)) {
     console.error("Erreur lors de la vérification des cours achetés :", error);
   });
 
-
+ const fetchOrders = async () => {
+            const userString = localStorage.getItem("auth-storage");
+            const userObj = userString ? JSON.parse(userString) : null;
+            const userId = userObj?.state?.user?._id;
+            if (userId) {
+            try {
+                const res = await axios.get(`http://localhost:3000/api/orders/user-id/${userId}`);
+                    const pendingOrders = res.data.filter(order => order.status === "pending");
+                    const courseIds = pendingOrders.flatMap(order =>
+                        order.items.map(item => item.courseId._id)
+  );
+                setOrderedCourseIds(courseIds);
+                console.log("Ordered course IDs:", courseIds);
+            } catch (error) {
+                console.error("Failed to fetch orders:", error);
+            }
+}
+        };
+        fetchOrders();
 
     }, [id]); // Runs when `id` changes
 
@@ -314,12 +334,14 @@ const handleAddToCart = async (course) => {
         }
 
         return (
-            <button
-                                                                onClick={() => handleAddToCart(course)}
-                                                                className="rts-btn btn-primary mt-3"
-                                                            >
-                                                                Add to Cart
-                                                            </button>
+            <>
+           {orderedCourseIds.includes(course._id) ? (
+           
+           <Link to="/cart" className="rts-btn btn-warning mt-3"> 
+             Go to Cart </Link> ) :
+              ( <button onClick={() => handleAddToCart(course)} className="rts-btn btn-primary mt-3" > 
+                Add to Cart </button> )}
+                 </>                                           
 
             
         );
