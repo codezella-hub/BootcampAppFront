@@ -89,6 +89,11 @@ import CouponList from "./components/coupon/CouponList";
 import EyeTracker from './components/EyeTracker.jsx';
 import HistoryOrderList from './components/historyOrders/HistoryOrderList.jsx';
 import { CartProvider } from './components/context/CartContext.jsx';
+import CoursesByCategoryChart from "./components/dashboard/CoursesByCategoryChart.jsx";
+import QuizSuccessChart from "./components/dashboard/QuizSuccessChart.jsx";
+import StatsGrid from "./components/dashboard/StatsGrid.jsx";
+import TopRatedCourses from "./components/dashboard/TopRatedCourses.jsx";
+import DashboardPage from "./components/dashboard/DashboardPage.jsx";
 function App() {
   const userId ='88888888'
   const [cartItems, setCartItems] = useState([]);
@@ -121,6 +126,8 @@ function App() {
         {/* Global Interface Routes */}
         <Route path="/" element={<GlobalInterface />} >
           <Route index element={<Home />} />
+          <Route path="dash" element={<DashboardPage />} />
+
           <Route path="AllCourses" element={<AllCourses />} />
           <Route path="/ListVideo" element={<ListVideo />} />
           <Route path="/VideoDetail/:id/:subCourseId" element={<VideoDetail />} />

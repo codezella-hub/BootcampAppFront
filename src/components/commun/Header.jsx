@@ -122,22 +122,29 @@ function Header() {
                                                     <>
                                                         {/* route forum */}
                                                         <li className="has-dropdown">
-                                                            <Link className="nav-link" >Courses</Link>
+                                                            <Link className="nav-link">Courses</Link>
                                                             <ul className="submenu">
                                                                 <li><Link to="/allcourses">List Course</Link></li>
 
                                                             </ul>
                                                         </li>
                                                         <li className="has-dropdown">
-                                                            <Link className="nav-link" >Videos</Link>
+                                                            <Link className="nav-link">Dashboard ad</Link>
+                                                            <ul className="submenu">
+                                                                <li><Link to="/dash">Dashboard</Link></li>
+
+                                                            </ul>
+                                                        </li>
+                                                        <li className="has-dropdown">
+                                                            <Link className="nav-link">Videos</Link>
                                                             <ul className="submenu">
                                                                 <li><Link to="/ListVideo">Videos</Link></li>
 
                                                             </ul>
                                                         </li>
                                                         <li className="has-dropdown">
-                                                            <Link to="/dashboard" className="nav-link" >Dashboard</Link>
-                                                            
+                                                            <Link to="/dashboard" className="nav-link">Dashboard</Link>
+
                                                         </li>
                                                         {user.role === "admin" && (
                                                             <>
@@ -155,19 +162,21 @@ function Header() {
 
                                                         {user.role === "user" && (
                                                             <>
-                                                            <li className="has-dropdown">
-                                                                <Link className="nav-link" to="/dashboard/student/enroll-course">Enrolled Courses</Link>
-                                                            </li>
-                                                            <li className="has-dropdown">
-                                                            <Link className="nav-link" to="/cart">My Cart</Link>
-                                                            </li>
+                                                                <li className="has-dropdown">
+                                                                    <Link className="nav-link"
+                                                                          to="/dashboard/student/enroll-course">Enrolled
+                                                                        Courses</Link>
+                                                                </li>
+                                                                <li className="has-dropdown">
+                                                                    <Link className="nav-link" to="/cart">My Cart</Link>
+                                                                </li>
                                                             </>
                                                         )}
 
                                                         {user.role === "professor" && (
                                                             <>
-                                                              
-                                                             
+
+
                                                                 <li className="has-dropdown">
                                                                     <Link className="nav-link"
                                                                           to="/Code">Code</Link>
@@ -193,9 +202,6 @@ function Header() {
                                                         </li>
                                                     </>
                                                 )}
-
-
-
 
 
                                                 {/* route forum */}
