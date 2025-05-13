@@ -77,6 +77,14 @@ This frontend was designed and implemented as part of the academic program for 4
 
 #react, #redux, #tailwindcss, #vite, #socketio, #web-development, #esprit, #4twin, #frontend, #ai, #education-platform, #learning, #certification, #quiz-app
 
+## 👥 Authors  
+- Louay Benslimen  
+- Saker Hajji  
+- Mokhles Benna  
+- Sofienne Mrabet  
+- Hachem Dhawadi  
+
+
 ## Directory Structure
 ```bash
 /frontend
