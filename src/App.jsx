@@ -95,6 +95,7 @@ import StatsGrid from "./components/dashboard/StatsGrid.jsx";
 import TopRatedCourses from "./components/dashboard/TopRatedCourses.jsx";
 import DashboardPage from "./components/dashboard/DashboardPage.jsx";
 import ListVideoBySubCourse from './components/trainer/video/ListVideoBySubCourse.jsx';
+import OrderList from './components/historyOrders/OrderList.jsx';
 function App() {
   const userId ='88888888'
   const [cartItems, setCartItems] = useState([]);
@@ -185,6 +186,7 @@ function App() {
           <Route path="student/enroll-course" element={<StudentEnrollCourse />} />
           <Route path="ListCategory" element={<ListCategory />} />
         <Route path="ListCourseAdmin" element={<ListCourseAdmin />} />
+        <Route path="historyOrders" element={<OrderList/>} />
         </Route>
 
         {/* Profile Routes */}
@@ -278,7 +280,7 @@ function App() {
         <Route path="/admin/coupons" element={<CouponList />} />
 
 
-        <Route path="/historyOrders" element={<HistoryOrderList />} />
+        
 
         {/* Not found  Route */}
         <Route path={"/*"} element={<Notfound/>} />

@@ -57,6 +57,7 @@ const handleGetCertificate = async (course) => {
 const fetchSubCourseCount = async (course) => {
   try {
     const response = await axios.get(`http://localhost:3000/api/subcourses/course/${course._id}/user/${course.user}`);
+    console.log(`Sub-cours pour le cours ${course.user}:`, response.data);
     setSubCourseCounts(prev => ({
       ...prev,
       [course._id]: response.data.length
@@ -99,7 +100,7 @@ const fetchSubCourseCount = async (course) => {
                       <div className="body-area">
                         <div className="course-top">
                           <div className="tags">Best Seller</div>
-                          <div className="price">${course.price}</div>
+                          <div className="price">{course.price}DT</div>
                         </div>
                         <a href="single-course.html">
                           <h5 className="title">{course.prerequisites}</h5>
