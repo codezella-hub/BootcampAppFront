@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useAuthStore } from '../../../store/authStore';
 
 function AddVideo() {
+    //iduser = user._id;
     const [uploadProgress, setUploadProgress] = useState(0);
     const { user} = useAuthStore();
     const [ListSubCourse, setSubCourse] = useState([]);
@@ -26,7 +27,7 @@ function AddVideo() {
     useEffect(() => {
         document.title = "List of SubCourses";
 
-        axios.get(`/api/subCourses`)
+        axios.get(`/api/subCourses/${user._id}`)
             .then(res => {
                 if (res.status === 200) {
                     setSubCourse(res.data);

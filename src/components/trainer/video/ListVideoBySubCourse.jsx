@@ -72,7 +72,7 @@ function ListVideoBySubCourse() {
                                     position: 'absolute',
                                     top: '10px',
                                     right: '10px',
-                                    zIndex: 1000,
+                                   
                                 }}
                             >
                                 <Link to="/AddVideo" className="rts-btn btn-primary">

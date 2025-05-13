@@ -29,31 +29,31 @@ function VideoDetail() {
     const [concentration, setConcentration] = useState(null);
     const handleLogConcentration = () => {
         if (concentration !== null) {
-          console.log(`Concentration moyenne pendant la vidéo : ${concentration}%`);
+            console.log(`Concentration moyenne pendant la vidéo : ${concentration}%`);
         } else {
-          console.log("Aucune donnée de concentration disponible pour l’instant.");
+            console.log("Aucune donnée de concentration disponible pour l’instant.");
         }
-      };
-      ////////
+    };
+    ////////
 
-const handleNavigateToQuiz = () => {
-  const courseId = video.subCourse.course;
-  const subCourseId = video.subCourse._id;
-  navigate(`/quiz-create/${courseId}/${subCourseId}`);
-};
+    const handleNavigateToQuiz = () => {
+        const courseId = video.subCourse.course;
+        const subCourseId = video.subCourse._id;
+        navigate(`/quiz-create/${courseId}/${subCourseId}`);
+    };
 
-const passQuiz = () => {
-    const courseId = video.subCourse.course;
-    const subCourseId = video.subCourse._id;
-    navigate(`/quiz/${subCourseId}`);
-  };
+    const passQuiz = () => {
+        const courseId = video.subCourse.course;
+        const subCourseId = video.subCourse._id;
+        navigate(`/quiz/${subCourseId}`);
+    };
 
 
 
 
     // Fetch initial progress and set video time
     useEffect(() => {
-        
+
         // Modify fetchInitialProgress
         const fetchInitialProgress = async () => {
             try {
@@ -86,26 +86,26 @@ const passQuiz = () => {
         ///eyeTracker//////////////
         const handleUnload = () => {
             if (concentration !== null && user._id && id) {
-              axios.post('http://localhost:3000/api/concentration', {
-                userId: user._id,
-                videoId: id,
-                concentration: parseFloat(concentration),
-              }).then(() => {
-                console.log('Concentration sauvegardée');
-              }).catch((err) => {
-                console.error('Erreur d\'enregistrement :', err);
-              });
+                axios.post('http://localhost:3000/api/concentration', {
+                    userId: user._id,
+                    videoId: id,
+                    concentration: parseFloat(concentration),
+                }).then(() => {
+                    console.log('Concentration sauvegardée');
+                }).catch((err) => {
+                    console.error('Erreur d\'enregistrement :', err);
+                });
             }
-          };
-      
-          window.addEventListener('beforeunload', handleUnload);
-          return () => {
+        };
+
+        window.addEventListener('beforeunload', handleUnload);
+        return () => {
             handleUnload(); // on save aussi lors du démontage
             window.removeEventListener('beforeunload', handleUnload);
-          };
-          //////////////
+        };
+        //////////////
         fetchInitialProgress();
-    }, [id,concentration]);
+    }, [id, concentration]);
 
     // Modify sendProgressUpdate to handle completion state
     const sendProgressUpdate = async (currentTime) => {
@@ -346,159 +346,97 @@ const passQuiz = () => {
             }
         }
     };
-    return (
-        <div>
-         
+return (
+    <div>
+        <div style={{ display: 'flex', marginTop: '20px', padding: '0 20px' }}>
+            <div style={{ flex: 3, marginRight: '20px', position: 'relative' }}>
+                {/* Progress bar container - positioned absolutely at top right */}
+                <div style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    zIndex: 10,
+                    backgroundColor: 'rgba(0,0,0,0.7)',
+                    padding: '5px 10px',
+                    borderRadius: '4px',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px'
+                }}>
+                    <span style={{ fontSize: '14px' }}>
+                        {isMarkedDone ? '✓ Completed' : `${Math.round((currentTime / videoDuration) * 100 || 0)}%`}
+                    </span>
+                    <button
+                      className="rts-btn btn-primary with-arrow"
+                        onClick={handleMarkAsDone}
+                        disabled={isMarkedDone}
+                    >
+                        {isMarkedDone ? '✓' : 'Mark Done'}
+                    </button>
+                </div>
 
-            <div style={{ display: 'flex', marginTop: '20px', padding: '0 20px' }}>
-                <div style={{ flex: 3, marginRight: '20px' }}>
-                    <div style={{ backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}>
-                        <video
-                            key={video?.url}
-                            ref={videoRef}
-                            onLoadedMetadata={(e) => {
-                                setVideoDuration(e.target.duration);
-                                if (!initialPositionSet.current) {
-                                    e.target.currentTime = initialProgress;
-                                    // Watch 30 seconds → refresh → should resume at 30s
-                                    // Add debug logs in onLoadedMetadata:
-                                    console.log('Setting initial time to:', initialProgress);
-                                    initialPositionSet.current = true;
-                                }
-                            }}
-                            onTimeUpdate={handleTimeUpdate}
-                            controls
-                            autoPlay
-                            style={{ width: '100%', height: '600px', objectFit: 'contain' }}
-                        >
-                            <source src={video?.url} type="video/mp4" />
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
+                {/* Video container */}
+                <div style={{ backgroundColor: '#000', borderRadius: '8px', overflow: 'hidden' }}>
+                    <video
+                        key={video?.url}
+                        ref={videoRef}
+                        onLoadedMetadata={(e) => {
+                            setVideoDuration(e.target.duration);
+                            if (!initialPositionSet.current) {
+                                e.target.currentTime = initialProgress;
+                                console.log('Setting initial time to:', initialProgress);
+                                initialPositionSet.current = true;
+                            }
+                        }}
+                        onTimeUpdate={handleTimeUpdate}
+                        controls
+                        autoPlay
+                        style={{ width: '100%', height: '600px', objectFit: 'contain' }}
+                    >
+                        <source src={video?.url} type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
 
+                {/* Eye tracking hidden */}
+                <HiddenEyeTracker onDataUpdate={(value) => setConcentration(value)} />
 
-{/* Eye tracking caché */}
-<HiddenEyeTracker onDataUpdate={(value) => setConcentration(value)} />
-    
-
-
-
-                    <div style={{ margin: '20px 0' }}>
-                        <div className="single-upcoming-events" key={video._id} style={{ margin: '40px 40px 60px 40px' }}>
-                            <div className="information">
-                                <a>
-                                    <h5 className="title">{video.title}</h5>
-                                </a>
-                            </div>
-                            {user.role === 'user' ? (
-  <button className="rts-btn btn-primary with-arrow" onClick={passQuiz}>
-    Start quiz
-  </button>
-) : (
-  <button className="rts-btn btn-primary with-arrow" onClick={handleNavigateToQuiz}>
-    Create quiz
-  </button>
-  
-)}
-
-
+                {/* Video title and quiz button */}
+                <div style={{ margin: '20px 0' }}>
+                    <div className="single-upcoming-events" key={video._id} style={{ margin: '40px 40px 60px 40px' }}>
+                        <div className="information">
+                            <a>
+                                <h5 className="title">{video.title}</h5>
+                            </a>
                         </div>
-                    </div>
-  
-                    <div style={{ margin: '20px 0' }}>
-                        <div className="single-upcoming-events" key={video._id} style={{ margin: '40px 40px 60px 40px' }}>
-                            <div className="information">
-                                <a>
-
-                                    <h5 className="title">
-                                        {isMarkedDone ? '✓ Completed: ' : ''}
-                                        Progress: {Math.round((currentTime / videoDuration) * 100 || 0)}%
-                                    </h5>
-                                </a>
-                            </div>
-                            <button
-                                className="rts-btn btn-primary with-arrow"
-                                onClick={handleMarkAsDone}
-                                disabled={isMarkedDone}
-                            >
-                                {isMarkedDone ? 'Completed ✓' : 'Mark as Done'}
+                        {user.role === 'user' ? (
+                            <button className="rts-btn btn-primary with-arrow" onClick={passQuiz}>
+                                Start quiz
                             </button>
-                        </div>
-                    </div>
-
-
-                    {/* Bouton pour voir la concentration moyenne */}
-                    <button className="rts-btn btn-primary with-arrow" onClick={() => {
-        console.log(`Concentration : ${concentration}%`);
-      }}>
-        Afficher concentration
-      </button>
-
-
-      
-                </div>
-
-                <div style={{ flex: 1, maxWidth: '400px' }}>
-                    <h3 style={{ marginBottom: '20px', paddingBottom: '10px', borderBottom: '1px solid #ddd' }}>
-                        Up Next ({ListVideo.length})
-                    </h3>
-
-                    <div style={{ maxHeight: '80vh', overflowY: 'auto' }}>
-                        {ListVideo.map((listVideo) => (
-                            <Link
-                                key={listVideo._id}
-                                to={`/VideoDetail/${listVideo._id}/${subCourseId}`}
-                                style={{
-                                    display: 'flex',
-                                    marginBottom: '12px',
-                                    padding: '8px',
-                                    borderRadius: '4px',
-                                    backgroundColor: listVideo._id === id ? '#f0f0f0' : 'transparent',
-                                    textDecoration: 'none',
-                                    color: 'inherit'
-                                }}
-                            >
-                                <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                                    {/* Thumbnail */}
-                                    <div style={{ width: '160px', marginRight: '12px' }}>
-                                        <img
-                                            src={listVideo.thumbnail}
-                                            alt={listVideo.title}
-                                            style={{ width: '100%', height: '90px', objectFit: 'cover', borderRadius: '4px' }}
-                                        />
-                                    </div>
-
-                                    {/* Title and Description */}
-                                    <div style={{ flex: 1 }}>
-                                        <h4 style={{ fontSize: '14px', margin: 0, WebkitLineClamp: 2, overflow: 'hidden' }}>
-                                            {listVideo.title}
-                                        </h4>
-                                        <p style={{ fontSize: '12px', color: '#666', marginTop: '4px', WebkitLineClamp: 2, overflow: 'hidden' }}>
-                                            {listVideo.description}
-                                        </p>
-                                    </div>
-
-                                    {/* Completion Status Indicator */}
-                                    <div style={{ marginLeft: 'auto', paddingRight: '8px' }}>
-                                        <div
-                                            style={{
-                                                width: '12px',
-                                                height: '12px',
-                                                borderRadius: '50%',
-                                                backgroundColor: videoProgress[listVideo._id] ? '#4CAF50' : '#ff4444'
-                                            }}
-                                        />
-                                    </div>
-                                </div>
-                            </Link>
-                        ))}
+                        ) : (
+                            <button className="rts-btn btn-primary with-arrow" onClick={handleNavigateToQuiz}>
+                                Create quiz
+                            </button>
+                        )}
                     </div>
                 </div>
+
+                {/* Concentration button */}
+                <button className="rts-btn btn-primary with-arrow" onClick={() => {
+                    console.log(`Concentration : ${concentration}%`);
+                }}>
+                    Afficher concentration
+                </button>
             </div>
 
-      
+            {/* Right sidebar with video list */}
+            <div style={{ flex: 1, maxWidth: '400px' }}>
+                {/* ... (keep your existing sidebar code) ... */}
+            </div>
         </div>
-    );
+    </div>
+);
 }
 
 export default VideoDetail;
