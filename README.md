@@ -38,21 +38,7 @@ The platform supports **AI-assisted learning, certification, course navigation, 
 - ESLint + Prettier
 - GitHub Actions (CI/CD optional)
 
-## Directory Structure
 
-/frontend
-├── public/ # Static files
-├── src/
-│ ├── assets/ # Images, logos
-│ ├── components/ # Reusable UI elements
-│ ├── layouts/ # Dashboard layouts by role
-│ ├── pages/ # Route views (Home, Courses, Profile...)
-│ ├── services/ # Axios API functions
-│ ├── store/ # Redux slices & store setup
-│ ├── styles/ # Global Tailwind and custom CSS
-│ └── main.jsx # App root
-├── tailwind.config.js
-└── vite.config.js
 
 
 ## Getting Started
@@ -64,7 +50,7 @@ The platform supports **AI-assisted learning, certification, course navigation, 
 
 ### Installation
 
-```bash
+
 # Clone the repo
 git clone (https://github.com/codezella-hub/BootcampAppFront/)
 cd studyhub-frontend
@@ -91,3 +77,18 @@ This frontend was designed and implemented as part of the academic program for 4
 
 #react, #redux, #tailwindcss, #vite, #socketio, #web-development, #esprit, #4twin, #frontend, #ai, #education-platform, #learning, #certification, #quiz-app
 
+## Directory Structure
+```bash
+/frontend
+├── public/ # Static files
+├── src/
+│ ├── assets/ # Images, logos
+│ ├── components/ # Reusable UI elements
+│ ├── layouts/ # Dashboard layouts by role
+│ ├── pages/ # Route views (Home, Courses, Profile...)
+│ ├── services/ # Axios API functions
+│ ├── store/ # Redux slices & store setup
+│ ├── styles/ # Global Tailwind and custom CSS
+│ └── main.jsx # App root
+├── tailwind.config.js
+└── vite.config.js
