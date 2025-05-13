@@ -118,6 +118,12 @@ export default function SubCoursesByCourse() {
                                             <span>Category: {item.course?.category?.title}</span>
                                         </div>
                                         <div className="right">
+                                                                                    <button 
+                                                onClick={() => navigate(`/dashboard/ListVideoBySubCourse/${item._id}`)} 
+                                                className="rts-btn btn-primary"
+                                            >
+                                                Videos
+                                            </button>
                                             <button 
                                                 onClick={() => navigate(`/UpdateSubCourse/${item._id}`)} 
                                                 className="rts-btn btn-primary"

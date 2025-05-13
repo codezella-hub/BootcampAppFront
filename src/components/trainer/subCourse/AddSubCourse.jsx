@@ -92,6 +92,7 @@ function AddSubCourse() {
                     confirmButtonText: 'OK',
                 });
                 navigate(`/dashboard/SubCoursesByCourse/${subCourseInput.course}`);
+                //navigate(`/AddVideo`);
             }
         } catch (err) {
             Swal.fire({

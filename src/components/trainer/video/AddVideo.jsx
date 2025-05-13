@@ -175,7 +175,7 @@ function AddVideo() {
                 setThumbnailPreview(null);
 
                 // Navigate to video list
-                navigate('/ListVideo');
+                navigate(-1);
             }
         } catch (error) {
             // Handle errors

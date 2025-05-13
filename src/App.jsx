@@ -94,6 +94,7 @@ import QuizSuccessChart from "./components/dashboard/QuizSuccessChart.jsx";
 import StatsGrid from "./components/dashboard/StatsGrid.jsx";
 import TopRatedCourses from "./components/dashboard/TopRatedCourses.jsx";
 import DashboardPage from "./components/dashboard/DashboardPage.jsx";
+import ListVideoBySubCourse from './components/trainer/video/ListVideoBySubCourse.jsx';
 function App() {
   const userId ='88888888'
   const [cartItems, setCartItems] = useState([]);
@@ -178,6 +179,8 @@ function App() {
 
           <Route index element={<MyProfile />} />
           <Route path="SubCoursesByCourse/:id" element={<SubCoursesByCourse />} />
+          <Route path="ListVideoBySubCourse/:id" element={<ListVideoBySubCourse />} />
+          
           <Route path="ListCourse" element={<ListCourse />} />
           <Route path="student/enroll-course" element={<StudentEnrollCourse />} />
           <Route path="ListCategory" element={<ListCategory />} />
@@ -223,6 +226,7 @@ function App() {
         <Route path="/SubCoursesByCourseAdmin/:id" element={<SubCoursesByCourseAdmin />} />
 
         {/* Trainer Routes */}
+                
        
         <Route path="/AddCourse" element={<AddCourse />} />
         <Route path="/UpdateCourse/:id" element={<UpdateCourse />} />
