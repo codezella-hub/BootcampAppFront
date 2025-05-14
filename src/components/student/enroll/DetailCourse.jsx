@@ -749,8 +749,8 @@ const handleAddToCart = async (course) => {
                                 {/* single course-sidebar */}
                                 <div className="course-side-bar">
                                     <div className="price-area">
-                                        <h3 className="title">${course.price}</h3>
-                                        <h4 className="none">$79.99</h4>
+                                        <h3 className="title">{course.price} DT</h3>
+                                        <h4 className="none">79.99 DT</h4>
                                         <span className="discount">-50%</span>
                                     </div>
                                     <div className="clock-area">

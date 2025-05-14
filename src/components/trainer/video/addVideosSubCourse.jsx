@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import Header from '../../commun/Header.jsx'
 import Footer from '../../commun/FooterPrinciple.jsx'
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuthStore } from '../../../store/authStore';
 
-function AddVideo() {
+function AddVideosSubCourse() {
+    const{id}=useParams();
+    
     //iduser = user._id;
     const [uploadProgress, setUploadProgress] = useState(0);
     const { user} = useAuthStore();
@@ -15,7 +17,7 @@ function AddVideo() {
     const [errorlist, setError] = useState({});
     const [videoInput, setVideoInput] = useState({
         order: '',
-        subCourse: '',
+        subCourse: id,
     });
     const [videoFile, setVideoFile] = useState(null);
     const [thumbnailFile, setThumbnailFile] = useState(null);
@@ -117,7 +119,7 @@ function AddVideo() {
         // Prepare form data
         const formData = new FormData();
         formData.append('order', videoInput.order);
-        formData.append('subCourse', videoInput.subCourse);
+        formData.append('subCourse', id);
         formData.append('video', videoFile);
         formData.append('thumbnail', thumbnailFile);
         formData.append('user', user._id);
@@ -243,7 +245,7 @@ function AddVideo() {
                                                                 {errorlist.order && <p style={{ color: "red", fontSize: "14px" }}>{errorlist.order}</p>}
                                                             </div>
 
-                                                            <div className="single-input">
+                                                           {/* <div className="single-input">
                                                                 <label htmlFor="subCourse">SubCourse</label>
                                                                 <select
                                                                     id="subCourse"
@@ -259,7 +261,7 @@ function AddVideo() {
                                                                     ))}
                                                                 </select>
                                                                 {errorlist.subCourse && <p style={{ color: "red", fontSize: "14px" }}>{errorlist.subCourse}</p>}
-                                                            </div>
+                                                            </div>*/}
 
                                                             <div className="single-input">
                                                                 <label htmlFor="video">Video File</label>
@@ -374,4 +376,4 @@ function AddVideo() {
     );
 }
 
-export default AddVideo;
+export default AddVideosSubCourse;

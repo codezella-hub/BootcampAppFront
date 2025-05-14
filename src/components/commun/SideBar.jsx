@@ -46,7 +46,7 @@ function SideBar() {
                         <p >My&nbsp;Quiz&nbsp;Attempts</p>
                     </Link>
 
-                    <a href="order-history.html" className="single-item">
+                    <a href="historyOrders" className="single-item">
                         <i className="fa-sharp fa-light fa-bag-shopping"/>
                         <p>Order History</p>
                     </a>

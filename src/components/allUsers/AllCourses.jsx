@@ -353,7 +353,7 @@ function AllCourses() {
                                                             {/* Rest of your course card content */}
                                                             <div className="tags-area-wrapper">
                                                                 <div className="single-tag">
-                                                                    <span>{course.category?.name || 'Web Development'}</span>
+                                                                    <span>{course.category?.title || 'Web Development'}</span>
                                                                 </div>
                                                             </div>
                                                             <div className="lesson-studente">
@@ -361,10 +361,7 @@ function AllCourses() {
                                                                     <i className="fa-light fa-calendar-lines-pen" />
                                                                     <span>{course.lessonsCount || 25} Lessons</span>
                                                                 </div>
-                                                                <div className="lesson">
-                                                                    <i className="fa-light fa-user-group" />
-                                                                    <span>{course.studentsCount || 54} Students</span>
-                                                                </div>
+                                                                
                                                             </div>
                                                             <Link to={`/DetailCourse/${course._id}`}>
                                                                 <h5 className="title">{course.title || 'The Complete Web Developer in 2023: Zero to Mastery'}</h5>

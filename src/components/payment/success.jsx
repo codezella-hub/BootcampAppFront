@@ -112,8 +112,8 @@ const Success = () => {
           <p>Thank you for your purchase. You now have full access to your course(s) 🎉</p>
 
           <div className="success-actions">
-            <Link to="/" className="btn-home">🏠 Return to Home</Link>
-            <Link to="/dashboard/courses" className="btn-my-courses">📚 Go to My Courses</Link>
+            <Link to="/" className="rts-btn btn-primary mt-3">🏠 Return to Home</Link>
+            <Link to="/dashboard/student/enroll-course" className="rts-btn btn-primary mt-3">📚 Go to My Courses</Link>
           </div>
         </div>
 
@@ -129,10 +129,19 @@ const Success = () => {
                 >
                   <div className="course-card-inner">
                     <img
-                      src={course.image || "assets/images.jpeg"}
-                      alt={course.title}
-                      className="recommendation-image"
-                    />
+                                                                src={`http://localhost:3000${course.courseImage}`}
+                                                                alt={course.title}
+                                                                onError={(e) => {
+                                                                    e.target.onerror = null;
+                                                                    e.target.src = "assets/images/course/11.jpg";
+                                                                }}
+                                                                style={{
+                                                                    width: '300px',
+                                                                    height: '200px',
+                                                                    objectFit: 'cover',
+                                                                    borderRadius: '8px'
+                                                                }}
+                                                            />
                     <h4 className="course-title">{course.title}</h4>
                     <p className="course-objectives">
                       🎯 {course.objectives || course.description || "No objectives provided."}

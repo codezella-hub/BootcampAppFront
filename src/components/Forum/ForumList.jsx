@@ -136,11 +136,26 @@ function ForumList() {
             <div className="col-lg-6" key={forum._id}>
               <div className="single-blog-list-wrapper">
                 <a href={`forum/${forum._id}`} className="thumbnail">
-                  <img 
-                    src={`http://localhost:3000${forum.image}`} 
-                    alt="forum" 
-                    style={{ width: "250px", height: "200px", borderRadius: "10px", objectFit: "cover" }} 
-                  />
+                  <div style={{
+                      width: "250px",
+                      height: "200px",
+                      borderRadius: "10px",
+                      overflow: "hidden",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: "#f0f0f0"
+                    }}>
+                      <img 
+                        src={`http://localhost:3000${forum.image}`} 
+                        alt="forum" 
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                          objectFit: "contain"
+                        }} 
+                      />
+                    </div>
                 </a>
                 <div className="information-blog">
                   <div className="tag"><span>{forum.categorie}</span></div>

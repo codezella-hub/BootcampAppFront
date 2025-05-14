@@ -52,6 +52,8 @@ import AddSubCourse from './components/trainer/subCourse/AddSubCourse';
 import ListSubCourse from './components/trainer/subCourse/ListSubCourse';
 import UpdateSubCourse from './components/trainer/subCourse/UpdateSubCourse';
 import AddVideo from './components/trainer/video/AddVideo';
+
+
 import ListVideo from './components/trainer/video/ListVideo';
 import VideoDetail from './components/trainer/video/VideoDetail.jsx';
 import UpdateVideo from './components/trainer/video/UpdateVideo';
@@ -95,6 +97,8 @@ import StatsGrid from "./components/dashboard/StatsGrid.jsx";
 import TopRatedCourses from "./components/dashboard/TopRatedCourses.jsx";
 import DashboardPage from "./components/dashboard/DashboardPage.jsx";
 import ListVideoBySubCourse from './components/trainer/video/ListVideoBySubCourse.jsx';
+import OrderList from './components/historyOrders/OrderList.jsx';
+import AddVideosSubCourse from './components/trainer/video/addVideosSubCourse.jsx';
 function App() {
   const userId ='88888888'
   const [cartItems, setCartItems] = useState([]);
@@ -185,6 +189,7 @@ function App() {
           <Route path="student/enroll-course" element={<StudentEnrollCourse />} />
           <Route path="ListCategory" element={<ListCategory />} />
         <Route path="ListCourseAdmin" element={<ListCourseAdmin />} />
+        <Route path="historyOrders" element={<OrderList/>} />
         </Route>
 
         {/* Profile Routes */}
@@ -236,6 +241,7 @@ function App() {
      
  
         <Route path="/AddVideo" element={<AddVideo />} />
+        <Route path="/addSubCourseVideo/:id" element={<AddVideosSubCourse />} />
         <Route path="/ListVideo" element={<ListVideo />} />
     
         <Route path="/VideoPopUp/:id" element={<VideoPopUp />} />
@@ -278,7 +284,7 @@ function App() {
         <Route path="/admin/coupons" element={<CouponList />} />
 
 
-        <Route path="/historyOrders" element={<HistoryOrderList />} />
+        
 
         {/* Not found  Route */}
         <Route path={"/*"} element={<Notfound/>} />
