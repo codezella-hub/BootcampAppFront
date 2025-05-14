@@ -99,6 +99,7 @@ import DashboardPage from "./components/dashboard/DashboardPage.jsx";
 import ListVideoBySubCourse from './components/trainer/video/ListVideoBySubCourse.jsx';
 import OrderList from './components/historyOrders/OrderList.jsx';
 import AddVideosSubCourse from './components/trainer/video/addVideosSubCourse.jsx';
+import Scraper from './components/scraper/scraper.jsx';
 function App() {
   const userId ='88888888'
   const [cartItems, setCartItems] = useState([]);
@@ -149,8 +150,13 @@ function App() {
         <Route path="addForum" element={<ProtectedRoute><AddForum /></ProtectedRoute>} />
         <Route path="updateForum/:id" element={<ProtectedRoute><UpdateForum /></ProtectedRoute>} />
         <Route path="Forums" element={<ForumList />} />
+
         <Route path="Myforum" element={<ProtectedRoute><MyForum /></ProtectedRoute>} />
         <Route path="forum/:id" element={<ProtectedRoute><ForumDetails /></ProtectedRoute>} />
+
+
+        <Route path="scraper" element={<Scraper />} />
+
 
         {/* Post Routes */}
         <Route path="posts" element={<PostList />} />

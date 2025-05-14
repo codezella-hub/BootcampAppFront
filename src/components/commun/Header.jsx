@@ -27,6 +27,7 @@ function Header() {
         // 🔧 You can implement this later in your store.
     };
     return (
+        <>
         <div>
 
             {/* header style one */}
@@ -58,6 +59,14 @@ function Header() {
                                                     <>
                                                         {/* route forum */}
 
+                                                        <li className="has-dropdown">
+                                                            <Link className="nav-link">Courses</Link>
+                                                            <ul className="submenu">
+                                                                <li><Link to="/allcourses">List Course</Link></li>
+                                                                <li><Link to="/scraper">External Courses</Link></li>
+
+                                                            </ul>
+                                                        </li>
 
                                                         <li className="has-dropdown">
                                                             <Link to="/dashboard" className="nav-link">Dashboard</Link>
@@ -248,6 +257,7 @@ function Header() {
                 onRemoveItem={removeFromCart}
             />
         </div>
+</>
     );
 }
 
