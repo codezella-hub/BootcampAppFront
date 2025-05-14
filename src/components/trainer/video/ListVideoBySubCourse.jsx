@@ -75,7 +75,7 @@ function ListVideoBySubCourse() {
                                    
                                 }}
                             >
-                                <Link to="/AddVideo" className="rts-btn btn-primary">
+                                <Link to={`/addSubCourseVideo/${id}`} className="rts-btn btn-primary">
                                     Add New Video
                                 </Link>
                             </div>
