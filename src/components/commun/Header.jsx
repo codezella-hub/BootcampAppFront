@@ -125,6 +125,7 @@ function Header() {
                                                             <Link className="nav-link">Courses</Link>
                                                             <ul className="submenu">
                                                                 <li><Link to="/allcourses">List Course</Link></li>
+                                                                <li><Link to="/scraper">External Courses</Link></li>
 
                                                             </ul>
                                                         </li>
