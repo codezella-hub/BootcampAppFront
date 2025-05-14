@@ -280,7 +280,7 @@ function AddVideosSubCourse() {
                                                                                 Your browser does not support the video tag.
                                                                             </video>
                                                                         ) : (
-                                                                            <img src="assets/images/dashboard/05.png" alt="Default" style={{ width: "250px", height: "250px", objectFit: "cover" }} />
+                                                                            <img src="/05.png" alt="Default" style={{ width: "250px", height: "250px", objectFit: "cover" }} />
                                                                         )}
                                                                     </div>
                                                                     <div className="information">
@@ -309,7 +309,7 @@ function AddVideosSubCourse() {
                                                                         {thumbnailPreview ? (
                                                                             <img src={thumbnailPreview} alt="Selected" style={{ width: "250px", height: "250px", objectFit: "cover" }} />
                                                                         ) : (
-                                                                            <img src="assets/images/dashboard/05.png" alt="Default" style={{ width: "250px", height: "250px", objectFit: "cover" }} />
+                                                                            <img src="/05.png" alt="Default" style={{ width: "250px", height: "250px", objectFit: "cover" }} />
                                                                         )}
                                                                     </div>
                                                                     <div className="information">
