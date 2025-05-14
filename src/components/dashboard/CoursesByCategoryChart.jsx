@@ -30,7 +30,7 @@ const CoursesByCategoryChart = () => {
                 data: {
                     labels: data.map(item => item.categoryName),
                     datasets: [{
-                        label: 'Nombre de cours',
+                        label: 'Number of courses',
                         data: data.map(item => item.count),
                         backgroundColor: 'rgba(54, 162, 235, 0.7)',
                         borderColor: 'rgba(54, 162, 235, 1)',
@@ -42,7 +42,7 @@ const CoursesByCategoryChart = () => {
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Cours par catégorie'
+                            text: 'Courses by Category'
                         }
                     },
                     scales: {
@@ -50,7 +50,7 @@ const CoursesByCategoryChart = () => {
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Nombre de cours'
+                                text: 'Number of courses'
                             }
                         }
                     }

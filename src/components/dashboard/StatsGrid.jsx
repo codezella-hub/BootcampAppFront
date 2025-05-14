@@ -51,22 +51,22 @@ const StatsGrid = () => {
     return (
         <div className="stats-grid">
             <StatsCard
-                title="Total Cours"
+                title="Total Courses"
                 value={stats.courses}
                 icon="📚"
             />
             <StatsCard
-                title="Utilisateurs"
+                title="Users"
                 value={stats.users}
                 icon="👥"
             />
             <StatsCard
-                title="Inscriptions"
+                title="Enrollments"
                 value={stats.enrollments}
                 icon="🎓"
             />
             <StatsCard
-                title="Catégories"
+                title="Categories"
                 value={stats.categories}
                 icon="🏷️"
             />

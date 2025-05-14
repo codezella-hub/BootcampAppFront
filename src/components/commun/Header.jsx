@@ -52,21 +52,14 @@ function Header() {
                                                     <Link className="nav-link">Courses</Link>
                                                     <ul className="submenu">
                                                         <li><Link to="/allcourses">List Course</Link></li>
-
+                                                        <li><Link to="/scraper">External Courses</Link></li>
                                                     </ul>
                                                 </li>
                                                 {isAuthenticated && (
                                                     <>
                                                         {/* route forum */}
 
-                                                        <li className="has-dropdown">
-                                                            <Link className="nav-link">Courses</Link>
-                                                            <ul className="submenu">
-                                                                <li><Link to="/allcourses">List Course</Link></li>
-                                                                <li><Link to="/scraper">External Courses</Link></li>
 
-                                                            </ul>
-                                                        </li>
 
                                                         <li className="has-dropdown">
                                                             <Link to="/dashboard" className="nav-link">Dashboard</Link>
@@ -80,20 +73,12 @@ function Header() {
 
                                                         {user.role === "admin" && (
                                                             <>
-                                                                <li className="has-dropdown">
-                                                                    <Link className="nav-link" to="/posts">page</Link>
-                                                                </li>
-                                                                <li className="has-dropdown">
-                                                                    <Link className="nav-link" to="/posts">page</Link>
-                                                                </li>
+
 
                                                                 <li className="has-dropdown">
-                                                                    <Link to="/dashboard"
-                                                                          className="nav-link">Dashboard</Link>
-                                                                    <ul className="submenu">
-                                                                        <li><Link to="/dash">Statistic</Link></li>
+                                                                    <Link to="/dash"
+                                                                          className="nav-link">Statistic</Link>
 
-                                                                    </ul>
                                                                 </li>
                                                             </>
 
@@ -176,13 +161,7 @@ function Header() {
                                                         <li><Link to="/Myforum">My Forum</Link></li>
                                                     </ul>
                                                 </li>
-                                                <li className="has-dropdown">
-                                                    <Link className="nav-link" to="/posts">Jobs</Link>
-                                                    <ul className="submenu">
-                                                        <li><Link to="/posts">Find Job</Link></li>
 
-                                                    </ul>
-                                                </li>
                                                 {/* route post */}
                                             </ul>
                                         </nav>

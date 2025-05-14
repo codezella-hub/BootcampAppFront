@@ -24,7 +24,7 @@ const TopRatedCourses = () => {
 
     return (
         <div className="top-courses">
-            <h2>Top 50 des cours par évaluation</h2>
+            <h2>Top 50 Rated Courses</h2>
             <div className="courses-list">
                 {courses.map((course, index) => (
                     <div key={course._id} className="course-item">

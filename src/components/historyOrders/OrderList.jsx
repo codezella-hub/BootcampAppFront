@@ -13,7 +13,7 @@ const OrderList = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await axios.get(`/api/orders/user-id/681f9fe34404e0b4d5b922f6`);
+        const response = await axios.get(`/api/orders/user-id/${user._id}`);
         setOrders(response.data);
       } catch (err) {
         setError(err.message || 'Failed to fetch orders');

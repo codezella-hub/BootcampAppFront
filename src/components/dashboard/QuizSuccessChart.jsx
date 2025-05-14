@@ -28,7 +28,7 @@ const QuizSuccessChart = () => {
             chartInstance.current = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: data.map(item => item.status === "Passed" ? "Réussis" : "Échoués"),
+                    labels: data.map(item => item.status === "Passed" ? "Passed" : "Failed"),
                     datasets: [{
                         data: data.map(item => item.count),
                         backgroundColor: [
@@ -47,7 +47,7 @@ const QuizSuccessChart = () => {
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Résultats des quiz'
+                            text: 'Quiz Results'
                         },
                         tooltip: {
                             callbacks: {

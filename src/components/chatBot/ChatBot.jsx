@@ -58,7 +58,7 @@ function ChatBot() {
 
                 {loading && (
                     <div className="chat-bubble bot-msg">
-                        ⏳ Chargement...
+                        ⏳ Loading...
                     </div>
                 )}
             </div>
@@ -69,11 +69,11 @@ function ChatBot() {
                     value={question}
                     onChange={(e) => setQuestion(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Écris ta question ici..."
+                    placeholder="Type your question here..."
                     className="form-control custom-input"
                 />
                 <button onClick={handleAsk} className="btn custom-btn">
-                    Envoyer
+                    Send
                 </button>
             </div>
         </div>
