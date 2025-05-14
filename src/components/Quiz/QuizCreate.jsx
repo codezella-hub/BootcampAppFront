@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import quizApi from "../../services/quizapi.js";
 import { useParams } from "react-router-dom";
 
@@ -9,6 +9,7 @@ const lightGray = "#f4f4f4";
 
 
 const QuizCreate = () => {
+    const navigate = useNavigate();
     const { courseId, subCourseId } = useParams();
     const { user } = useAuthStore();
     const [quiz, setQuiz] = useState({
@@ -107,6 +108,8 @@ const QuizCreate = () => {
             const response = await quizApi.createQuiz(payload);
             console.log("✅ Quiz saved:", response.data);
             alert("Quiz saved to database!");
+            navigate(-1);
+
 
             // Optionally reset form
             // setQuiz({ title: "", subCourseId: "", courseId: "", difficulty: "", totalQuestions: 0, maxAttempts: 0, timeLimit: 0, createdBy: "", questions: [] });

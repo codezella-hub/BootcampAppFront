@@ -19,7 +19,7 @@ const registerSchema = z.object({
     email: z.string().email('Invalid email address'),
     password: z.string().min(8, 'Password must be at least 8 characters'),
     gender: z.enum(['male', 'female']),
-    role: z.enum(['admin', 'user']),
+    role: z.enum(['admin', 'user','entreprise','professor']),
     terms: z.literal(true, {
         errorMap: () => ({ message: 'You must accept the terms and conditions' }),
     }),
@@ -261,6 +261,8 @@ export default function Register() {
                                                 <option value="">Select Role</option>
                                                 <option value="admin">Admin</option>
                                                 <option value="user">User</option>
+                                                <option value="professor">Professor</option>
+                                                <option value="entreprise">Entreprise</option>
                                             </select>
                                             {errors.role && (
                                                 <div className="invalid-feedback">

@@ -142,23 +142,23 @@ function App() {
           <Route path="chat" element={<ChatBot />} />
           <Route path="AddCategory" element={<AddCategory />} />
           {/* Forum Routes */}
-        <Route path="addForum" element={<AddForum />} />
-        <Route path="updateForum/:id" element={<UpdateForum />} />
+        <Route path="addForum" element={<ProtectedRoute><AddForum /></ProtectedRoute>} />
+        <Route path="updateForum/:id" element={<ProtectedRoute><UpdateForum /></ProtectedRoute>} />
         <Route path="Forums" element={<ForumList />} />
-        <Route path="Myforum" element={<MyForum />} />
-        <Route path="forum/:id" element={<ForumDetails />} />
+        <Route path="Myforum" element={<ProtectedRoute><MyForum /></ProtectedRoute>} />
+        <Route path="forum/:id" element={<ProtectedRoute><ForumDetails /></ProtectedRoute>} />
 
         {/* Post Routes */}
         <Route path="posts" element={<PostList />} />
-        <Route path="posts/:id" element={<DetailPost />} />
-        <Route path="postsEntreprise/:id" element={<AffichePostEntreprise />} />
-        <Route path="addCandidat/:postId" element={<AddCandidat />} />
-        <Route path="MyPosts" element={<MyPosts />} />
-        <Route path="addPost" element={<AddPost />} />
-        <Route path="updatePost/:id" element={<UpdatePost />} />
-        <Route path="CandidatDetailsEntreprise/:id" element={<CandidatDetailsEntreprise />} />
-        <Route path="MyCandidats" element={<MyCandidats />} />
-        <Route path="updateCandidat/:id" element={<UpdateCandidat />} />
+        <Route path="posts/:id" element={<ProtectedRoute><DetailPost /></ProtectedRoute>} />
+        <Route path="postsEntreprise/:id" element={<ProtectedRoute><AffichePostEntreprise /></ProtectedRoute>} />
+        <Route path="addCandidat/:postId" element={<ProtectedRoute><AddCandidat /></ProtectedRoute>} />
+        <Route path="MyPosts" element={<ProtectedRoute><MyPosts /></ProtectedRoute>} />
+        <Route path="addPost" element={<ProtectedRoute><AddPost /></ProtectedRoute>} />
+        <Route path="updatePost/:id" element={<ProtectedRoute><UpdatePost /></ProtectedRoute>} />
+        <Route path="CandidatDetailsEntreprise/:id" element={<ProtectedRoute><CandidatDetailsEntreprise /></ProtectedRoute>} />
+        <Route path="MyCandidats" element={<ProtectedRoute><MyCandidats /></ProtectedRoute>} />
+        <Route path="updateCandidat/:id" element={<ProtectedRoute><UpdateCandidat /></ProtectedRoute>} />
 
         {/* eyeTracker */}
         <Route path="/eye-tracker" element={<EyeTracker />} />

@@ -31,78 +31,7 @@ function Header() {
 
             {/* header style one */}
             <header className="header-one v-2 header--sticky">
-                <div className="header-top-one-wrapper">
-                    <div className="container">
-                        <div className="row">
-                            <div className="col-lg-12">
-                                <div className="header-top-one">
-                                    <div className="left-information">
-                                        <a href="mailto:someone@example.com" className="email"><i className="fa-light fa-envelope" />info@studyhub.com</a>
-                                        <a href="tel:+4733378901" className="email"><i className="fa-light fa-phone" />+61 012 012 445</a>
-                                    </div>
-                                    <div className="right-information">
-                                        <div className="right-information">
-                                            <ul className="rts-dropdown-menu switcher-language">
-                                                <li className="has-child-menu">
-                                                    <a href="#">
-                                                        <img className="left-image" src="assets/images/flag-01.svg" alt="Language Images" />
-                                                        <span className="menu-item">English</span>
-                                                        <i className="fa-regular fa-chevron-down" />
-                                                    </a>
-                                                    <ul className="sub-menu">
-                                                        <li>
-                                                            <a href="#">
-                                                                <img className="left-image" src="assets/images/flag-03.svg" alt="Language Images" />
-                                                                <span className="menu-item">Deutsch</span>
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">
-                                                                <img className="left-image" src="assets/images/flag-02.svg" alt="Language Images" />
-                                                                <span className="menu-item">Portuguese</span>
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">
-                                                                <img className="left-image" src="assets/images/flag-04.svg" alt="Language Images" />
-                                                                <span className="menu-item">Russian</span>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                            <ul className="rts-dropdown-menu switcher-currency">
-                                                <li className="has-child-menu">
-                                                    <a href="#">
-                                                        <span className="menu-item">USD</span>
-                                                        <i className="fa-regular fa-chevron-down" />
-                                                    </a>
-                                                    <ul className="sub-menu">
-                                                        <li>
-                                                            <a href="#">
-                                                                <span className="menu-item">Euro</span>
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">
-                                                                <span className="menu-item">Real</span>
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#">
-                                                                <span className="menu-item">Ruble</span>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
                 <div className="container">
                     <div className="row">
                         <div className="col-lg-12">
@@ -115,33 +44,29 @@ function Header() {
                                         <nav>
                                             <ul>
                                                 <li className="has-dropdown" style={{position: 'static'}}>
-                                                    <a className="nav-link" href="#">Home</a>
+                                                    <a className="nav-link" href="/">Home</a>
 
+                                                </li>
+                                                <li className="has-dropdown">
+                                                    <Link className="nav-link">Courses</Link>
+                                                    <ul className="submenu">
+                                                        <li><Link to="/allcourses">List Course</Link></li>
+
+                                                    </ul>
                                                 </li>
                                                 {isAuthenticated && (
                                                     <>
                                                         {/* route forum */}
-                                                        <li className="has-dropdown">
-                                                            <Link className="nav-link">Courses</Link>
-                                                            <ul className="submenu">
-                                                                <li><Link to="/allcourses">List Course</Link></li>
 
-                                                            </ul>
-                                                        </li>
-                                                        
-                                                        <li className="has-dropdown">
-                                                            <Link className="nav-link">Videos</Link>
-                                                            <ul className="submenu">
-                                                                <li><Link to="/ListVideo">Videos</Link></li>
 
-                                                            </ul>
-                                                        </li>
                                                         <li className="has-dropdown">
                                                             <Link to="/dashboard" className="nav-link">Dashboard</Link>
-                                                                <ul className="submenu">
-                                                                <li><Link to="/dash">Statistic</Link></li>
+                                                            <ul className="submenu">
+                                                                <li><Link to="/dashboard">Dashboard</Link></li>
 
                                                             </ul>
+
+
                                                         </li>
                                                         {user.role === "admin" && (
                                                             <>
@@ -151,6 +76,15 @@ function Header() {
                                                                 <li className="has-dropdown">
                                                                     <Link className="nav-link" to="/posts">page</Link>
                                                                 </li>
+
+                                                                <li className="has-dropdown">
+                                                                    <Link to="/dashboard"
+                                                                          className="nav-link">Dashboard</Link>
+                                                                    <ul className="submenu">
+                                                                        <li><Link to="/dash">Statistic</Link></li>
+
+                                                                    </ul>
+                                                                </li>
                                                             </>
 
 
@@ -159,7 +93,15 @@ function Header() {
 
                                                         {user.role === "user" && (
                                                             <>
-                                                                
+                                                                <li className="has-dropdown">
+                                                                    <Link className="nav-link" to="/posts">Jobs</Link>
+                                                                    <ul className="submenu">
+                                                                        <li><Link to="/posts">Find Job</Link></li>
+
+                                                                        <li><Link to="/MyCandidats">My
+                                                                            Applications</Link></li>
+                                                                    </ul>
+                                                                </li>
                                                             </>
                                                         )}
 
@@ -170,6 +112,24 @@ function Header() {
                                                                 <li className="has-dropdown">
                                                                     <Link className="nav-link"
                                                                           to="/Code">Code</Link>
+                                                                </li>
+
+
+                                                            </>
+
+
+                                                        )}
+                                                        {user.role === "entreprise" && (
+                                                            <>
+
+
+                                                                <li className="has-dropdown">
+                                                                    <Link className="nav-link" to="/posts">Jobs</Link>
+                                                                    <ul className="submenu">
+                                                                        <li><Link to="/posts">Find Job</Link></li>
+                                                                        <li><Link to="/MyPosts">My Offers</Link></li>
+
+                                                                    </ul>
                                                                 </li>
 
 
@@ -206,24 +166,24 @@ function Header() {
                                                         <li><Link to="/Myforum">My Forum</Link></li>
                                                     </ul>
                                                 </li>
-                                                 {/* route post */}
-                                                 <li className="has-dropdown">
-                                                        <Link className="nav-link" to="/posts">Jobs</Link>
-                                                        <ul className="submenu">
-                                                            <li><Link to="/posts">Find Job</Link></li>
-                                                            <li><Link to="/MyPosts">My Offers</Link></li>
-                                                            <li><Link to="/MyCandidats">My Applications</Link></li>
-                                                        </ul>
-                                                        </li>
+                                                <li className="has-dropdown">
+                                                    <Link className="nav-link" to="/posts">Jobs</Link>
+                                                    <ul className="submenu">
+                                                        <li><Link to="/posts">Find Job</Link></li>
+
+                                                    </ul>
+                                                </li>
+                                                {/* route post */}
                                             </ul>
                                         </nav>
                                     </div>
                                 </div>
                                 <div className="header-right-area-one">
-                                <div className="actions-area">
+                                    <div className="actions-area">
                                         <div className="search-btn" id="search">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} viewBox="0 0 22 22" fill="none">
-                                                <path d="M19.9375 18.9652L14.7454 13.7732..." fill="#553CDF" />
+                                            <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22}
+                                                 viewBox="0 0 22 22" fill="none">
+                                                <path d="M19.9375 18.9652L14.7454 13.7732..." fill="#553CDF"/>
                                             </svg>
                                         </div>
 

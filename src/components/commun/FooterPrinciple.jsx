@@ -15,7 +15,7 @@ function FooterPrinciple() {
                                 <div className="footer-singl-wized left-logo">
                                     <div className="head">
                                         <a href="#">
-                                            <img src="assets/images/logo/logo-1.svg" alt="logo" loading="lazy" />
+                                            <img src="/assets/images/logo/logo-1.svg" alt="logo" loading="lazy" />
                                         </a>
                                     </div>
                                     <div className="body">
