@@ -34,22 +34,19 @@ function SideBar() {
                     {/* single item end */}
                     {/* single item */}
                 
-                    <Link to="student/enroll-course" className="single-item">
+                    <Link to="/dashboard/student/enroll-course" className="single-item">
                         <i className="fa-light fa-graduation-cap"/>
                         <p>Enrolled Courses</p>
                     </Link>
 
 
 
-                    <Link to="/respenses" className="single-item" >
-                        <i className="fa-sharp fa-light fa-bullseye-pointer" />
-                        <p >My&nbsp;Quiz&nbsp;Attempts</p>
-                    </Link>
 
-                    <a href="historyOrders" className="single-item">
+
+                    <Link to="/dashboard/historyOrders" className="single-item">
                         <i className="fa-sharp fa-light fa-bag-shopping"/>
                         <p>Order History</p>
-                    </a>
+                    </Link>
 
 
 

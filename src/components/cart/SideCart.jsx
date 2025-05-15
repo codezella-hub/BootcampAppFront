@@ -64,9 +64,7 @@ const SideCart = ({ isOpen, onClose }) => {
                         <span>Total:</span>
                         <span className="total-amount">TND {calculateTotal().toFixed(2)}</span>
                     </div>
-                    <Link to="/checkout" className="checkout-btn" onClick={onClose}>
-                        Proceed to Checkout
-                    </Link>
+
                     <Link to="/cart" className="view-cart-btn" onClick={onClose}>
                         View Full Cart
                     </Link>
